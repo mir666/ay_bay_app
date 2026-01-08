@@ -413,117 +413,116 @@ class _BalanceCardState extends State<BalanceCard> {
             ),
 
           /// 🔍 FLOATING SEARCH PANEL
-          if (controller.isSearching.value)
-            Positioned(
+          Obx(() {
+            if (!controller.isSearching.value) return SizedBox();
+
+            return Positioned(
               top: 80,
               left: 12,
               right: 12,
               child: Material(
                 elevation: 12,
                 borderRadius: BorderRadius.circular(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    /// Search Bar
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: TextField(
-                        autofocus: true,
-                        onChanged: controller.searchTransaction,
-                        decoration: const InputDecoration(
-                          hintText: 'মাস বা লেনদেন খুঁজুন...',
-                          prefixIcon: Icon(Icons.search),
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-
-                    /// Month Suggestions
-                    Obx(() {
-                      if (controller.monthSuggestions.isEmpty) {
-                        return const SizedBox();
-                      }
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 4,
-                            ),
-                            child: Text(
-                              'মাস',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                color: Colors.white,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxHeight: 400, // পুরো suggestions area scrollable
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        /// Search Bar
+                        Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: TextField(
+                            autofocus: true,
+                            onChanged: controller.searchTransaction,
+                            decoration: const InputDecoration(
+                              hintText: 'মাস, লেনদেন বা তারিখ খুঁজুন...',
+                              prefixIcon: Icon(Icons.search),
+                              border: InputBorder.none,
                             ),
                           ),
-                          ListView.builder(
-                            itemCount: controller.monthSuggestions.length,
-                            itemBuilder: (context, index) {
-                              final m = controller.monthSuggestions[index];
-                              return ListTile(
-                                leading: const Icon(Icons.calendar_month),
-                                title: searchHighlightText(
-                                  m['month'],
-                                  controller.searchText.value,
-                                  highlightColor: Colors.deepPurple,
+                        ),
+
+                        /// Month Suggestions
+                        if (controller.monthSuggestions.isNotEmpty)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Padding(
+                                padding:
+                                EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                child: Text(
+                                  'মাস',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
-                                onTap: () =>
-                                    controller.selectMonthFromSearch(m),
+                              ),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: controller.monthSuggestions.length,
+                                itemBuilder: (context, index) {
+                                  final m = controller.monthSuggestions[index];
+                                  return ListTile(
+                                    leading: const Icon(Icons.calendar_month),
+                                    title: searchHighlightText(
+                                      m['month'],
+                                      controller.searchText.value,
+                                      highlightColor: Colors.deepPurple,
+                                    ),
+                                    onTap: () => controller.selectMonthFromSearch(m),
+                                  );
+                                },
+                              ),
+                              const Divider(height: 1),
+                            ],
+                          ),
+
+                        /// Transaction Suggestions
+                        if (controller.suggestions.isNotEmpty)
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            itemCount: controller.suggestions.length,
+                            itemBuilder: (context, index) {
+                              final trx = controller.suggestions[index];
+                              return ListTile(
+                                leading: Icon(
+                                  trx.type == TransactionType.income
+                                      ? Icons.arrow_downward
+                                      : Icons.arrow_upward,
+                                  color: trx.type == TransactionType.income
+                                      ? Colors.green
+                                      : Colors.red,
+                                ),
+                                title: searchHighlightText(
+                                  trx.title,
+                                  controller.searchText.value,
+                                  highlightColor: trx.type == TransactionType.income
+                                      ? Colors.green
+                                      : Colors.red,
+                                ),
+                                subtitle:
+                                Text(DateFormat('dd MMM yyyy').format(trx.date)),
+                                trailing: Text('৳ ${trx.amount}'),
+                                onTap: () {
+                                  controller.selectSuggestion(trx);
+                                  controller.closeSearch();
+                                },
                               );
                             },
                           ),
-                          const Divider(height: 1),
-                        ],
-                      );
-                    }),
-
-                    /// Transaction Suggestions
-                    Obx(() {
-                      if (controller.suggestions.isEmpty) {
-                        return const SizedBox();
-                      }
-
-                      return Container(
-                        constraints: const BoxConstraints(maxHeight: 260),
-                        child: ListView.builder(
-                          itemCount: controller.suggestions.length,
-                          itemBuilder: (context, index) {
-                            final trx = controller.suggestions[index];
-                            return ListTile(
-                              leading: Icon(
-                                trx.type == TransactionType.income
-                                    ? Icons.arrow_downward
-                                    : Icons.arrow_upward,
-                                color: trx.type == TransactionType.income
-                                    ? Colors.green
-                                    : Colors.red,
-                              ),
-                              title: searchHighlightText(
-                                trx.title,
-                                controller.searchText.value,
-                                highlightColor:
-                                    trx.type == TransactionType.income
-                                    ? Colors.green
-                                    : Colors.red,
-                              ),
-                              subtitle: Text(
-                                DateFormat('dd MMM yyyy').format(trx.date),
-                              ),
-                              trailing: Text('৳ ${trx.amount}'),
-                              onTap: () {
-                                controller.selectSuggestion(trx);
-                                controller.closeSearch();
-                              },
-                            );
-                          },
-                        ),
-                      );
-                    }),
-                  ],
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
+            );
+          }),
+
+
         ],
       );
     });

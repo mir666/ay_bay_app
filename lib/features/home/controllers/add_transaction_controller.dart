@@ -53,17 +53,11 @@ class AddTransactionController extends GetxController {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     final home = Get.find<HomeController>();
 
-    if (uid == null) return;
-    if (home.selectedMonthId.value.isEmpty) return;
+    if (uid == null || home.selectedMonthId.value.isEmpty) return;
 
-    final amount = double.tryParse(amountCtrl.text);
-    if (amount == null || amount <= 0) {
+    final amount = double.tryParse(amountCtrl.text) ?? 0;
+    if (amount <= 0) {
       Get.snackbar('Error', 'সঠিক এমাউন্ট দিন');
-      return;
-    }
-
-    if (category.value.isEmpty) {
-      Get.snackbar('Error', 'ক্যাটাগরি নির্বাচন করুন');
       return;
     }
 
@@ -87,22 +81,18 @@ class AddTransactionController extends GetxController {
           .doc(home.selectedMonthId.value)
           .collection('transactions');
 
-      // 🔹 ADD / EDIT
       if (editingTransactionId == null) {
         await ref.add(data);
       } else {
         await ref.doc(editingTransactionId).update(data);
       }
 
-      // 🔥 একমাত্র কাজ → refresh month data
-      await home.fetchTransactions(home.selectedMonthId.value);
-
-      // সব দেখাবে
+      // 🔥 SAFE RELOAD (NO BUG)
+      await home.fetchMonthSummary(home.selectedMonthId.value);
       home.setFilter('সব');
 
-      clearForm();
       Get.back();
-
+      clearForm();
       Get.snackbar('Success', 'লেনদেন সফলভাবে যোগ হয়েছে');
     } catch (e) {
       Get.snackbar('Error', e.toString());
@@ -111,6 +101,7 @@ class AddTransactionController extends GetxController {
     }
   }
 
+
   @override
   void onClose() {
     amountCtrl.dispose();
@@ -118,4 +109,3 @@ class AddTransactionController extends GetxController {
     super.onClose();
   }
 }
-

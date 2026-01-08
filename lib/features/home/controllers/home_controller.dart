@@ -72,6 +72,7 @@ class HomeController extends GetxController {
 
   void searchTransaction(String query) {
     searchText.value = query;
+    isSearching.value = query.isNotEmpty;
 
     if (query.isEmpty) {
       transactions.value = allTransactions;
@@ -82,22 +83,29 @@ class HomeController extends GetxController {
 
     final q = query.toLowerCase();
 
-    /// 🔍 GLOBAL TRANSACTION SEARCH
+    // 🔹 Global Transaction Search (Title, Category, Month, Date)
     final trxMatches = globalTransactions.where((trx) {
-      return trx.title.toLowerCase().contains(q) ||
-          trx.category.toLowerCase().contains(q) ||
-          trx.monthName.toLowerCase().contains(q);
+      final titleMatch = trx.title.toLowerCase().contains(q);
+      final categoryMatch = trx.category.toLowerCase().contains(q);
+      final monthMatch = trx.monthName.toLowerCase().contains(q);
+
+      // Date match (format: dd MMM yyyy)
+      final dateStr = DateFormat('dd MMM yyyy').format(trx.date).toLowerCase();
+      final dateMatch = dateStr.contains(q);
+
+      return titleMatch || categoryMatch || monthMatch || dateMatch;
     }).toList();
 
     suggestions.value = trxMatches.take(5).toList();
     transactions.value = trxMatches;
 
-    /// 📅 Month Suggestions
+    // 🔹 Month Suggestions
     monthSuggestions.value = months
         .where((m) => m['month'].toString().toLowerCase().contains(q))
         .take(5)
         .toList();
   }
+
 
   void selectSuggestion(TransactionModel trx) async {
     searchText.value = trx.title;
@@ -308,6 +316,43 @@ class HomeController extends GetxController {
     transactions.value = _applyFilter(data);
     _calculateDashboard(data);
   }
+
+  Future<void> fetchMonthSummary(String monthId) async {
+    final txSnap = await _db
+        .collection('users')
+        .doc(uid)
+        .collection('months')
+        .doc(monthId)
+        .collection('transactions')
+        .get();
+
+    double inc = 0;
+    double exp = 0;
+
+    for (var d in txSnap.docs) {
+      final amt = (d['amount'] ?? 0).toDouble();
+      if (d['type'] == 'income') {
+        inc += amt;
+      } else {
+        exp += amt;
+      }
+    }
+
+    final monthSnap = await _db
+        .collection('users')
+        .doc(uid)
+        .collection('months')
+        .doc(monthId)
+        .get();
+
+    income.value = inc;
+    expense.value = exp;
+    totalBalance.value = (monthSnap['totalBalance'] ?? 0).toDouble();
+    balance.value = totalBalance.value - expense.value;
+
+    fetchTransactions(monthId);
+  }
+
 
   Future<void> addMonth({
     required DateTime monthDate,
