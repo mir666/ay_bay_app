@@ -58,29 +58,54 @@ class MonthTransactionsScreen extends StatelessWidget {
 
         return Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Card(
-                color: AppColors.ayCardColor,
-                elevation: 4,
-                shadowColor: Colors.black26,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
+            Card(
+              color: AppColors.textFieldBorderColor,
+              elevation: 4,
+              shadowColor: Colors.black26,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: SingleChildScrollView( // যদি বেশি Column থাকে তাহলে scrollable হবে
+                  scrollDirection: Axis.horizontal,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
+                      _summaryTile('মোট বাজেট', controller.totalBalance.value, Colors.white),
+
+                      Container(
+                        width: 1,
+                        height: 60, // responsive height
+                        color: Colors.white,
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                      ),
+
                       _summaryTile('আয়', totalIncome, Colors.green),
+
+                      Container(
+                        width: 1,
+                        height: 60,
+                        color: Colors.white,
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                      ),
+
                       _summaryTile('ব্যয়', totalExpense, Colors.red),
-                      _summaryTile('বেচে যাওয়া টাকা', balance, Colors.blue),
+
+                      Container(
+                        width: 1,
+                        height: 60,
+                        color: Colors.white,
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                      ),
+
+                      _summaryTile('সঞ্চয় টাকা', balance, Colors.white),
                     ],
                   ),
                 ),
               ),
             ),
+
             Expanded(
               child: ListView.builder(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -117,10 +142,10 @@ class MonthTransactionsScreen extends StatelessWidget {
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
-            color: AppColors.categoryTitleColor,
+            color: Colors.white,
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         Text(
           '৳ $amount',
           style: TextStyle(
@@ -166,7 +191,7 @@ class MonthTransactionsScreen extends StatelessWidget {
             ],
           ),
           pw.SizedBox(height: 16),
-          pw.Table.fromTextArray(
+          pw.TableHelper.fromTextArray(
             headers: ['তারিখ', 'বিবরণ', 'টাইপ', 'পরিমাণ'],
             data: list.map((trx) {
               return [

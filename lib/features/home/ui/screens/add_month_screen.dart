@@ -1,3 +1,4 @@
+import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -112,8 +113,8 @@ class _AddMonthScreenState extends State<AddMonthScreen> {
                   Get.back(); // Close screen after adding/updating
                 },
                 style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  backgroundColor: Colors.green,
+                  backgroundColor: AppColors.loginTextButtonColor,
+                  padding: EdgeInsets.symmetric(horizontal: 80, vertical: 10),
                 ),
                 child: const Text(
                   'যোগ করুন',

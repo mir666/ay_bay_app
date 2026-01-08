@@ -124,7 +124,7 @@ class HomeScreen extends StatelessWidget {
                               child: Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: Colors.red.withOpacity(0.1),
+                                  color: Colors.red.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Icon(Icons.delete_outline, color: Colors.red, size: 22),
@@ -228,7 +228,7 @@ class HomeScreen extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.1),
+              color: Colors.blue.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(Icons.edit_note, color: Colors.blue, size: 22),
@@ -258,7 +258,7 @@ class HomeScreen extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.1),
+              color: Colors.red.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(Icons.delete_outline, color: Colors.red, size: 22),
@@ -286,7 +286,7 @@ class HomeScreen extends StatelessWidget {
 
         final totalExpense = snapshot.data!.docs.fold<double>(
           0,
-          (sum, doc) => sum + (doc['amount']?.toDouble() ?? 0),
+          (double sum, doc) => sum + (doc['amount']?.toDouble() ?? 0),
         );
 
         return Text(

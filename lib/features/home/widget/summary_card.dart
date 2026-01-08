@@ -22,7 +22,7 @@ class SummaryCard extends StatelessWidget {
               padding: EdgeInsets.only(top: 5),
               height: 70,
               decoration: BoxDecoration(
-                color: AppColors.monthAddButtonColor.withOpacity(0.5),
+                color: AppColors.monthAddButtonColor.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: AppColors.bannerBottomColor,
@@ -45,7 +45,7 @@ class SummaryCard extends StatelessWidget {
               padding: EdgeInsets.only(top: 5),
               height: 70,
               decoration: BoxDecoration(
-                color: AppColors.monthAddButtonColor.withOpacity(0.5),
+                color: AppColors.monthAddButtonColor.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: AppColors.bannerBottomColor,

@@ -85,7 +85,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   Expanded(
                     child: Obx(
                       () => DropdownButtonFormField<TransactionType>(
-                        value: controller.type.value,
+                        initialValue: controller.type.value,
                         decoration: const InputDecoration(
                           labelText: 'ধরন',
                           border: OutlineInputBorder(),

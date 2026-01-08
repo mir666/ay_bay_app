@@ -4,7 +4,6 @@ import 'package:ay_bay_app/app/app_path.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
-import 'package:ay_bay_app/features/home/ui/screens/add_month_screen.dart';
 import 'package:ay_bay_app/features/home/widget/search_highlite_text.dart';
 import 'package:ay_bay_app/features/home/widget/summary_card.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +23,6 @@ class _BalanceCardState extends State<BalanceCard> {
   Widget build(BuildContext context) {
     final controller = Get.find<HomeController>();
     final size = MediaQuery.sizeOf(context);
-    final isSmall = size.width < 360;
 
     return Obx(() {
       return Stack(
@@ -64,7 +62,7 @@ class _BalanceCardState extends State<BalanceCard> {
                         backgroundColor: AppColors.monthAddButtonColor,
                         child: IconButton(
                           onPressed: () async {
-                            final data = await SideSheet.left(
+                            final _ = await SideSheet.left(
                               body: Align(
                                 alignment: Alignment.topCenter,
                                 child: SizedBox(
@@ -158,7 +156,7 @@ class _BalanceCardState extends State<BalanceCard> {
                           shape: const CircleBorder(),
                           padding: const EdgeInsets.all(16),
                           backgroundColor: AppColors.categoryTitleBgColor
-                              .withOpacity(0.2),
+                              .withValues(alpha: 0.2),
                           elevation: 2,
                         ),
                         child: const Icon(
@@ -174,9 +172,7 @@ class _BalanceCardState extends State<BalanceCard> {
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(horizontal: 14),
                           decoration: BoxDecoration(
-                            color: AppColors.categoryTitleBgColor.withOpacity(
-                              0.1,
-                            ),
+                            color: AppColors.categoryTitleBgColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(30),
                           ),
                           child: Obx(() {
@@ -199,16 +195,20 @@ class _BalanceCardState extends State<BalanceCard> {
                                 hint: Text(
                                   safeSelectedMonth == null
                                       ? 'মাস'
-                                      : '${safeSelectedMonth} (${DateFormat('dd MMM').format(today)})',
+                                      : '$safeSelectedMonth (${DateFormat('dd MMM').format(today)})',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                                icon: const Icon(
-                                  Icons.arrow_drop_down,
-                                  color: Colors.white,
+                                icon: Obx(
+                                  () => Icon(
+                                    controller.isMonthDropdownOpen.value
+                                        ? Icons.arrow_drop_up
+                                        : Icons.arrow_drop_down,
+                                    color: Colors.white,
+                                  ),
                                 ),
                                 dropdownColor: const Color(0xFF0F2C59),
                                 items: [
@@ -235,13 +235,11 @@ class _BalanceCardState extends State<BalanceCard> {
                                         ],
                                       ),
                                     );
-                                  }).toList(),
-
+                                  }),
                                   const DropdownMenuItem<String>(
                                     enabled: false,
                                     child: Divider(color: Colors.white),
                                   ),
-
                                   DropdownMenuItem<String>(
                                     enabled: false,
                                     child: TextButton.icon(
@@ -252,23 +250,19 @@ class _BalanceCardState extends State<BalanceCard> {
                                         if (result != null &&
                                             result is Map<String, dynamic>) {
                                           controller.selectMonth(result);
+
+                                          // 🔹 নতুন মাস add করার পরে dropdown close
+                                          controller.isMonthDropdownOpen.value =
+                                              false;
                                         }
                                       },
                                       icon: const Icon(
                                         Icons.add,
                                         color: Colors.white,
                                       ),
-                                      label: TextButton.icon(
-                                        onPressed: () {
-                                          Get.toNamed(
-                                            AppRoutes.addMonth,
-                                            arguments: 'NEW_MONTH',
-                                          );
-                                        },
-                                        label: const Text(
-                                          'নতুন মাস খুলুন',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
+                                      label: const Text(
+                                        'নতুন মাস খুলুন',
+                                        style: TextStyle(color: Colors.white),
                                       ),
                                     ),
                                   ),
@@ -279,6 +273,14 @@ class _BalanceCardState extends State<BalanceCard> {
                                     (m) => m['month'] == monthName,
                                   );
                                   controller.selectMonth(month);
+
+                                  // 🔹 মাস select করার পরে dropdown close
+                                  controller.isMonthDropdownOpen.value = false;
+                                },
+                                onTap: () {
+                                  // 🔹 tap করলে dropdown toggle হবে
+                                  controller.isMonthDropdownOpen.value =
+                                      !controller.isMonthDropdownOpen.value;
                                 },
                               ),
                             );
@@ -293,7 +295,7 @@ class _BalanceCardState extends State<BalanceCard> {
                           shape: const CircleBorder(),
                           padding: const EdgeInsets.all(16),
                           backgroundColor: AppColors.categoryTitleBgColor
-                              .withOpacity(0.2),
+                              .withValues(alpha: 0.2),
                           elevation: 2,
                         ),
                         child: const Icon(
@@ -314,7 +316,7 @@ class _BalanceCardState extends State<BalanceCard> {
                   margin: const EdgeInsets.symmetric(horizontal: 12),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
-                    color: AppColors.monthAddButtonColor.withOpacity(0.5),
+                    color: AppColors.monthAddButtonColor.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: AppColors.bannerBottomColor,
@@ -361,7 +363,7 @@ class _BalanceCardState extends State<BalanceCard> {
                       Container(
                         height: 50,
                         width: 1,
-                        color: AppColors.addButtonColor.withOpacity(0.3),
+                        color: AppColors.addButtonColor.withValues(alpha: 0.3),
                       ),
 
                       /// 🟢 RIGHT SIDE — ব্যালেন্স
@@ -407,7 +409,7 @@ class _BalanceCardState extends State<BalanceCard> {
                 onTap: controller.closeSearch,
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                  child: Container(color: Colors.black.withOpacity(0.35)),
+                  child: Container(color: Colors.black.withValues(alpha: 0.35)),
                 ),
               ),
             ),
@@ -452,8 +454,10 @@ class _BalanceCardState extends State<BalanceCard> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Padding(
-                                padding:
-                                EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 4,
+                                ),
                                 child: Text(
                                   'মাস',
                                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -472,7 +476,8 @@ class _BalanceCardState extends State<BalanceCard> {
                                       controller.searchText.value,
                                       highlightColor: Colors.deepPurple,
                                     ),
-                                    onTap: () => controller.selectMonthFromSearch(m),
+                                    onTap: () =>
+                                        controller.selectMonthFromSearch(m),
                                   );
                                 },
                               ),
@@ -500,12 +505,14 @@ class _BalanceCardState extends State<BalanceCard> {
                                 title: searchHighlightText(
                                   trx.title,
                                   controller.searchText.value,
-                                  highlightColor: trx.type == TransactionType.income
+                                  highlightColor:
+                                      trx.type == TransactionType.income
                                       ? Colors.green
                                       : Colors.red,
                                 ),
-                                subtitle:
-                                Text(DateFormat('dd MMM yyyy').format(trx.date)),
+                                subtitle: Text(
+                                  DateFormat('dd MMM yyyy').format(trx.date),
+                                ),
                                 trailing: Text('৳ ${trx.amount}'),
                                 onTap: () {
                                   controller.selectSuggestion(trx);
@@ -521,36 +528,8 @@ class _BalanceCardState extends State<BalanceCard> {
               ),
             );
           }),
-
-
         ],
       );
     });
-  }
-
-  Widget _item(String title, double value) {
-    return Expanded(
-      child: Column(
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '৳ ${value.toStringAsFixed(0)}',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
