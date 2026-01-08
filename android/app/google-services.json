@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "281462982602",
+    "project_id": "ay-bay-app",
+    "storage_bucket": "ay-bay-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281462982602:android:978b10062d43268517b133",
+        "android_client_info": {
+          "package_name": "com.globalcomputer.ay_bay_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6kFHZbdJMvNXsnYsPaJ8jE4f7F2S4R7M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
