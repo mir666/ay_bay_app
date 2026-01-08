@@ -58,6 +58,7 @@ class _BalanceCardState extends State<BalanceCard> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      // 🔹 Profile Button
                       CircleAvatar(
                         backgroundColor: AppColors.monthAddButtonColor,
                         child: IconButton(
@@ -66,8 +67,7 @@ class _BalanceCardState extends State<BalanceCard> {
                               body: Align(
                                 alignment: Alignment.topCenter,
                                 child: SizedBox(
-                                  height:
-                                      MediaQuery.sizeOf(context).height * 0.5,
+                                  height: MediaQuery.sizeOf(context).height * 0.5,
                                   child: Column(
                                     children: [
                                       Container(
@@ -85,27 +85,23 @@ class _BalanceCardState extends State<BalanceCard> {
                                       SizedBox(height: 20),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: Column(
+                                        child: Row(
                                           children: [
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.logout_outlined,
+                                            Icon(
+                                              Icons.logout_outlined,
+                                              color: Colors.red,
+                                            ),
+                                            SizedBox(width: 12),
+                                            TextButton(
+                                              onPressed: () {
+                                                controller.logout();
+                                              },
+                                              child: Text(
+                                                'Log Out',
+                                                style: TextStyle(
                                                   color: Colors.red,
                                                 ),
-                                                SizedBox(width: 12),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    controller.logout();
-                                                  },
-                                                  child: Text(
-                                                    'Log Out',
-                                                    style: TextStyle(
-                                                      color: Colors.red,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -124,6 +120,8 @@ class _BalanceCardState extends State<BalanceCard> {
                           ),
                         ),
                       ),
+
+                      // 🔹 Search Button
                       IconButton(
                         icon: Icon(
                           controller.isSearching.value
@@ -141,6 +139,7 @@ class _BalanceCardState extends State<BalanceCard> {
                   ),
                 ),
 
+
                 const SizedBox(height: 12),
 
                 /// 🔹 Month Selector Row
@@ -154,7 +153,7 @@ class _BalanceCardState extends State<BalanceCard> {
                         onPressed: controller.goToPreviousMonth,
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(12),
                           backgroundColor: AppColors.categoryTitleBgColor
                               .withValues(alpha: 0.2),
                           elevation: 2,
@@ -293,7 +292,7 @@ class _BalanceCardState extends State<BalanceCard> {
                         onPressed: controller.goToNextMonth,
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(12),
                           backgroundColor: AppColors.categoryTitleBgColor
                               .withValues(alpha: 0.2),
                           elevation: 2,
