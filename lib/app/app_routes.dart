@@ -1,4 +1,6 @@
 
+import 'package:ay_bay_app/core/profile/ui/screens/profile_screen.dart';
+import 'package:ay_bay_app/core/settings/ui/screens/settings_screen.dart';
 import 'package:ay_bay_app/features/auth/ui/screens/forget_password_screen.dart';
 import 'package:ay_bay_app/features/auth/ui/screens/log_in_screen.dart';
 import 'package:ay_bay_app/features/auth/ui/screens/sigh_up_screen.dart';
@@ -19,6 +21,8 @@ class AppRoutes {
   static const initialBalance = '/add-initialBalance';
   static const addMonth = '/add-month';
   static const monthTransactionSave = '/month-transaction-save';
+  static const appSettings = '/app-settings';
+  static const appProfile = '/app-profile';
 
   static final pages = [
     GetPage(name: splash, page: () => SplashScreen()),
@@ -29,5 +33,7 @@ class AppRoutes {
     GetPage(name: addTransaction, page: () => AddTransactionScreen()),
     GetPage(name: addMonth, page: () => AddMonthScreen()),
     GetPage(name: monthTransactionSave, page: () => MonthTransactionsScreen(monthId: '', monthName: '',)),
+    GetPage(name: appSettings, page: () => SettingsScreen()),
+    GetPage(name: appProfile, page: () => ProfileScreen()),
   ];
 }

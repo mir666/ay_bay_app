@@ -1,9 +1,9 @@
 import 'dart:ui';
 import 'package:ay_bay_app/app/app_colors.dart';
-import 'package:ay_bay_app/app/app_path.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
+import 'package:ay_bay_app/features/home/widget/app_drawer.dart';
 import 'package:ay_bay_app/features/home/widget/search_highlite_text.dart';
 import 'package:ay_bay_app/features/home/widget/summary_card.dart';
 import 'package:flutter/material.dart';
@@ -63,56 +63,12 @@ class _BalanceCardState extends State<BalanceCard> {
                         backgroundColor: AppColors.monthAddButtonColor,
                         child: IconButton(
                           onPressed: () async {
-                            final _ = await SideSheet.left(
-                              body: Align(
-                                alignment: Alignment.topCenter,
-                                child: SizedBox(
-                                  height: MediaQuery.sizeOf(context).height * 0.5,
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        height: 150,
-                                        decoration: BoxDecoration(
-                                          color: AppColors.bannerBottomColor,
-                                          image: DecorationImage(
-                                            image: AssetImage(
-                                              AssetsPath.drawerBannerImg,
-                                            ),
-                                            fit: BoxFit.fill,
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(height: 20),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.logout_outlined,
-                                              color: Colors.red,
-                                            ),
-                                            SizedBox(width: 12),
-                                            TextButton(
-                                              onPressed: () {
-                                                controller.logout();
-                                              },
-                                              child: Text(
-                                                'Log Out',
-                                                style: TextStyle(
-                                                  color: Colors.red,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                            await SideSheet.left(
                               context: context,
+                              body: SafeArea(
+                                child: AppDrawer(),
+                              ),
                             );
-                            setState(() {});
                           },
                           icon: const Icon(
                             Icons.person_2_outlined,

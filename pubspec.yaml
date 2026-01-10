@@ -45,6 +45,9 @@ dependencies:
   side_sheet: ^1.0.4+1
   path_provider: ^2.0.15
   open_file: ^3.2.1
+  firebase_storage: ^13.0.5
+  image_picker: ^1.2.1
+  firebase_messaging: ^16.1.0
 
 dev_dependencies:
   flutter_test:
