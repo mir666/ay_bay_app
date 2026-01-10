@@ -42,15 +42,6 @@ class AppDrawer extends StatelessWidget {
             const SizedBox(height: 12),
 
             _DrawerItem(
-              icon: Icons.dashboard_outlined,
-              title: 'ড্যাশবোর্ড',
-              iconSize: iconSize,
-              textSize: textSize,
-              padding: verticalPadding,
-              onTap: () => Get.back(),
-            ),
-
-            _DrawerItem(
               icon: Icons.person_2_outlined,
               title: 'প্রোফাইল',
               iconSize: iconSize,
