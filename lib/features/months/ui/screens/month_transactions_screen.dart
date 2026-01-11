@@ -138,24 +138,25 @@ class MonthTransactionsScreen extends StatelessWidget {
                         trx.category,
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                          fontSize: 16,
                         ),
                       ),
                       subtitle: Text(
                         DateFormat('dd MMM yyyy').format(trx.date),
                         style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
+                          fontSize: 14,
+                          color: Colors.black54,
                         ),
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            '${isIncome ? '+' : '-'} ৳ ${trx.amount}',
+                            '${isIncome ? '+' : '-'} ৳ ${trx.amount.toInt()}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: isIncome ? Colors.green : Colors.red,
+                              fontSize: 14,
                             ),
                           ),
                         ],
@@ -184,7 +185,7 @@ class MonthTransactionsScreen extends StatelessWidget {
         ),
         SizedBox(height: 4),
         Text(
-          '৳ $amount',
+          '৳ ${amount.toInt()}',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
@@ -240,7 +241,7 @@ class MonthTransactionsScreen extends StatelessWidget {
                 DateFormat('dd MMM yyyy').format(trx.date), // তারিখ
                 trx.type == TransactionType.income ? 'আয়' : 'ব্যয়', // টাইপ
                 trx.category, // ক্যাটাগরী
-                '৳ ${trx.amount}', // পরিমাণ
+                '৳ ${trx.amount.toInt()}', // পরিমাণ
               ];
             }).toList(),
             headerStyle: pw.TextStyle(
@@ -271,8 +272,8 @@ class MonthTransactionsScreen extends StatelessWidget {
         pw.Text(title, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 4),
         pw.Text(
-          '৳ $amount',
-          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: color),
+          '৳ ${amount.toInt()}',
+          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: color, fontSize: 14),
         ),
       ],
     );

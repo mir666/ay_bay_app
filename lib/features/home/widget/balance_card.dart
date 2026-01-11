@@ -301,7 +301,7 @@ class _BalanceCardState extends State<BalanceCard> {
                               ),
                               Obx(
                                 () => Text(
-                                  '৳ ${controller.totalBalance.value}',
+                                  '৳ ${controller.totalBalance.value.toInt()}',
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -337,7 +337,7 @@ class _BalanceCardState extends State<BalanceCard> {
                             const SizedBox(height: 6),
                             Obx(
                               () => Text(
-                                '৳ ${controller.balance.value.toStringAsFixed(2)}',
+                                '৳ ${controller.balance.value.toInt()}',
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,

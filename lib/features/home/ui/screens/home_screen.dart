@@ -168,7 +168,7 @@ class HomeScreen extends StatelessWidget {
                     child: ListTile(
                       leading: Icon(
                         IconData(trx.categoryIcon, fontFamily: 'MaterialIcons'),
-                        color: Colors.lightBlue,
+                        color: AppColors.addButtonColor,
                         size: 28,
                       ),
                       title: Text(
@@ -263,7 +263,7 @@ class HomeScreen extends StatelessWidget {
 
         // ২️⃣ Amount
         Text(
-          '${isIncome ? '+' : '-'} ৳ ${trx.amount}',
+          '${isIncome ? '+' : '-'} ৳ ${trx.amount.toInt()}',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: isSmall ? 12 : 14,
@@ -314,16 +314,16 @@ class HomeScreen extends StatelessWidget {
       builder: (context, snapshot) {
         if (!snapshot.hasData) return const SizedBox(width: 40);
 
-        final total = snapshot.data!.docs.fold<double>(
-          0,
-          (sum, doc) => sum + (doc['amount']?.toDouble() ?? 0),
+        final total = snapshot.data!.docs.fold<double>(0,
+          (double sum, doc) => sum + (doc['amount']?.toDouble() ?? 0),
         );
 
         return Text(
-          '৳${total.toStringAsFixed(2)}',
+          '৳${total.toInt()}',
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.red,
+            fontSize: 16,
           ),
         );
       },
