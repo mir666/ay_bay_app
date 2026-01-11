@@ -1,3 +1,4 @@
+import 'package:ay_bay_app/features/common/models/category_model.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/add_transaction_controller.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
@@ -22,24 +23,40 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   void initState() {
     super.initState();
 
-    /// Prefill data if edit mode
     if (widget.transaction != null) {
       final trx = widget.transaction!;
+
       controller.noteCtrl.text = trx.title;
       controller.amountCtrl.text = trx.amount.toString();
       controller.type.value = trx.type;
       controller.selectedDate.value = trx.date;
       controller.isMonthly.value = trx.isMonthly;
 
-      // Save editing ID
       controller.editingTransactionId = trx.id;
+
+      // ======================
+      // Category prefill
+      // ======================
+      final list = trx.type == TransactionType.income
+          ? controller.incomeCategories
+          : controller.expenseCategories;
+
+      final cat = list.firstWhere(
+              (c) => c.name == trx.category,
+          orElse: () => CategoryModel(name: 'Other', icon: Icons.more_horiz));
+
+      controller.selectedCategory.value = cat;
+
+      if (trx.category != cat.name) {
+        controller.otherCategoryCtrl.text = trx.category;
+      }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.transaction != null;
-    final screenWidth = MediaQuery.of(context).size.width;
     final padding = 16.0;
 
     return Scaffold(
@@ -205,7 +222,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: isSelected
-                                          ? Colors.blue.withOpacity(0.2)
+                                          ? Colors.blue.withValues(alpha: 0.2)
                                           : Colors.grey.shade100,
                                       border: Border.all(
                                         color: isSelected ? Colors.blue : Colors.transparent,
