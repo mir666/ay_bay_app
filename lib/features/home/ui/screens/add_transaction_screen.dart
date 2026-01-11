@@ -239,7 +239,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                   Text(
                                     cat.name,
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 14,
                                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                                     ),
                                   ),
@@ -263,7 +263,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                         child: TextField(
                           controller: controller.otherCategoryCtrl,
                           decoration: const InputDecoration(
-                            labelText: 'ক্যাটাগরির নাম লিখুন',
+                            labelText: 'খরচের বর্ণনা নাম লিখুন',
                             border: OutlineInputBorder(),
                           ),
                         ),

@@ -70,41 +70,11 @@ class MonthTransactionsScreen extends StatelessWidget {
                 child: SingleChildScrollView(
                   // যদি বেশি Column থাকে তাহলে scrollable হবে
                   scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _summaryTile(
-                        'মোট বাজেট',
-                        controller.totalBalance.value,
-                        Colors.white,
-                      ),
-
-                      Container(
-                        width: 1,
-                        height: 60, // responsive height
-                        color: Colors.white,
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                      ),
-
-                      _summaryTile('আয়', totalIncome, Colors.green),
-
-                      Container(
-                        width: 1,
-                        height: 60,
-                        color: Colors.white,
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                      ),
-
-                      _summaryTile('ব্যয়', totalExpense, Colors.red),
-
-                      Container(
-                        width: 1,
-                        height: 60,
-                        color: Colors.white,
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                      ),
-
-                      _summaryTile('সঞ্চয় টাকা', balance, Colors.white),
-                    ],
+                  child: _buildSummarySection(
+                    controller,
+                    totalIncome,
+                    totalExpense,
+                    balance,
                   ),
                 ),
               ),
@@ -119,56 +89,89 @@ class MonthTransactionsScreen extends StatelessWidget {
                   final trx = list[index];
                   final isIncome = trx.type == TransactionType.income;
 
-                  return Card(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 6,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 2,
-                    child: ListTile(
-                      leading: Icon(
-                        IconData(trx.categoryIcon, fontFamily: 'MaterialIcons'),
-                        color: Colors.blue,
-                        size: 28,
-                      ),
-                      title: Text(
-                        trx.category,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                      subtitle: Text(
-                        DateFormat('dd MMM yyyy').format(trx.date),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
-                        ),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            '${isIncome ? '+' : '-'} ৳ ${trx.amount.toInt()}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: isIncome ? Colors.green : Colors.red,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
+                  return _buildCard(trx, isIncome);
                 },
               ),
             ),
           ],
         );
       }),
+    );
+  }
+
+  Widget _buildSummarySection(
+    HomeController controller,
+    double totalIncome,
+    double totalExpense,
+    double balance,
+  ) {
+    return Row(
+      children: [
+        _summaryTile('মোট বাজেট', controller.totalBalance.value, Colors.white),
+
+        Container(
+          width: 1,
+          height: 60, // responsive height
+          color: Colors.white,
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+        ),
+
+        _summaryTile('আয়', totalIncome, Colors.green),
+
+        Container(
+          width: 1,
+          height: 60,
+          color: Colors.white,
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+        ),
+
+        _summaryTile('ব্যয়', totalExpense, Colors.red),
+
+        Container(
+          width: 1,
+          height: 60,
+          color: Colors.white,
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+        ),
+
+        _summaryTile('সঞ্চয় টাকা', balance, Colors.white),
+      ],
+    );
+  }
+
+  Widget _buildCard(TransactionModel trx, bool isIncome) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      child: ListTile(
+        leading: Icon(
+          IconData(trx.categoryIcon, fontFamily: 'MaterialIcons'),
+          color: Colors.blue,
+          size: 28,
+        ),
+        title: Text(
+          trx.category,
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+        ),
+        subtitle: Text(
+          DateFormat('dd MMM yyyy').format(trx.date),
+          style: const TextStyle(fontSize: 14, color: Colors.black54),
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '${isIncome ? '+' : '-'} ৳ ${trx.amount.toInt()}',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: isIncome ? Colors.green : Colors.red,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -273,7 +276,11 @@ class MonthTransactionsScreen extends StatelessWidget {
         pw.SizedBox(height: 4),
         pw.Text(
           '৳ ${amount.toInt()}',
-          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: color, fontSize: 14),
+          style: pw.TextStyle(
+            fontWeight: pw.FontWeight.bold,
+            color: color,
+            fontSize: 14,
+          ),
         ),
       ],
     );

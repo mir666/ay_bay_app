@@ -30,6 +30,7 @@ class AddTransactionController extends GetxController {
     CategoryModel(name: 'Salary', icon: Icons.account_balance_wallet),
     CategoryModel(name: 'Gift', icon: Icons.card_giftcard),
     CategoryModel(name: 'Tuition', icon: Icons.school),
+    CategoryModel(name: 'Bonuses', icon: Icons.attach_money),
     CategoryModel(name: 'Other', icon: Icons.more_horiz),
   ];
 
@@ -37,8 +38,10 @@ class AddTransactionController extends GetxController {
     CategoryModel(name: 'Food', icon: Icons.restaurant),
     CategoryModel(name: 'Transport', icon: Icons.directions_bus),
     CategoryModel(name: 'Shopping', icon: Icons.shopping_bag),
-    CategoryModel(name: 'Electric Bills', icon: Icons.receipt_long),
-    CategoryModel(name: 'Net Bills', icon: Icons.wifi),
+    CategoryModel(name: 'Electric Bill', icon: Icons.receipt_long),
+    CategoryModel(name: 'Net Bill', icon: Icons.wifi),
+    CategoryModel(name: 'Gas Bill', icon: Icons.gas_meter_outlined),
+    CategoryModel(name: 'Bazaar', icon: Icons.shopping_cart_outlined),
     CategoryModel(name: 'Other', icon: Icons.more_horiz),
   ];
 
