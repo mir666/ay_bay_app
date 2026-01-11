@@ -1,4 +1,3 @@
-
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
@@ -33,15 +32,10 @@ class HomeScreen extends StatelessWidget {
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-
             /// 🔹 BALANCE CARD
-            const SliverToBoxAdapter(
-              child: BalanceCard(),
-            ),
+            const SliverToBoxAdapter(child: BalanceCard()),
 
-            const SliverToBoxAdapter(
-              child: SizedBox(height: 16),
-            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
             /// 🔹 FILTER BUTTONS
             SliverToBoxAdapter(
@@ -76,9 +70,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
-            const SliverToBoxAdapter(
-              child: SizedBox(height: 12),
-            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
             /// 🔹 MAIN CONTENT
             Obx(() {
@@ -92,56 +84,59 @@ class HomeScreen extends StatelessWidget {
                 }
 
                 return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                      final m = controller.months[index];
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final m = controller.months[index];
 
-                      return Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ListTile(
+                        title: Text(
+                          m['month'],
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: isSmall ? 14 : 16,
+                          ),
                         ),
-                        child: ListTile(
-                          title: Text(
-                            m['month'],
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: isSmall ? 14 : 16,
-                            ),
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _buildMonthExpense(controller, m),
-                              const SizedBox(width: 16),
-                              _deleteIcon(() {
-                                Get.defaultDialog(
-                                  title: 'Confirm Delete',
-                                  middleText: '${m['month']} মাস ডিলিট করতে চাচ্ছো?',
-                                  textConfirm: 'হ্যাঁ',
-                                  textCancel: 'না',
-                                  confirmTextColor: Colors.white,
-                                  buttonColor: Colors.red,
-                                  onConfirm: () {
-                                    Get.back();
-                                    controller.deleteMonth(m['id'], m['month']);
-                                  },
-                                );
-                              }),
-                            ],
-                          ),
-                          onTap: () {
-                            controller.selectMonth(m);
-                            Get.to(() => MonthTransactionsScreen(
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildMonthExpense(controller, m),
+                            const SizedBox(width: 16),
+                            _deleteIcon(() {
+                              Get.defaultDialog(
+                                title: 'Confirm Delete',
+                                middleText:
+                                    '${m['month']} মাস ডিলিট করতে চাচ্ছো?',
+                                textConfirm: 'হ্যাঁ',
+                                textCancel: 'না',
+                                confirmTextColor: Colors.white,
+                                buttonColor: Colors.red,
+                                onConfirm: () {
+                                  Get.back();
+                                  controller.deleteMonth(m['id'], m['month']);
+                                },
+                              );
+                            }),
+                          ],
+                        ),
+                        onTap: () {
+                          controller.selectMonth(m);
+                          Get.to(
+                            () => MonthTransactionsScreen(
                               monthId: m['id'],
                               monthName: m['month'],
-                            ));
-                          },
-                        ),
-                      );
-                    },
-                    childCount: controller.months.length,
-                  ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  }, childCount: controller.months.length),
                 );
               }
 
@@ -154,35 +149,45 @@ class HomeScreen extends StatelessWidget {
               }
 
               return SliverList(
-                delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                    final trx = controller.transactions[index];
-                    final isIncome = trx.type == TransactionType.income;
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final trx = controller.transactions[index];
+                  final isIncome = trx.type == TransactionType.income;
 
-                    return Card(
-                      color: isIncome ? AppColors.ayCardColor : AppColors.bayCardColor,
-                      elevation: 6,
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  return Card(
+                    color: isIncome
+                        ? AppColors.ayCardColor
+                        : AppColors.bayCardColor,
+                    elevation: 6,
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ListTile(
+                      leading: Icon(
+                        IconData(trx.categoryIcon, fontFamily: 'MaterialIcons'),
+                        color: Colors.lightBlue,
+                        size: 28,
                       ),
-                      child: ListTile(
-                        title: Text(trx.title, style: TextStyle(fontSize: isSmall ? 14 : 16)),
-                        subtitle: Text(
-                          DateFormat('dd MMM yyyy').format(trx.date),
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        trailing: _buildTransactionAction(
-                          isIncome,
-                          trx,
-                          isSmall,
-                          controller,
-                        ),
+                      title: Text(
+                        trx.category,
+                        style: TextStyle(fontSize: isSmall ? 14 : 16),
                       ),
-                    );
-                  },
-                  childCount: controller.transactions.length,
-                ),
+                      subtitle: Text(
+                        DateFormat('dd MMM yyyy').format(trx.date),
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      trailing: _buildTransactionAction(
+                        isIncome,
+                        trx,
+                        isSmall,
+                        controller,
+                      ),
+                    ),
+                  );
+                }, childCount: controller.transactions.length),
               );
             }),
 
@@ -246,14 +251,17 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildTransactionAction(
-      bool isIncome,
-      TransactionModel trx,
-      bool isSmall,
-      HomeController controller,
-      ) {
+    bool isIncome,
+    TransactionModel trx,
+    bool isSmall,
+    HomeController controller,
+  ) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
+        const SizedBox(width: 12),
+
+        // ২️⃣ Amount
         Text(
           '${isIncome ? '+' : '-'} ৳ ${trx.amount}',
           style: TextStyle(
@@ -262,11 +270,16 @@ class HomeScreen extends StatelessWidget {
             color: isIncome ? Colors.green : Colors.red,
           ),
         ),
+
         const SizedBox(width: 12),
+
+        // ৩️⃣ Edit Button
         IconButton(
           icon: const Icon(Icons.edit_note, color: Colors.blue),
           onPressed: () => controller.editTransaction(trx),
         ),
+
+        // ৪️⃣ Delete Button
         IconButton(
           icon: const Icon(Icons.delete_outline, color: Colors.red),
           onPressed: () {
@@ -303,7 +316,7 @@ class HomeScreen extends StatelessWidget {
 
         final total = snapshot.data!.docs.fold<double>(
           0,
-              (sum, doc) => sum + (doc['amount']?.toDouble() ?? 0),
+          (sum, doc) => sum + (doc['amount']?.toDouble() ?? 0),
         );
 
         return Text(
@@ -317,4 +330,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-

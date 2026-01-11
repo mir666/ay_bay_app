@@ -1,4 +1,3 @@
-
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
@@ -68,11 +67,16 @@ class MonthTransactionsScreen extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: SingleChildScrollView( // যদি বেশি Column থাকে তাহলে scrollable হবে
+                child: SingleChildScrollView(
+                  // যদি বেশি Column থাকে তাহলে scrollable হবে
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _summaryTile('মোট বাজেট', controller.totalBalance.value, Colors.white),
+                      _summaryTile(
+                        'মোট বাজেট',
+                        controller.totalBalance.value,
+                        Colors.white,
+                      ),
 
                       Container(
                         width: 1,
@@ -105,6 +109,7 @@ class MonthTransactionsScreen extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 20),
 
             Expanded(
               child: ListView.builder(
@@ -114,14 +119,46 @@ class MonthTransactionsScreen extends StatelessWidget {
                   final trx = list[index];
                   final isIncome = trx.type == TransactionType.income;
 
-                  return ListTile(
-                    title: Text(trx.title),
-                    subtitle: Text(DateFormat('dd MMM yyyy').format(trx.date)),
-                    trailing: Text(
-                      '${isIncome ? '+' : '-'} ৳ ${trx.amount}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: isIncome ? Colors.green : Colors.red,
+                  return Card(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
+                    child: ListTile(
+                      leading: Icon(
+                        IconData(trx.categoryIcon, fontFamily: 'MaterialIcons'),
+                        color: Colors.blue,
+                        size: 28,
+                      ),
+                      title: Text(
+                        trx.category,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                      subtitle: Text(
+                        DateFormat('dd MMM yyyy').format(trx.date),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '${isIncome ? '+' : '-'} ৳ ${trx.amount}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: isIncome ? Colors.green : Colors.red,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   );
@@ -185,6 +222,11 @@ class MonthTransactionsScreen extends StatelessWidget {
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
             children: [
+              _pdfSummary(
+                'মোট বাজেট',
+                controller.totalBalance.value,
+                PdfColors.green,
+              ),
               _pdfSummary('আয়', totalIncome, PdfColors.green),
               _pdfSummary('ব্যয়', totalExpense, PdfColors.red),
               _pdfSummary('ব্যালেন্স', balance, PdfColors.blue),
@@ -192,27 +234,28 @@ class MonthTransactionsScreen extends StatelessWidget {
           ),
           pw.SizedBox(height: 16),
           pw.TableHelper.fromTextArray(
-            headers: ['তারিখ', 'বিবরণ', 'টাইপ', 'পরিমাণ'],
+            headers: ['তারিখ', 'টাইপ', 'ক্যাটাগরী', 'পরিমাণ'],
             data: list.map((trx) {
               return [
-                DateFormat('dd MMM yyyy').format(trx.date),
-                trx.title,
-                trx.type == TransactionType.income ? 'আয়' : 'ব্যয়',
-                trx.amount.toString(),
+                DateFormat('dd MMM yyyy').format(trx.date), // তারিখ
+                trx.type == TransactionType.income ? 'আয়' : 'ব্যয়', // টাইপ
+                trx.category, // ক্যাটাগরী
+                '৳ ${trx.amount}', // পরিমাণ
               ];
             }).toList(),
             headerStyle: pw.TextStyle(
               fontWeight: pw.FontWeight.bold,
               color: PdfColors.white,
+              fontSize: 12,
             ),
             headerDecoration: pw.BoxDecoration(color: PdfColors.grey800),
             cellAlignment: pw.Alignment.centerLeft,
             cellStyle: const pw.TextStyle(fontSize: 12),
             columnWidths: {
-              0: const pw.FixedColumnWidth(70),
-              1: const pw.FlexColumnWidth(),
-              2: const pw.FixedColumnWidth(50),
-              3: const pw.FixedColumnWidth(60),
+              0: const pw.FixedColumnWidth(70), // তারিখ → fixed
+              1: const pw.FixedColumnWidth(50), // টাইপ → fixed
+              2: const pw.FlexColumnWidth(3), // ক্যাটাগরী → বড় জায়গা
+              3: const pw.FixedColumnWidth(50), // পরিমাণ → ছোট
             },
           ),
         ],

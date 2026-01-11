@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 enum TransactionType { income, expense }
 
@@ -8,6 +9,7 @@ class TransactionModel {
   final double amount;
   final TransactionType type;
   final String category;
+  final int categoryIcon; // ✅ নতুন field
   final DateTime date;
   final bool isMonthly;
   final String monthId;
@@ -19,6 +21,7 @@ class TransactionModel {
     required this.amount,
     required this.type,
     required this.category,
+    required this.categoryIcon, // constructor update
     required this.date,
     required this.isMonthly,
     required this.monthId,
@@ -32,6 +35,7 @@ class TransactionModel {
       amount: (json['amount'] ?? 0).toDouble(),
       type: _parseType(json['type']),
       category: json['category'] ?? '',
+      categoryIcon: json['categoryIcon'] ?? Icons.help_outline.codePoint, // default icon
       date: json['date'] is Timestamp
           ? (json['date'] as Timestamp).toDate()
           : DateTime.now(),
@@ -52,6 +56,7 @@ class TransactionModel {
       amount: amount,
       type: type,
       category: category,
+      categoryIcon: categoryIcon, // copyWith এ থাকছে
       date: date,
       isMonthly: isMonthly ?? this.isMonthly,
       monthId: monthId ?? this.monthId,
@@ -65,6 +70,7 @@ class TransactionModel {
       'amount': amount,
       'type': type == TransactionType.income ? 'income' : 'expense',
       'category': category,
+      'categoryIcon': categoryIcon, // ✅ save করবো Firestore-এ
       'date': Timestamp.fromDate(date),
       'isMonthly': isMonthly,
     };

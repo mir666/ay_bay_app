@@ -1,3 +1,4 @@
+import 'package:ay_bay_app/features/common/models/category_model.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,8 +22,25 @@ class AddTransactionController extends GetxController {
 
   final selectedDate = DateTime.now().obs;
 
-  final categoriesIncome = ['Salary', 'Gift', 'Tuition'];
-  final categoriesExpense = ['Food', 'Market', 'Transport'];
+  Rx<CategoryModel?> selectedCategory = Rx<CategoryModel?>(null);
+
+  final otherCategoryCtrl = TextEditingController();
+
+  final incomeCategories = const [
+    CategoryModel(name: 'Salary', icon: Icons.account_balance_wallet),
+    CategoryModel(name: 'Gift', icon: Icons.card_giftcard),
+    CategoryModel(name: 'Tuition', icon: Icons.school),
+    CategoryModel(name: 'Other', icon: Icons.more_horiz),
+  ];
+
+  final expenseCategories = const [
+    CategoryModel(name: 'Food', icon: Icons.restaurant),
+    CategoryModel(name: 'Transport', icon: Icons.directions_bus),
+    CategoryModel(name: 'Shopping', icon: Icons.shopping_bag),
+    CategoryModel(name: 'Electric Bills', icon: Icons.receipt_long),
+    CategoryModel(name: 'Net Bills', icon: Icons.wifi),
+    CategoryModel(name: 'Other', icon: Icons.more_horiz),
+  ];
 
   // =========================
   // 🔹 Helpers
@@ -63,12 +81,32 @@ class AddTransactionController extends GetxController {
 
     isLoading.value = true;
 
+    final selectedCat = selectedCategory.value;
+
+    if (selectedCat == null) {
+      Get.snackbar('Error', 'একটি ক্যাটাগরি নির্বাচন করুন');
+      isLoading.value = false;
+      return;
+    }
+
+    final categoryName = selectedCat.name == 'Other'
+        ? otherCategoryCtrl.text.trim()
+        : selectedCat.name;
+
+    if (categoryName.isEmpty) {
+      Get.snackbar('Error', 'ক্যাটাগরির নাম লিখুন');
+      isLoading.value = false;
+      return;
+    }
+
+
     try {
       final data = {
         'title': noteCtrl.text.trim(),
         'amount': amount,
-        'type': type.value == TransactionType.income ? 'income' : 'expense',
-        'category': category.value,
+        'type': type.value.name,
+        'category': categoryName,
+        'categoryIcon': selectedCat.icon.codePoint,
         'date': Timestamp.fromDate(selectedDate.value),
         'isMonthly': isMonthly.value,
         'createdAt': Timestamp.now(),
