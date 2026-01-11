@@ -31,6 +31,7 @@ class AddTransactionController extends GetxController {
     CategoryModel(name: 'Gift', icon: Icons.card_giftcard),
     CategoryModel(name: 'Tuition', icon: Icons.school),
     CategoryModel(name: 'Bonuses', icon: Icons.attach_money),
+    CategoryModel(name: 'Business income', icon: Icons.business),
     CategoryModel(name: 'Other', icon: Icons.more_horiz),
   ];
 
