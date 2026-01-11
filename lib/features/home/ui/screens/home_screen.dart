@@ -29,166 +29,168 @@ class HomeScreen extends StatelessWidget {
         child: const Icon(Icons.add, color: Colors.white),
       ),
 
-      body: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
+      body: SafeArea(
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
 
-          /// 🔹 BALANCE CARD
-          const SliverToBoxAdapter(
-            child: BalanceCard(),
-          ),
+            /// 🔹 BALANCE CARD
+            const SliverToBoxAdapter(
+              child: BalanceCard(),
+            ),
 
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 16),
-          ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 16),
+            ),
 
-          /// 🔹 FILTER BUTTONS
-          SliverToBoxAdapter(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 12),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.dateIconBgColor,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.categoryShadowColor,
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _filterButton('সব', isSmall),
-                    const SizedBox(width: 10),
-                    _filterButton('আয়', isSmall),
-                    const SizedBox(width: 10),
-                    _filterButton('ব্যয়', isSmall),
-                    const SizedBox(width: 10),
-                    _filterButton('মাসিক', isSmall),
+            /// 🔹 FILTER BUTTONS
+            SliverToBoxAdapter(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.dateIconBgColor,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.categoryShadowColor,
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
                   ],
+                ),
+                child: SingleChildScrollView(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _filterButton('সব', isSmall),
+                      const SizedBox(width: 10),
+                      _filterButton('আয়', isSmall),
+                      const SizedBox(width: 10),
+                      _filterButton('ব্যয়', isSmall),
+                      const SizedBox(width: 10),
+                      _filterButton('মাসিক', isSmall),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
 
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 12),
-          ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 12),
+            ),
 
-          /// 🔹 MAIN CONTENT
-          Obx(() {
-            /// 🟢 MONTH LIST
-            if (controller.filterCategory.value == 'মাসিক') {
-              if (controller.months.isEmpty) {
+            /// 🔹 MAIN CONTENT
+            Obx(() {
+              /// 🟢 MONTH LIST
+              if (controller.filterCategory.value == 'মাসিক') {
+                if (controller.months.isEmpty) {
+                  return const SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(child: Text('কোনো মাস যোগ করা হয়নি')),
+                  );
+                }
+
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                      final m = controller.months[index];
+
+                      return Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ListTile(
+                          title: Text(
+                            m['month'],
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: isSmall ? 14 : 16,
+                            ),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _buildMonthExpense(controller, m),
+                              const SizedBox(width: 16),
+                              _deleteIcon(() {
+                                Get.defaultDialog(
+                                  title: 'Confirm Delete',
+                                  middleText: '${m['month']} মাস ডিলিট করতে চাচ্ছো?',
+                                  textConfirm: 'হ্যাঁ',
+                                  textCancel: 'না',
+                                  confirmTextColor: Colors.white,
+                                  buttonColor: Colors.red,
+                                  onConfirm: () {
+                                    Get.back();
+                                    controller.deleteMonth(m['id'], m['month']);
+                                  },
+                                );
+                              }),
+                            ],
+                          ),
+                          onTap: () {
+                            controller.selectMonth(m);
+                            Get.to(() => MonthTransactionsScreen(
+                              monthId: m['id'],
+                              monthName: m['month'],
+                            ));
+                          },
+                        ),
+                      );
+                    },
+                    childCount: controller.months.length,
+                  ),
+                );
+              }
+
+              /// 🟢 TRANSACTION LIST
+              if (controller.transactions.isEmpty) {
                 return const SliverFillRemaining(
                   hasScrollBody: false,
-                  child: Center(child: Text('কোনো মাস যোগ করা হয়নি')),
+                  child: Center(child: Text('কোনো ট্রানজাকশন নেই')),
                 );
               }
 
               return SliverList(
                 delegate: SliverChildBuilderDelegate(
                       (context, index) {
-                    final m = controller.months[index];
+                    final trx = controller.transactions[index];
+                    final isIncome = trx.type == TransactionType.income;
 
                     return Card(
+                      color: isIncome ? AppColors.ayCardColor : AppColors.bayCardColor,
+                      elevation: 6,
                       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: ListTile(
-                        title: Text(
-                          m['month'],
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: isSmall ? 14 : 16,
-                          ),
+                        title: Text(trx.title, style: TextStyle(fontSize: isSmall ? 14 : 16)),
+                        subtitle: Text(
+                          DateFormat('dd MMM yyyy').format(trx.date),
+                          style: const TextStyle(fontSize: 12),
                         ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _buildMonthExpense(controller, m),
-                            const SizedBox(width: 16),
-                            _deleteIcon(() {
-                              Get.defaultDialog(
-                                title: 'Confirm Delete',
-                                middleText: '${m['month']} মাস ডিলিট করতে চাচ্ছো?',
-                                textConfirm: 'হ্যাঁ',
-                                textCancel: 'না',
-                                confirmTextColor: Colors.white,
-                                buttonColor: Colors.red,
-                                onConfirm: () {
-                                  Get.back();
-                                  controller.deleteMonth(m['id'], m['month']);
-                                },
-                              );
-                            }),
-                          ],
+                        trailing: _buildTransactionAction(
+                          isIncome,
+                          trx,
+                          isSmall,
+                          controller,
                         ),
-                        onTap: () {
-                          controller.selectMonth(m);
-                          Get.to(() => MonthTransactionsScreen(
-                            monthId: m['id'],
-                            monthName: m['month'],
-                          ));
-                        },
                       ),
                     );
                   },
-                  childCount: controller.months.length,
+                  childCount: controller.transactions.length,
                 ),
               );
-            }
+            }),
 
-            /// 🟢 TRANSACTION LIST
-            if (controller.transactions.isEmpty) {
-              return const SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(child: Text('কোনো ট্রানজাকশন নেই')),
-              );
-            }
-
-            return SliverList(
-              delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                  final trx = controller.transactions[index];
-                  final isIncome = trx.type == TransactionType.income;
-
-                  return Card(
-                    color: isIncome ? AppColors.ayCardColor : AppColors.bayCardColor,
-                    elevation: 6,
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ListTile(
-                      title: Text(trx.title, style: TextStyle(fontSize: isSmall ? 14 : 16)),
-                      subtitle: Text(
-                        DateFormat('dd MMM yyyy').format(trx.date),
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                      trailing: _buildTransactionAction(
-                        isIncome,
-                        trx,
-                        isSmall,
-                        controller,
-                      ),
-                    ),
-                  );
-                },
-                childCount: controller.transactions.length,
-              ),
-            );
-          }),
-
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 80), // FAB space
-          ),
-        ],
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 80), // FAB space
+            ),
+          ],
+        ),
       ),
     );
   }

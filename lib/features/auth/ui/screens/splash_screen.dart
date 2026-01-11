@@ -2,6 +2,7 @@
 import 'package:ay_bay_app/app/app_config.dart';
 import 'package:ay_bay_app/app/app_path.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -23,7 +24,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _moveToNextScreen() async {
     await Future.delayed(Duration(seconds: 1));
-    Get.offAndToNamed(AppRoutes.login);
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      // ✅ Already logged in
+      Get.offAllNamed(AppRoutes.home);
+    } else {
+      // ❌ Not logged in
+      Get.offAllNamed(AppRoutes.login);
+    }
   }
 
   @override
