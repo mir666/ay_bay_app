@@ -38,7 +38,6 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _fetchActiveMonth();
     initCurrentMonth();
     _listenMonths();
     _loadState();
@@ -163,60 +162,6 @@ class HomeController extends GetxController {
     suggestions.clear();
     monthSuggestions.clear();
     transactions.value = allTransactions; // selected month restore
-  }
-
-  void _fetchActiveMonth() async {
-    if (uid == null) return;
-    String lastMonthId = _storage.read('selectedMonthId') ?? '';
-    DocumentSnapshot? doc;
-
-    if (lastMonthId.isNotEmpty) {
-      doc = await _db
-          .collection('users')
-          .doc(uid)
-          .collection('months')
-          .doc(lastMonthId)
-          .get();
-    }
-
-    if (doc == null || !doc.exists) {
-      final snapshot = await _db
-          .collection('users')
-          .doc(uid)
-          .collection('months')
-          .where('isActive', isEqualTo: true)
-          .limit(1)
-          .get();
-      if (snapshot.docs.isNotEmpty) doc = snapshot.docs.first;
-    }
-
-    if (doc != null && doc.exists) {
-      selectedMonth.value = doc['month'];
-      selectedMonthId.value = doc.id;
-      canAddTransaction.value = true;
-      fetchTransactions(doc.id);
-    }
-
-    final snapshot = await _db
-        .collection('users')
-        .doc(uid)
-        .collection('months')
-        .where('isActive', isEqualTo: true)
-        .limit(1)
-        .get();
-
-    if (snapshot.docs.isNotEmpty) {
-      final m = snapshot.docs.first;
-      selectedMonth.value = m['month'];
-      selectedMonthId.value = m.id;
-      totalBalance.value = (m['totalBalance'] ?? 0).toDouble();
-      balance.value = (m['opening'] ?? 0).toDouble();
-
-      // Active month → can add transaction
-      canAddTransaction.value = true;
-
-      fetchTransactions(m.id);
-    }
   }
 
   /// মাস সিলেক্ট করার মেথড

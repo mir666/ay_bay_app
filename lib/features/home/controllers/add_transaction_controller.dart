@@ -43,6 +43,7 @@ class AddTransactionController extends GetxController {
     CategoryModel(name: 'Net Bill', icon: Icons.wifi),
     CategoryModel(name: 'Gas Bill', icon: Icons.gas_meter_outlined),
     CategoryModel(name: 'Bazaar', icon: Icons.shopping_cart_outlined),
+    CategoryModel(name: 'Hospital', icon: Icons.local_hospital_outlined),
     CategoryModel(name: 'Other', icon: Icons.more_horiz),
   ];
 
