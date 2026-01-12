@@ -6,9 +6,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 class AddTransactionController extends GetxController {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+
 
   String? editingTransactionId;
 
@@ -47,6 +49,25 @@ class AddTransactionController extends GetxController {
     CategoryModel(name: 'Other', icon: Icons.more_horiz),
   ];
 
+  RxDouble calculatedAmount = 0.0.obs; // ক্যালকুলেটেড মান
+
+  /// =========================
+  /// Amount এর Expression Handle
+  /// =========================
+  void onAmountChanged(String input) {
+    try {
+      // math expression parse
+      final exp = input.replaceAll('×', '*').replaceAll('÷', '/'); // যদি ইউজার × ÷ use করে
+      Parser p = Parser();
+      Expression expression = p.parse(exp);
+      double eval = expression.evaluate(EvaluationType.REAL, ContextModel());
+
+      calculatedAmount.value = eval;
+    } catch (e) {
+      calculatedAmount.value = 0; // যদি invalid input হয়
+    }
+  }
+
   // =========================
   // 🔹 Helpers
   // =========================
@@ -78,7 +99,7 @@ class AddTransactionController extends GetxController {
 
     if (uid == null || home.selectedMonthId.value.isEmpty) return;
 
-    final amount = double.tryParse(amountCtrl.text) ?? 0;
+    final amount = calculatedAmount.value;
     if (amount <= 0) {
       Get.snackbar('Error', 'সঠিক এমাউন্ট দিন');
       return;
@@ -108,7 +129,7 @@ class AddTransactionController extends GetxController {
     try {
       final data = {
         'title': noteCtrl.text.trim(),
-        'amount': amount,
+        'amount': amount.toInt(),
         'type': type.value.name,
         'category': categoryName,
         'categoryIcon': selectedCat.icon.codePoint,
@@ -142,6 +163,7 @@ class AddTransactionController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+
   }
 
 

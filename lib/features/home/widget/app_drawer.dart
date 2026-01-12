@@ -49,7 +49,7 @@ class AppDrawer extends StatelessWidget {
               padding: verticalPadding,
               onTap: () {
                 Get.back();
-                Get.toNamed(AppRoutes.appProfile);
+
               },
             ),
 
@@ -59,7 +59,10 @@ class AppDrawer extends StatelessWidget {
               iconSize: iconSize,
               textSize: textSize,
               padding: verticalPadding,
-              onTap: () => Get.back(),
+              onTap: () {
+                Get.back();
+                Get.toNamed(AppRoutes.appAnalysis);
+              },
             ),
 
             _DrawerItem(
@@ -79,7 +82,7 @@ class AppDrawer extends StatelessWidget {
               padding: verticalPadding,
               onTap: () {
                 Get.back();
-                Get.toNamed(AppRoutes.appSettings);
+
               },
             ),
 
@@ -91,7 +94,7 @@ class AppDrawer extends StatelessWidget {
               padding: verticalPadding,
               onTap: () {
                 Get.back();
-                Get.toNamed(AppRoutes.appSettings);
+
               },
             ),
 
@@ -103,7 +106,7 @@ class AppDrawer extends StatelessWidget {
               padding: verticalPadding,
               onTap: () {
                 Get.back();
-                Get.toNamed(AppRoutes.appSettings);
+
               },
             ),
 
