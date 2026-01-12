@@ -38,14 +38,14 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _fetchActiveMonth();
+    initCurrentMonth();
     _listenMonths();
     _loadState();
     fetchGlobalTransactions();
-    initCurrentMonth();
     Timer.periodic(const Duration(minutes: 1), (_) {
       todayDate.value = DateTime.now();
     });
-    _fetchActiveMonth();
   }
 
   // 🔍 Search & Suggestions
