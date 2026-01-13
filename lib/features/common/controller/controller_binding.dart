@@ -1,7 +1,7 @@
 
 //import 'package:ay_bay_app/core/analysis/controllers/analysis_controller.dart';
 //import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
-import 'package:ay_bay_app/core/budget/controllers/budget_controller.dart';
+//import 'package:ay_bay_app/core/budget/controllers/budget_controller.dart';
 import 'package:ay_bay_app/features/auth/controllers/auth_controller.dart';
 import 'package:ay_bay_app/features/home/controllers/add_transaction_controller.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
@@ -13,7 +13,7 @@ class ControllerBinding extends Bindings {
     Get.put(AuthController(), permanent: true);
     Get.put(HomeController());
     Get.put(AddTransactionController());
-    Get.put(BudgetController());
+   // Get.put(BudgetController());
     //Get.put(AnalysisController());
    // Get.put(SettingsController());
   }

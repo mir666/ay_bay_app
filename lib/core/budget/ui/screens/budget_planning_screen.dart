@@ -1,141 +1,231 @@
+// budget_screen.dart
+import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:ay_bay_app/core/budget/controllers/budget_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:fl_chart/fl_chart.dart';
 
-class BudgetPlanningScreen extends StatelessWidget {
-  BudgetPlanningScreen({super.key});
+class BudgetScreen extends StatelessWidget {
+  BudgetScreen({super.key});
 
-  final BudgetController controller = Get.put(BudgetController());
+  final HomeController homeController = Get.find<HomeController>();
+  final BudgetController budgetController = Get.put(BudgetController());
+
+  final List<String> categories = [
+    'খাদ্য',
+    'পরিবহন',
+    'বিল',
+    'বিনোদন',
+    'অন্যান্য'
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Budget Planning'),
-        centerTitle: true,
-      ),
-      body: Obx(() {
-        if (controller.categories.isEmpty && controller.totalBudget.value == 0) {
-          // প্রথমে loader দেখাবে
-          return const Center(child: CircularProgressIndicator());
-        }
+      appBar: AppBar(title: const Text('বাজেট প্ল্যানিং')),
+      body: SafeArea(
+        child: Column(
+          children: [
+            /// 🔹 Month Selector
 
-        if (controller.categories.isEmpty) {
-          // ডাটা নাই হলে empty state দেখাবে
-          return Center(
-            child: Text(
-              'কোনো বাজেট ডাটা পাওয়া যায়নি',
-              style: TextStyle(fontSize: 16),
+            /// 🔹 Budget Summary
+            Obx(() {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _summaryCard(
+                        'মোট বাজেট', homeController.totalBalance.value, Colors.blue),
+                    _summaryCard(
+                        'ব্যয়', homeController.expense.value, Colors.red),
+                    _summaryCard(
+                        'ব্যালান্স', homeController.balance.value, Colors.green),
+                  ],
+                ),
+              );
+            }),
+
+            /// 🔹 PieChart
+            Obx(() {
+              double spent = homeController.expense.value;
+              double remaining = homeController.balance.value;
+              if (homeController.totalBalance.value == 0) {
+                spent = 0;
+                remaining = 0;
+              }
+
+              return SizedBox(
+                height: 200,
+                child: PieChart(
+                  PieChartData(
+                    sections: [
+                      PieChartSectionData(
+                        value: spent,
+                        color: Colors.redAccent,
+                        title: 'ব্যয়',
+                        titleStyle: const TextStyle(color: Colors.white),
+                      ),
+                      PieChartSectionData(
+                        value: remaining,
+                        color: Colors.greenAccent,
+                        title: 'ব্যালান্স',
+                        titleStyle: const TextStyle(color: Colors.white),
+                      ),
+                    ],
+                    sectionsSpace: 2,
+                    centerSpaceRadius: 40,
+                  ),
+                ),
+              );
+            }),
+
+            /// 🔹 Category Budget List
+            Expanded(
+              child: Obx(() {
+                if (homeController.transactions.isEmpty) {
+                  return const Center(child: Text('কোনো বাজেট নেই'));
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    final cat = categories[index];
+                    final catExpense = homeController.transactions
+                        .where((t) => t.category == cat)
+                        .fold<double>(
+                        0,
+                            (prev, t) =>
+                        prev + (t.type == 'expense' ? t.amount : 0));
+
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      child: ListTile(
+                        title: Text(cat),
+                        subtitle: Text('ব্যয়: $catExpense ৳'),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () =>
+                                  _showBudgetDialog(context, category: cat),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () => _deleteCategoryTransactions(cat),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
             ),
-          );
-        }
 
-        // ডাটা থাকলে Card দেখাবে
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+            /// 🔹 Add Budget Button
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: ElevatedButton(
+                onPressed: () => _showBudgetDialog(context),
+                child: const Text('নতুন বাজেট যোগ করুন'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// -----------------------------
+  /// 🔹 Summary Card
+  /// -----------------------------
+  Widget _summaryCard(String title, double amount, Color color) {
+    return Expanded(
+      child: Card(
+        color: color,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
           child: Column(
             children: [
-              _summaryCard(isLandscape),
-              const SizedBox(height: 20),
-              ...controller.categories
-                  .map((c) => _categoryCard(c, isLandscape))
-                  .toList(),
+              Text(title,
+                  style: const TextStyle(color: Colors.white, fontSize: 14)),
+              const SizedBox(height: 4),
+              Text('${amount.toStringAsFixed(0)} ৳',
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold)),
             ],
           ),
-        );
-      })
-      ,
-    );
-  }
-
-  // ================= Summary =================
-  Widget _summaryCard(bool isLandscape) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Obx(() => Column(
-          children: [
-            _row('Total Budget', controller.totalBudget.value, Colors.blue),
-            _row('Spent', controller.totalSpent, Colors.red),
-            const Divider(),
-            _row('Remaining', controller.remaining,
-                controller.remaining >= 0 ? Colors.green : Colors.red),
-          ],
-        )),
+        ),
       ),
     );
   }
 
-  Widget _row(String title, double value, Color color) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title),
-          Text(
-            '৳ ${value.toInt()}',
-            style: TextStyle(fontWeight: FontWeight.bold, color: color),
+  /// -----------------------------
+  /// 🔹 Add/Edit Budget Dialog
+  /// -----------------------------
+  void _showBudgetDialog(BuildContext context, {String? category}) {
+    final catController = TextEditingController(text: category ?? '');
+    final amountController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(category == null ? 'নতুন বাজেট' : 'বাজেট এডিট'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: catController,
+              decoration: const InputDecoration(labelText: 'ক্যাটেগরি'),
+            ),
+            TextField(
+              controller: amountController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'বাজেট (৳)'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context), child: const Text('বাতিল')),
+          ElevatedButton(
+            onPressed: () {
+              final amt = double.tryParse(amountController.text) ?? 0;
+              if (amt <= 0) return;
+
+              final newTotal = homeController.totalBalance.value + amt;
+              homeController.updateCurrentMonthBudget(newTotal);
+
+              Navigator.pop(context);
+            },
+            child: const Text('সেভ'),
           ),
         ],
       ),
     );
   }
 
-  // ================= Category Card =================
-  Widget _categoryCard(cat, bool isLandscape) {
-    final progress = (cat.spent / cat.budget).clamp(0.0, 1.0);
+  /// -----------------------------
+  /// 🔹 Delete Category Transactions
+  /// -----------------------------
+  void _deleteCategoryTransactions(String category) async {
+    final monthId = homeController.selectedMonthId.value;
+    if (monthId.isEmpty) return;
 
-    Color color = progress >= 1
-        ? Colors.red
-        : progress >= 0.8
-        ? Colors.orange
-        : Colors.green;
+    final toDelete = homeController.transactions
+        .where((t) => t.category == category)
+        .toList();
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // title + spent/budget
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  cat.name,
-                  style: TextStyle(
-                      fontSize: isLandscape ? 14 : 16,
-                      fontWeight: FontWeight.bold),
-                ),
-                Text('৳ ${cat.spent.toInt()} / ${cat.budget.toInt()}'),
-              ],
-            ),
-            const SizedBox(height: 10),
-            LinearProgressIndicator(
-              value: progress,
-              minHeight: 8,
-              color: color,
-              backgroundColor: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            if (progress >= 1)
-              const Padding(
-                padding: EdgeInsets.only(top: 6),
-                child: Text(
-                  'Over Budget!',
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
+    for (var trx in toDelete) {
+      await homeController.deleteTransaction(trx.id);
+    }
+
+    Get.snackbar('Success', '$category-এর বাজেট ডিলিট হয়েছে',
+        colorText: Colors.green);
   }
 }

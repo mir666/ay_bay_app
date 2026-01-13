@@ -1,30 +1,35 @@
-class BudgetCategory {
-  final String id;
-  final String name;
-  final double budget;
-  final double spent;
+class BudgetModel {
+  String id;
+  String category;
+  double amount;
+  double spent;
+  String monthId;
 
-  BudgetCategory({
+  BudgetModel({
     required this.id,
-    required this.name,
-    required this.budget,
-    required this.spent,
+    required this.category,
+    required this.amount,
+    this.spent = 0.0,
+    required this.monthId,
   });
-
-  factory BudgetCategory.fromMap(Map<String, dynamic> map, String id) {
-    return BudgetCategory(
-      id: id,
-      name: map['name'] ?? '',
-      budget: (map['budget'] ?? 0).toDouble(),
-      spent: (map['spent'] ?? 0).toDouble(),
-    );
-  }
 
   Map<String, dynamic> toMap() {
     return {
-      'name': name,
-      'budget': budget,
+      'id': id,
+      'category': category,
+      'amount': amount,
       'spent': spent,
+      'monthId': monthId,
     };
+  }
+
+  factory BudgetModel.fromMap(Map<String, dynamic> map) {
+    return BudgetModel(
+      id: map['id'],
+      category: map['category'],
+      amount: map['amount'],
+      spent: map['spent'] ?? 0.0,
+      monthId: map['monthId'],
+    );
   }
 }

@@ -40,6 +40,6 @@ class AppRoutes {
     GetPage(name: appSettings, page: () => SettingsScreen()),
     GetPage(name: appProfile, page: () => ProfileScreen()),
     GetPage(name: appAnalysis, page: () => AnalysisScreen()),
-    GetPage(name: appBudget, page: () => BudgetPlanningScreen()),
+    GetPage(name: appBudget, page: () => BudgetScreen()),
   ];
 }

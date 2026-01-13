@@ -1,64 +1,88 @@
+// budget_controller.dart
+import 'package:ay_bay_app/core/budget/models/budget_model.dart';
+import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-import '../models/budget_model.dart';
 
 class BudgetController extends GetxController {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final HomeController homeController = Get.find<HomeController>();
 
-  RxDouble totalBudget = 0.0.obs;
-  RxList<BudgetCategory> categories = <BudgetCategory>[].obs;
-
-  double get totalSpent => categories.fold(0, (sum, c) => sum + c.spent);
-  double get remaining => totalBudget.value - totalSpent;
+  RxList<BudgetModel> budgets = <BudgetModel>[].obs;
+  RxString selectedMonthId = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
-    fetchBudget();
-  }
 
-  Future<void> fetchBudget() async {
-    try {
-      final doc = await _db.collection('budgets').doc('current').get();
-      if (!doc.exists) {
-        totalBudget.value = 0;
-        categories.value = [];
-        return;
-      }
-
-      totalBudget.value = (doc['totalBudget'] ?? 0).toDouble();
-
-      final snap = await _db
-          .collection('budgets')
-          .doc('current')
-          .collection('categories')
-          .get();
-
-      if (snap.docs.isEmpty) {
-        categories.value = [];
-        return;
-      }
-
-      categories.value =
-          snap.docs.map((e) => BudgetCategory.fromMap(e.data(), e.id)).toList();
-
-      print('Categories fetched: ${categories.length}'); // debug
-    } catch (e) {
-      print('Error fetching budget: $e');
-      totalBudget.value = 0;
-      categories.value = [];
+    // ডিফল্ট মাস load
+    if (homeController.months.isNotEmpty) {
+      selectedMonthId.value = homeController.selectedMonthId.value.isEmpty
+          ? homeController.months.first['id']
+          : homeController.selectedMonthId.value;
+      loadBudgets();
     }
+
+    // মাস change হলে budget reload
+    ever(selectedMonthId, (_) => loadBudgets());
   }
 
+  void loadBudgets() async {
+    if (selectedMonthId.value.isEmpty) return;
+    final uid = homeController.uid;
+    if (uid == null) return;
 
-  Future<void> updateCategoryBudget(String id, double newBudget) async {
-    await _db
+    final snapshot = await _db
+        .collection('users')
+        .doc(uid)
         .collection('budgets')
-        .doc('current')
-        .collection('categories')
-        .doc(id)
-        .update({'budget': newBudget});
+        .where('monthId', isEqualTo: selectedMonthId.value)
+        .get();
 
-    fetchBudget();
+    budgets.value =
+        snapshot.docs.map((doc) => BudgetModel.fromMap(doc.data())).toList();
+  }
+
+  void addBudget(BudgetModel budget) async {
+    final uid = homeController.uid;
+    if (uid == null) return;
+
+    await _db
+        .collection('users')
+        .doc(uid)
+        .collection('budgets')
+        .doc(budget.id)
+        .set(budget.toMap());
+
+    budgets.add(budget);
+  }
+
+  void updateBudget(BudgetModel budget) async {
+    final uid = homeController.uid;
+    if (uid == null) return;
+
+    await _db
+        .collection('users')
+        .doc(uid)
+        .collection('budgets')
+        .doc(budget.id)
+        .update(budget.toMap());
+
+    final index = budgets.indexWhere((b) => b.id == budget.id);
+    if (index != -1) budgets[index] = budget;
+  }
+
+  void deleteBudget(String id) async {
+    final uid = homeController.uid;
+    if (uid == null) return;
+
+    await _db
+        .collection('users')
+        .doc(uid)
+        .collection('budgets')
+        .doc(id)
+        .delete();
+
+    budgets.removeWhere((b) => b.id == id);
   }
 }
