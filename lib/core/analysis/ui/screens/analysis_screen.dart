@@ -39,8 +39,7 @@ class AnalysisScreen extends StatelessWidget {
                 // 🔹 Months Selector
                 SizedBox(
                   height: monthHeight,
-                  child: Obx(
-                        () => ListView.builder(
+                  child: Obx(() => ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: controller.monthsList.length,
                       itemBuilder: (context, index) {
@@ -48,20 +47,15 @@ class AnalysisScreen extends StatelessWidget {
                         return GestureDetector(
                           onTap: () => controller.selectMonth(month['id']),
                           child: Obx(() {
-                            final isSelected =
-                                controller.selectedMonthId.value == month['id'];
+                            final isSelected = controller.selectedMonthId.value == month['id'];
                             return AnimatedContainer(
                               duration: const Duration(milliseconds: 250),
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: width * 0.02, vertical: height * 0.01),
-                              padding: EdgeInsets.symmetric(
-                                  vertical: height * 0.01, horizontal: width * 0.05),
+                              margin: EdgeInsets.symmetric(horizontal: width * 0.02, vertical: height * 0.01),
+                              padding: EdgeInsets.symmetric(vertical: height * 0.01, horizontal: width * 0.05),
                               decoration: BoxDecoration(
-                                color:
-                                isSelected ? Colors.blue.shade700 : Colors.grey.shade200,
+                                color: isSelected ? Colors.blue.shade700 : Colors.grey.shade200,
                                 borderRadius: BorderRadius.circular(14),
-                                boxShadow: isSelected
-                                    ? [
+                                boxShadow: isSelected ? [
                                   BoxShadow(
                                     color: Colors.blue.shade200.withValues(alpha: 0.4),
                                     blurRadius: 5,
@@ -76,10 +70,7 @@ class AnalysisScreen extends StatelessWidget {
                                   ),
                                 ],
                                 border: Border.all(
-                                    color: isSelected
-                                        ? Colors.blue.shade800
-                                        : Colors.grey.shade300,
-                                    width: 1),
+                                    color: isSelected ? Colors.blue.shade800 : Colors.grey.shade300, width: 1),
                               ),
                               child: Center(
                                 child: Text(
@@ -137,8 +128,7 @@ class AnalysisScreen extends StatelessWidget {
                       SizedBox(
                         height: chartHeight,
                         width: double.infinity,
-                        child:
-                        _buildCategoryBarChart(chartHeight, isSmall, isMedium, isLarge),
+                        child: _buildCategoryBarChart(chartHeight, isSmall, isMedium, isLarge),
                       ),
                       const SizedBox(height: 24),
 

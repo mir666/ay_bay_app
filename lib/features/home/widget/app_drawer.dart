@@ -71,7 +71,10 @@ class AppDrawer extends StatelessWidget {
               iconSize: iconSize,
               textSize: textSize,
               padding: verticalPadding,
-              onTap: () => Get.back(),
+              onTap: () {
+                Get.back();
+                Get.toNamed(AppRoutes.appBudget);
+              }
             ),
 
             _DrawerItem(
