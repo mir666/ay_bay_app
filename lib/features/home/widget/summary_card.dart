@@ -85,7 +85,7 @@ class SummaryCard extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '৳ ${value.toStringAsFixed(0)}',
+          '${value.toStringAsFixed(0)} ৳',
           style: const TextStyle(
             color: Colors.white70,
             fontSize: 16,

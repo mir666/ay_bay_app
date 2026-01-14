@@ -418,7 +418,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           decoration: InputDecoration(
                             labelText: 'টাকার পরিমাণ (e.g. 100+50-30*2/5)',
                             border: const OutlineInputBorder(),
-                            suffixText: controller.calculatedAmount.value.toStringAsFixed(2),
+                            suffixText: controller.calculatedAmount.value.toStringAsFixed(0),
+                            suffixStyle: TextStyle(
+                              color: Colors.grey.shade300,
+                            ),
                           ),
                           onChanged: (val) => controller.onAmountChanged(val),
                         );

@@ -263,7 +263,7 @@ class HomeScreen extends StatelessWidget {
 
         // ২️⃣ Amount
         Text(
-          '${isIncome ? '+' : '-'} ৳ ${trx.amount.toInt()}',
+          '${isIncome ? '+' : '-'} ${trx.amount.toInt()} ৳',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: isSmall ? 12 : 14,
@@ -319,7 +319,7 @@ class HomeScreen extends StatelessWidget {
         );
 
         return Text(
-          '৳${total.toInt()}',
+          '${total.toInt()}৳',
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.red,

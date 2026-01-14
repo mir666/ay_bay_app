@@ -49,9 +49,9 @@ class AnalysisScreen extends StatelessWidget {
                           child: Obx(() {
                             final isSelected = controller.selectedMonthId.value == month['id'];
                             return AnimatedContainer(
-                              duration: const Duration(milliseconds: 250),
+                              duration: Duration(milliseconds: 250),
                               margin: EdgeInsets.symmetric(horizontal: width * 0.02, vertical: height * 0.01),
-                              padding: EdgeInsets.symmetric(vertical: height * 0.01, horizontal: width * 0.05),
+                              padding: EdgeInsets.symmetric(vertical: height * 0.01, horizontal: width * 0.03),
                               decoration: BoxDecoration(
                                 color: isSelected ? Colors.blue.shade700 : Colors.grey.shade200,
                                 borderRadius: BorderRadius.circular(14),
@@ -59,11 +59,9 @@ class AnalysisScreen extends StatelessWidget {
                                   BoxShadow(
                                     color: Colors.blue.shade200.withValues(alpha: 0.4),
                                     blurRadius: 5,
-                                    offset: const Offset(0, 3),
+                                    offset: Offset(0, 3),
                                   ),
-                                ]
-                                    : [
-                                  const BoxShadow(
+                                ] : [BoxShadow(
                                     color: Colors.black12,
                                     blurRadius: 3,
                                     offset: Offset(0, 2),
@@ -90,7 +88,7 @@ class AnalysisScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: isLarge ? height * 0.15 : height * 0.03,),
 
                 // 🔹 Selected Month & Summary
                 Obx(() {
@@ -110,11 +108,11 @@ class AnalysisScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: height * 0.02),
+                      SizedBox(height: isLarge ? height * 0.10 : height * 0.03,),
 
                       // 🔹 Summary Cards
                       _buildResponsiveCardRow(width, height),
-                      SizedBox(height: height * 0.03),
+                      SizedBox(height: isLarge ? height * 0.10 : height * 0.05,),
 
                       // 🔹 Category-wise Bar Chart
                       Text(
@@ -124,24 +122,24 @@ class AnalysisScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: isLarge ? height * 0.30 : height * 0.05,),
                       SizedBox(
                         height: chartHeight,
                         width: double.infinity,
                         child: _buildCategoryBarChart(chartHeight, isSmall, isMedium, isLarge),
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: isLarge ? height * 0.40 : height * 0.01,),
 
                       // 🔹 Pie Chart
                       if (controller.categoryData.isEmpty)
-                        const Center(child: Text('এই মাসে কোন লেনদেন নেই'))
+                        Center(child: Text('এই মাসে কোন লেনদেন নেই'))
                       else
                         SizedBox(
                           height: isLarge ? height * 0.35 : height * 0.33,
                           width: double.infinity,
                           child: _buildPieChart(width, height, isSmall, isMedium, isLarge),
                         ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                     ],
                   );
                 }),
@@ -197,8 +195,6 @@ class AnalysisScreen extends StatelessWidget {
               card['title'] as String,
               card['amount'] as double,
               card['color'] as Color,
-              cardWidth,
-              cardHeight,
             );
           }).toList(),
         );
@@ -208,43 +204,20 @@ class AnalysisScreen extends StatelessWidget {
 
 
   // ================= Single Card =================
-  Widget _buildCard(
-      String title,
-      double amount,
-      Color color,
-      double cardWidth,
-      double cardHeight,
-      ) {
+  Widget _buildCard(String title, double amount, Color color) {
     return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: color,
       child: SizedBox(
-        width: cardWidth,
-        height: cardHeight,
-        child: Padding(
-          padding: EdgeInsets.all(cardWidth * 0.03),
+        width: 100,
+        height: 80,
+        child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              FittedBox(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    color: color,
-                    fontWeight: FontWeight.bold,
-                    fontSize: cardWidth * 0.12,
-                  ),
-                ),
-              ),
-              FittedBox(
-                child: Text(
-                  amount.toInt().toString(),
-                  style: TextStyle(
-                    fontSize: cardWidth * 0.13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+              Text(title,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              Text(amount.toStringAsFixed(0),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ],
           ),
         ),
@@ -254,7 +227,7 @@ class AnalysisScreen extends StatelessWidget {
 
   // ================= Category Bar Chart =================
   Widget _buildCategoryBarChart(double height, bool isSmall, bool isMedium, bool isLarge) {
-    if (controller.categoryData.isEmpty) return const SizedBox();
+    if (controller.categoryData.isEmpty) return SizedBox();
 
     final categories = controller.categoryData.map((e) => e['name']).toList();
     final maxAmount = controller.categoryData
@@ -276,13 +249,13 @@ class AnalysisScreen extends StatelessWidget {
                   toY: (cat['income'] ?? 0).toDouble(),
                   color: Colors.green,
                   width: barWidth,
-                  borderRadius: const BorderRadius.only(
+                  borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(6), topRight: Radius.circular(6))),
               BarChartRodData(
                   toY: (cat['expense'] ?? 0).toDouble(),
                   color: Colors.red,
                   width: barWidth,
-                  borderRadius: const BorderRadius.only(
+                  borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(6), topRight: Radius.circular(6))),
             ],
           );
@@ -296,7 +269,7 @@ class AnalysisScreen extends StatelessWidget {
                     return SizedBox.shrink();
                   }
                   return Padding(
-                    padding: const EdgeInsets.only(top: 6),
+                    padding: EdgeInsets.only(top: 6),
                     child: Text(
                       categories[value.toInt()],
                       style: TextStyle(

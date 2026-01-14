@@ -58,7 +58,7 @@ class AddTransactionController extends GetxController {
     try {
       // math expression parse
       final exp = input.replaceAll('×', '*').replaceAll('÷', '/'); // যদি ইউজার × ÷ use করে
-      Parser p = Parser();
+      ExpressionParser p = GrammarParser();
       Expression expression = p.parse(exp);
       double eval = expression.evaluate(EvaluationType.REAL, ContextModel());
 
