@@ -284,10 +284,7 @@ class _BalanceCardState extends State<BalanceCard> {
                       Expanded(
                         child: InkWell(
                           onTap: () {
-                            Get.toNamed(
-                              AppRoutes.addMonth,
-                              arguments: 'UPDATE_BUDGET',
-                            );
+                            controller.openBudgetButton();
                           },
                           child: Column(
                             children: [

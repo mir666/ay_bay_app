@@ -1,4 +1,4 @@
-// budget_screen.dart
+import 'package:ay_bay_app/core/budget/models/budget_model.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:ay_bay_app/core/budget/controllers/budget_controller.dart';
 import 'package:flutter/material.dart';
@@ -16,121 +16,77 @@ class BudgetScreen extends StatelessWidget {
     'পরিবহন',
     'বিল',
     'বিনোদন',
-    'অন্যান্য'
+    'অন্যান্য',
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('বাজেট প্ল্যানিং')),
+      appBar: AppBar(title: Text('বাজেট প্ল্যানিং'), centerTitle: true),
       body: SafeArea(
-        child: Column(
-          children: [
-            /// 🔹 Month Selector
-
-            /// 🔹 Budget Summary
-            Obx(() {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _summaryCard(
-                        'মোট বাজেট', homeController.totalBalance.value, Colors.blue),
-                    _summaryCard(
-                        'ব্যয়', homeController.expense.value, Colors.red),
-                    _summaryCard(
-                        'ব্যালান্স', homeController.balance.value, Colors.green),
-                  ],
-                ),
-              );
-            }),
-
-            /// 🔹 PieChart
-            Obx(() {
-              double spent = homeController.expense.value;
-              double remaining = homeController.balance.value;
-              if (homeController.totalBalance.value == 0) {
-                spent = 0;
-                remaining = 0;
-              }
-
-              return SizedBox(
-                height: 200,
-                child: PieChart(
-                  PieChartData(
-                    sections: [
-                      PieChartSectionData(
-                        value: spent,
-                        color: Colors.redAccent,
-                        title: 'ব্যয়',
-                        titleStyle: const TextStyle(color: Colors.white),
-                      ),
-                      PieChartSectionData(
-                        value: remaining,
-                        color: Colors.greenAccent,
-                        title: 'ব্যালান্স',
-                        titleStyle: const TextStyle(color: Colors.white),
-                      ),
-                    ],
-                    sectionsSpace: 2,
-                    centerSpaceRadius: 40,
-                  ),
-                ),
-              );
-            }),
-
-            /// 🔹 Category Budget List
-            Expanded(
-              child: Obx(() {
-                if (homeController.transactions.isEmpty) {
-                  return const Center(child: Text('কোনো বাজেট নেই'));
-                }
-
-                return ListView.builder(
-                  padding: const EdgeInsets.all(12),
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    final cat = categories[index];
-                    final catExpense = homeController.transactions
-                        .where((t) => t.category == cat)
-                        .fold<double>(
-                        0,
-                            (prev, t) =>
-                        prev + (t.type == 'expense' ? t.amount : 0));
-
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      child: ListTile(
-                        title: Text(cat),
-                        subtitle: Text('ব্যয়: $catExpense ৳'),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () =>
-                                  _showBudgetDialog(context, category: cat),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () => _deleteCategoryTransactions(cat),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                );
-              }),
+        child: CustomScrollView(
+          slivers: [
+            // 🔹 Summary
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.only(top: 30),
+                child: _buildSummary(),
+              ),
             ),
 
-            /// 🔹 Add Budget Button
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: ElevatedButton(
-                onPressed: () => _showBudgetDialog(context),
-                child: const Text('নতুন বাজেট যোগ করুন'),
+            // 🔹 Pie Chart
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.only(top: 30, bottom: 30),
+                child: _buildPieChart(),
+              ),
+            ),
+
+            // 🔹 Budget List
+            Obx(() {
+              if (budgetController.budgets.isEmpty) {
+                return SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: Center(child: Text('কোনো বাজেট নেই')),
+                  ),
+                );
+              }
+
+              return SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final budget = budgetController.budgets[index];
+                  return Card(
+                    margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    child: ListTile(
+                      title: Text(budget.category),
+                      subtitle: Text(
+                        'বাজেট যোগ করা হয়েছে : ${budget.amount.toStringAsFixed(0)} ৳',
+                      ),
+
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () =>
+                            budgetController.deleteBudget(budget.id),
+                      ),
+                      onTap: () => _showBudgetDialog(context, budget: budget),
+                    ),
+                  );
+                }, childCount: budgetController.budgets.length),
+              );
+            }),
+
+            // 🔹 Add Button
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 40),
+                child: ElevatedButton(
+                  onPressed: () => _showBudgetDialog(context),
+                  child: Text(
+                    'নতুন বাজেট যোগ করুন',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ),
               ),
             ),
           ],
@@ -140,8 +96,32 @@ class BudgetScreen extends StatelessWidget {
   }
 
   /// -----------------------------
-  /// 🔹 Summary Card
+  /// 🔹 Summary Card Row
   /// -----------------------------
+  Widget _buildSummary() {
+    return Obx(
+      () => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _summaryCard(
+              'মোট বাজেট',
+              homeController.totalBalance.value,
+              Colors.blue,
+            ),
+            _summaryCard('ব্যয়', homeController.expense.value, Colors.red),
+            _summaryCard(
+              'ব্যালান্স',
+              homeController.balance.value,
+              Colors.green,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _summaryCard(String title, double amount, Color color) {
     return Expanded(
       child: Card(
@@ -150,14 +130,22 @@ class BudgetScreen extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Column(
             children: [
-              Text(title,
-                  style: const TextStyle(color: Colors.white, fontSize: 14)),
-              const SizedBox(height: 4),
-              Text('${amount.toStringAsFixed(0)} ৳',
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold)),
+              Text(
+                title,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                '${amount.toStringAsFixed(0)} ৳',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
         ),
@@ -166,16 +154,48 @@ class BudgetScreen extends StatelessWidget {
   }
 
   /// -----------------------------
+  /// 🔹 Pie Chart
+  /// -----------------------------
+  Widget _buildPieChart() {
+    return Obx(() {
+      double spent = homeController.expense.value;
+      double remaining = homeController.balance.value;
+
+      return SizedBox(
+        height: 220,
+        child: PieChart(
+          PieChartData(
+            sections: [
+              PieChartSectionData(
+                value: spent,
+                color: Colors.redAccent,
+                title: 'ব্যয়',
+              ),
+              PieChartSectionData(
+                value: remaining,
+                color: Colors.greenAccent,
+                title: 'ব্যালান্স',
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  /// -----------------------------
   /// 🔹 Add/Edit Budget Dialog
   /// -----------------------------
-  void _showBudgetDialog(BuildContext context, {String? category}) {
-    final catController = TextEditingController(text: category ?? '');
-    final amountController = TextEditingController();
+  void _showBudgetDialog(BuildContext context, {BudgetModel? budget}) {
+    final catController = TextEditingController(text: budget?.category ?? '');
+    final amountController = TextEditingController(
+      text: budget?.amount.toString() ?? '',
+    );
 
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(category == null ? 'নতুন বাজেট' : 'বাজেট এডিট'),
+        title: Text(budget == null ? 'নতুন বাজেট' : 'বাজেট এডিট'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -183,6 +203,7 @@ class BudgetScreen extends StatelessWidget {
               controller: catController,
               decoration: const InputDecoration(labelText: 'ক্যাটেগরি'),
             ),
+            SizedBox(height: 8),
             TextField(
               controller: amountController,
               keyboardType: TextInputType.number,
@@ -192,40 +213,47 @@ class BudgetScreen extends StatelessWidget {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context), child: const Text('বাতিল')),
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'বাতিল',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
+            ),
+          ),
           ElevatedButton(
             onPressed: () {
+              if (budgetController.selectedMonthId.value.isEmpty) {
+                Get.snackbar('Error', 'আগে মাস সিলেক্ট করুন');
+                return;
+              }
+
+              final categoryName = catController.text.trim();
               final amt = double.tryParse(amountController.text) ?? 0;
-              if (amt <= 0) return;
 
-              final newTotal = homeController.totalBalance.value + amt;
-              homeController.updateCurrentMonthBudget(newTotal);
+              if (categoryName.isEmpty || amt <= 0) return;
 
+              final newBudget = BudgetModel(
+                id:
+                    budget?.id ??
+                    DateTime.now().millisecondsSinceEpoch.toString(),
+                category: categoryName,
+                amount: amt,
+                spent: budget?.spent ?? 0.0,
+                monthId: budgetController.selectedMonthId.value,
+              );
+
+              budgetController.saveBudget(newBudget);
               Navigator.pop(context);
             },
-            child: const Text('সেভ'),
+            child: Text(
+              'সেভ',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
     );
-  }
-
-  /// -----------------------------
-  /// 🔹 Delete Category Transactions
-  /// -----------------------------
-  void _deleteCategoryTransactions(String category) async {
-    final monthId = homeController.selectedMonthId.value;
-    if (monthId.isEmpty) return;
-
-    final toDelete = homeController.transactions
-        .where((t) => t.category == category)
-        .toList();
-
-    for (var trx in toDelete) {
-      await homeController.deleteTransaction(trx.id);
-    }
-
-    Get.snackbar('Success', '$category-এর বাজেট ডিলিট হয়েছে',
-        colorText: Colors.green);
   }
 }

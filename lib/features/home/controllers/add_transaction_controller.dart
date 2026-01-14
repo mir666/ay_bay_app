@@ -1,3 +1,4 @@
+import 'package:ay_bay_app/core/budget/controllers/budget_controller.dart';
 import 'package:ay_bay_app/features/common/models/category_model.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
@@ -46,6 +47,7 @@ class AddTransactionController extends GetxController {
     CategoryModel(name: 'Gas Bill', icon: Icons.gas_meter_outlined),
     CategoryModel(name: 'Bazaar', icon: Icons.shopping_cart_outlined),
     CategoryModel(name: 'Hospital', icon: Icons.local_hospital_outlined),
+    CategoryModel(name: 'School', icon: Icons.school_outlined),
     CategoryModel(name: 'Other', icon: Icons.more_horiz),
   ];
 
@@ -128,7 +130,6 @@ class AddTransactionController extends GetxController {
 
     try {
       final data = {
-        'title': noteCtrl.text.trim(),
         'amount': amount.toInt(),
         'type': type.value.name,
         'category': categoryName,
@@ -154,6 +155,11 @@ class AddTransactionController extends GetxController {
       // 🔥 SAFE RELOAD (NO BUG)
       await home.fetchMonthSummary(home.selectedMonthId.value);
       home.setFilter('সব');
+      // 🔹 Update budget spent after adding transaction
+      // 🔹 Save transaction শেষে budget update
+      final budgetController = Get.find<BudgetController>();
+      budgetController.updateSpentForBudgets(home.selectedMonthId.value);
+
 
       Get.back();
       clearForm();

@@ -132,7 +132,7 @@ class AnalysisScreen extends StatelessWidget {
 
                       // 🔹 Pie Chart
                       if (controller.categoryData.isEmpty)
-                        Center(child: Text('এই মাসে কোন লেনদেন নেই'))
+                        Center(child: Text('এই মাসে কোন লেনদেন নেই'),)
                       else
                         SizedBox(
                           height: isLarge ? height * 0.35 : height * 0.33,
