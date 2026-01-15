@@ -255,32 +255,27 @@ class _BalanceCardState extends State<BalanceCard> {
 
   Widget _buildTotalBudget(HomeController controller) {
     return Expanded(
-      child: InkWell(
-        onTap: () {
-          Get.toNamed(AppRoutes.addMonth, arguments: 'UPDATE_BUDGET');
-        },
-        child: Column(
-          children: [
-            const Text(
-              'মোট বাজেট',
-              style: TextStyle(
+      child: Column(
+        children: [
+          const Text(
+            'মোট বাজেট',
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Obx(
+            () => Text(
+              '${controller.totalBalance.value.toInt()} ৳',
+              style: const TextStyle(
                 fontSize: 20,
+                fontWeight: FontWeight.bold,
                 color: Colors.white,
-                fontWeight: FontWeight.w600,
               ),
             ),
-            Obx(
-              () => Text(
-                '${controller.totalBalance.value.toInt()} ৳',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -29,9 +29,9 @@ class HomeScreen extends StatelessWidget {
           final controller = Get.find<HomeController>();
 
           if (!controller.canAddTransaction.value) {
-            _showBudgetDialog(controller);
+            _showBudgetDialog(controller); // যদি কোনো বাজেট না থাকে
           } else {
-            Get.to(() => const AddTransactionScreen());
+            Get.to(() => const AddTransactionScreen()); // সরাসরি income/expense যোগ
           }
         },
         child: const Icon(Icons.add, color: Colors.white),
@@ -339,12 +339,11 @@ class HomeScreen extends StatelessWidget {
       },
     );
   }
-
   void _showBudgetDialog(HomeController controller) {
     Get.dialog(
       AlertDialog(
         title: const Text(
-          'এই মাসের বাজেট যোগ করে লেনদেন শুরু করেন',
+          'এই মাসে বাজেট যোগ করে লেনদেন শুরু করুন',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         content: Column(
@@ -353,7 +352,7 @@ class HomeScreen extends StatelessWidget {
             // ✅ Budget Button
             ElevatedButton.icon(
               icon: const Icon(Icons.account_balance_wallet),
-              label: Text('বাজেট যোগ করুন',style: TextStyle(color: Colors.white),),
+              label: const Text('বাজেট যোগ করুন'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.loginTextButtonColor,
                 minimumSize: const Size(double.infinity, 45),
@@ -362,7 +361,7 @@ class HomeScreen extends StatelessWidget {
                 Get.back();
                 Get.to(
                       () => const AddMonthScreen(),
-                  arguments: 'NEW_MONTH',
+                  arguments: 'UPDATE_BUDGET',
                 );
               },
             ),
@@ -392,5 +391,6 @@ class HomeScreen extends StatelessWidget {
       barrierDismissible: true,
     );
   }
+
 
 }

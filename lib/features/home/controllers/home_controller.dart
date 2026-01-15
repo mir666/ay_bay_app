@@ -368,6 +368,7 @@ class HomeController extends GetxController {
       canAddTransaction.value = true;
 
       Get.offAllNamed(AppRoutes.home);
+
       Get.snackbar('Success', 'নতুন মাস যোগ হয়েছে', colorText: Colors.green);
     } catch (e) {
       Get.snackbar('Error', e.toString());
