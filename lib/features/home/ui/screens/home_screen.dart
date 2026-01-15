@@ -2,6 +2,7 @@ import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
+import 'package:ay_bay_app/features/home/ui/screens/add_month_screen.dart';
 import 'package:ay_bay_app/features/home/ui/screens/add_transaction_screen.dart';
 import 'package:ay_bay_app/features/home/widget/balance_card.dart';
 import 'package:ay_bay_app/features/months/ui/screens/month_transactions_screen.dart';
@@ -24,9 +25,18 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.loginTextButtonColor,
-        onPressed: () => Get.to(() => AddTransactionScreen()),
+        onPressed: () {
+          final controller = Get.find<HomeController>();
+
+          if (!controller.canAddTransaction.value) {
+            _showBudgetDialog(controller);
+          } else {
+            Get.to(() => const AddTransactionScreen());
+          }
+        },
         child: const Icon(Icons.add, color: Colors.white),
       ),
+
 
       body: SafeArea(
         child: CustomScrollView(
@@ -329,4 +339,58 @@ class HomeScreen extends StatelessWidget {
       },
     );
   }
+
+  void _showBudgetDialog(HomeController controller) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text(
+          'এই মাসের বাজেট যোগ করে লেনদেন শুরু করেন',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // ✅ Budget Button
+            ElevatedButton.icon(
+              icon: const Icon(Icons.account_balance_wallet),
+              label: Text('বাজেট যোগ করুন',style: TextStyle(color: Colors.white),),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.loginTextButtonColor,
+                minimumSize: const Size(double.infinity, 45),
+              ),
+              onPressed: () {
+                Get.back();
+                Get.to(
+                      () => const AddMonthScreen(),
+                  arguments: 'NEW_MONTH',
+                );
+              },
+            ),
+
+            const SizedBox(height: 12),
+
+            // ❌ Transaction disabled
+            Obx(() {
+              return ElevatedButton.icon(
+                icon: const Icon(Icons.swap_vert),
+                label: const Text('আয়-ব্যয় যোগ করুন'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 45),
+                  backgroundColor: Colors.grey.shade300,
+                ),
+                onPressed: controller.canAddTransaction.value
+                    ? () {
+                  Get.back();
+                  Get.to(() => const AddTransactionScreen());
+                }
+                    : null,
+              );
+            }),
+          ],
+        ),
+      ),
+      barrierDismissible: true,
+    );
+  }
+
 }

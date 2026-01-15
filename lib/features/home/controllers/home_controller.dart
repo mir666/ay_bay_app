@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/features/auth/ui/screens/log_in_screen.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/ui/screens/add_transaction_screen.dart';
@@ -366,7 +367,7 @@ class HomeController extends GetxController {
 
       canAddTransaction.value = true;
 
-      Get.back();
+      Get.offAllNamed(AppRoutes.home);
       Get.snackbar('Success', 'নতুন মাস যোগ হয়েছে', colorText: Colors.green);
     } catch (e) {
       Get.snackbar('Error', e.toString());
@@ -661,6 +662,8 @@ class HomeController extends GetxController {
     balance.value = totalBalance.value;
 
     canAddTransaction.value = true;
+    canAddTransaction.value = totalBalance.value > 0;
+
 
     // 🔄 Load transactions & calculate dashboard
     await fetchTransactions(monthRef.id);
