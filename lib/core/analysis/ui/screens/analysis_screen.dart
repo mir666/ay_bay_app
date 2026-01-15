@@ -17,8 +17,9 @@ class AnalysisScreen extends StatelessWidget {
     final bool isMedium = width >= 360 && width < 600;
     final bool isLarge = width >= 600;
 
-    final monthHeight = isLarge ? height * 0.08 : height * 0.07;
+
     final chartHeight = isLarge ? 320.0 : isMedium ? 250.0 : 220.0;
+    final bool isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
 
     return Scaffold(
       appBar: AppBar(
@@ -38,56 +39,58 @@ class AnalysisScreen extends StatelessWidget {
               children: [
                 // 🔹 Months Selector
                 SizedBox(
-                  height: monthHeight,
-                  child: Obx(() => ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: controller.monthsList.length,
-                      itemBuilder: (context, index) {
-                        final month = controller.monthsList[index];
-                        return GestureDetector(
-                          onTap: () => controller.selectMonth(month['id']),
-                          child: Obx(() {
-                            final isSelected = controller.selectedMonthId.value == month['id'];
-                            return AnimatedContainer(
-                              duration: Duration(milliseconds: 250),
-                              margin: EdgeInsets.symmetric(horizontal: width * 0.02, vertical: height * 0.01),
-                              padding: EdgeInsets.symmetric(vertical: height * 0.01, horizontal: width * 0.03),
-                              decoration: BoxDecoration(
-                                color: isSelected ? Colors.blue.shade700 : Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(14),
-                                boxShadow: isSelected ? [
-                                  BoxShadow(
-                                    color: Colors.blue.shade200.withValues(alpha: 0.4),
-                                    blurRadius: 5,
-                                    offset: Offset(0, 3),
-                                  ),
-                                ] : [BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 3,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                                border: Border.all(
-                                    color: isSelected ? Colors.blue.shade800 : Colors.grey.shade300, width: 1),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  month['month'],
-                                  style: TextStyle(
-                                    color: isSelected ? Colors.white : Colors.black87,
-                                    fontWeight:
-                                    isSelected ? FontWeight.bold : FontWeight.w500,
-                                    fontSize: width * 0.035,
-                                  ),
+                  height: isLandscape ? 56 : 64,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: controller.monthsList.length,
+                    itemBuilder: (context, index) {
+                      final month = controller.monthsList[index];
+
+                      return GestureDetector(
+                        onTap: () => controller.selectMonth(month['id']),
+                        child: Obx(() {
+                          final isSelected =
+                              controller.selectedMonthId.value == month['id'];
+
+                          return AnimatedContainer(
+                            duration: const Duration(milliseconds: 250),
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal: 18,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? Colors.blue.shade700
+                                  : Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: isSelected
+                                      ? Colors.blue.withValues(alpha: 0.35)
+                                      : Colors.black12,
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                month['month'],
+                                style: TextStyle(
+                                  color: isSelected ? Colors.white : Colors.black87,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: isLandscape ? 14 : 15,
                                 ),
                               ),
-                            );
-                          }),
-                        );
-                      },
-                    ),
+                            ),
+                          );
+                        }),
+                      );
+                    },
                   ),
                 ),
+
                 SizedBox(height: isLarge ? height * 0.15 : height * 0.03,),
 
                 // 🔹 Selected Month & Summary

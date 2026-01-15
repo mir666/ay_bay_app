@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/features/auth/ui/screens/log_in_screen.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/ui/screens/add_transaction_screen.dart';
@@ -221,38 +220,6 @@ class HomeController extends GetxController {
     // 🔥 আসল ব্যালেন্স লজিক
     balance.value = totalBalance.value - exp;
   }
-
-  /// ✅ Open budget button logic
-  void openBudgetButton() async {
-    if (uid == null) return;
-
-    final now = DateTime.now();
-    final monthKey = DateFormat('yyyy-MM').format(now);
-
-    // 🔹 Check if current month already has budget
-    final existing = await _db
-        .collection('users')
-        .doc(uid)
-        .collection('months')
-        .where('monthKey', isEqualTo: monthKey)
-        .limit(1)
-        .get();
-
-    if (existing.docs.isNotEmpty) {
-      // Budget already exists
-      Get.snackbar(
-        'Info',
-        'এই মাসের বাজেট ইতিমধ্যে যোগ করা হয়েছে। বাজেট পরিবর্তন করতে বাজেট প্ল্যানিং যান।',
-        colorText: Colors.white,
-        backgroundColor: Colors.orange,
-      );
-      return; // আর স্ক্রীন খুলবে না
-    }
-
-    // Budget নেই → AddMonth screen খুলবে
-    Get.toNamed(AppRoutes.addMonth, arguments: 'NEW_MONTH');
-  }
-
 
   /// 📅 Month Listener
   void _listenMonths() {

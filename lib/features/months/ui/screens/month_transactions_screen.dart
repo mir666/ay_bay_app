@@ -26,19 +26,40 @@ class MonthTransactionsScreen extends StatelessWidget {
     controller.fetchTransactions(monthId);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('$monthName মাসের লেনদেন', style: TextStyle(fontSize: 18)),
+      appBar:AppBar(
+        title: Text(
+          '$monthName মাসের লেনদেন',
+          style: const TextStyle(fontSize: 18),
+        ),
         centerTitle: true,
+
+        actionsPadding: const EdgeInsets.only(right: 12), // 👈 ডান পাশে ফাঁকা
         actions: [
-          IconButton(
-            icon: const Icon(Icons.download),
-            onPressed: () async {
-              await _generatePdf(controller);
-            },
+          SizedBox(
+            height: 36, // 👈 AppBar friendly height
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.addButtonColor,
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                elevation: 0, // 👈 AppBar এর সাথে clean look
+              ),
+              onPressed: () async {
+                await _generatePdf(controller);
+              },
+              child: const Icon(
+                Icons.download,
+                size: 20,
+                color: Colors.white,
+              ),
+            ),
           ),
         ],
       ),
-      body: Obx(() {
+
+        body: Obx(() {
         final list = controller.transactions;
         if (list.isEmpty) {
           return const Center(child: Text('কোনো ট্রানজ্যাকশন নেই'));
@@ -162,7 +183,7 @@ class MonthTransactionsScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              '${isIncome ? '+' : '-'} ৳ ${trx.amount.toInt()}',
+              '${isIncome ? '+' : '-'} ${trx.amount.toInt()} ৳',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: isIncome ? Colors.green : Colors.red,
@@ -188,7 +209,7 @@ class MonthTransactionsScreen extends StatelessWidget {
         ),
         SizedBox(height: 4),
         Text(
-          '৳ ${amount.toInt()}',
+          '${amount.toInt()} ৳',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
@@ -222,7 +243,7 @@ class MonthTransactionsScreen extends StatelessWidget {
             '$monthName মাসের লেনদেন রিপোর্ট',
             style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
           ),
-          pw.SizedBox(height: 16),
+          pw.SizedBox(height: 24),
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
             children: [
@@ -236,7 +257,7 @@ class MonthTransactionsScreen extends StatelessWidget {
               _pdfSummary('ব্যালেন্স', balance, PdfColors.blue),
             ],
           ),
-          pw.SizedBox(height: 16),
+          pw.SizedBox(height: 18),
           pw.TableHelper.fromTextArray(
             headers: ['তারিখ', 'টাইপ', 'ক্যাটাগরী', 'পরিমাণ'],
             data: list.map((trx) {
@@ -244,7 +265,7 @@ class MonthTransactionsScreen extends StatelessWidget {
                 DateFormat('dd MMM yyyy').format(trx.date), // তারিখ
                 trx.type == TransactionType.income ? 'আয়' : 'ব্যয়', // টাইপ
                 trx.category, // ক্যাটাগরী
-                '৳ ${trx.amount.toInt()}', // পরিমাণ
+                '${trx.amount.toInt()} ৳', // পরিমাণ
               ];
             }).toList(),
             headerStyle: pw.TextStyle(
@@ -256,10 +277,10 @@ class MonthTransactionsScreen extends StatelessWidget {
             cellAlignment: pw.Alignment.centerLeft,
             cellStyle: const pw.TextStyle(fontSize: 12),
             columnWidths: {
-              0: const pw.FixedColumnWidth(70), // তারিখ → fixed
+              0: const pw.FixedColumnWidth(90), // তারিখ → fixed
               1: const pw.FixedColumnWidth(50), // টাইপ → fixed
-              2: const pw.FlexColumnWidth(3), // ক্যাটাগরী → বড় জায়গা
-              3: const pw.FixedColumnWidth(50), // পরিমাণ → ছোট
+              2: const pw.FlexColumnWidth(20), // ক্যাটাগরী → বড় জায়গা
+              3: const pw.FixedColumnWidth(90), // পরিমাণ → ছোট
             },
           ),
         ],
@@ -273,9 +294,9 @@ class MonthTransactionsScreen extends StatelessWidget {
     return pw.Column(
       children: [
         pw.Text(title, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-        pw.SizedBox(height: 4),
+        pw.SizedBox(height: 8),
         pw.Text(
-          '৳ ${amount.toInt()}',
+          '${amount.toInt()} ৳',
           style: pw.TextStyle(
             fontWeight: pw.FontWeight.bold,
             color: color,
