@@ -23,64 +23,78 @@ class ProfileScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // ✅ Profile Header
-              Obx(() => Container(
-                color: Colors.blue,
-                padding: EdgeInsets.symmetric(
-                  vertical: size.height * 0.03,
-                  horizontal: size.width * 0.04,
-                ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: size.width * 0.12,
-                      backgroundImage: userController.avatarUrl.value.isNotEmpty
-                          ? NetworkImage(userController.avatarUrl.value)
-                          : null,
-                      child: userController.avatarUrl.value.isEmpty
-                          ? Text(
-                        userController.fullName.value.isNotEmpty
-                            ? userController.fullName.value[0]
-                            : '?',
-                        style: TextStyle(
-                            fontSize: size.width * 0.12,
-                            fontWeight: FontWeight.bold),
-                      )
-                          : null,
-                    ),
-                    SizedBox(width: size.width * 0.04),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            userController.fullName.value.isNotEmpty
-                                ? userController.fullName.value
-                                : 'Your Name',
-                            style: TextStyle(
+              Obx(
+                () => Container(
+                  color: Colors.blue,
+                  padding: EdgeInsets.symmetric(
+                    vertical: size.height * 0.03,
+                    horizontal: size.width * 0.04,
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: size.width * 0.12,
+                        backgroundImage:
+                            userController.avatarUrl.value.isNotEmpty
+                            ? NetworkImage(userController.avatarUrl.value)
+                            : null,
+                        child: userController.avatarUrl.value.isEmpty
+                            ? Text(
+                                userController.fullName.value.isNotEmpty
+                                    ? userController.fullName.value[0]
+                                    : '?',
+                                style: TextStyle(
+                                  fontSize: size.width * 0.12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )
+                            : null,
+                      ),
+                      SizedBox(width: size.width * 0.04),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              userController.fullName.value.isNotEmpty
+                                  ? userController.fullName.value
+                                  : 'Your Name',
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: size.width * 0.05,
-                                fontWeight: FontWeight.bold),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          SizedBox(height: size.height * 0.008),
-                          Text(
-                            userController.phoneNumber.value.isNotEmpty
-                                ? userController.phoneNumber.value
-                                : 'Phone Number',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: size.width * 0.035,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+                            SizedBox(height: size.height * 0.008),
+                            Text(
+                              userController.phoneNumber.value.isNotEmpty
+                                  ? userController.phoneNumber.value
+                                  : 'Phone Number',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: size.width * 0.035,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              )),
+              ),
 
-              SizedBox(height: size.height * 0.15),
+              SizedBox(height: size.height * 0.05),
+
+              Center(
+                child: Text(
+                  'Ay Graph Chart',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                ),
+              ),
+
+              SizedBox(height: size.height * 0.10),
 
               // ✅ BarChart Section
               Obx(() {
@@ -116,10 +130,11 @@ class ProfileScreen extends StatelessWidget {
                   );
                 }
 
-                double maxY = incomeTransactions
-                    .map((e) => e.amount)
-                    .reduce((a, b) => a > b ? a : b)
-                    .toDouble() +
+                double maxY =
+                    incomeTransactions
+                        .map((e) => e.amount)
+                        .reduce((a, b) => a > b ? a : b)
+                        .toDouble() +
                     500;
 
                 return SingleChildScrollView(
@@ -168,8 +183,12 @@ class ProfileScreen extends StatelessWidget {
                                 reservedSize: 40,
                               ),
                             ),
-                            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                            topTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            rightTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
                           ),
                           gridData: FlGridData(
                             show: true,
@@ -180,14 +199,18 @@ class ProfileScreen extends StatelessWidget {
                           barTouchData: BarTouchData(
                             enabled: true,
                             touchTooltipData: BarTouchTooltipData(
-                              getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                                final trx = incomeTransactions[group.x.toInt()];
-                                return BarTooltipItem(
-                                  '${trx.category}\n+${trx.amount.toInt()}৳',
-                                  const TextStyle(
-                                      color: Colors.white, fontWeight: FontWeight.bold),
-                                );
-                              },
+                              getTooltipItem:
+                                  (group, groupIndex, rod, rodIndex) {
+                                    final trx =
+                                        incomeTransactions[group.x.toInt()];
+                                    return BarTooltipItem(
+                                      '${trx.category}\n+${trx.amount.toInt()}৳',
+                                      const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    );
+                                  },
                             ),
                           ),
                         ),
