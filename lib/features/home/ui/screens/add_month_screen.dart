@@ -109,8 +109,7 @@ class _AddMonthScreenState extends State<AddMonthScreen> {
                   } else if (mode == 'UPDATE_BUDGET') {
                     await controller.updateCurrentMonthBudget(amount);
                   }
-
-                  Get.back(); // Close screen after adding/updating
+                  controller.canAddTransaction.value = true;
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.loginTextButtonColor,

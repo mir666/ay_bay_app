@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/features/auth/ui/screens/log_in_screen.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/ui/screens/add_transaction_screen.dart';
@@ -364,10 +363,9 @@ class HomeController extends GetxController {
 
       allTransactions.clear();
       transactions.clear();
-
+      Get.back();
       canAddTransaction.value = true;
-
-      Get.offAllNamed(AppRoutes.home);
+      await fetchTransactions(docRef.id);
 
       Get.snackbar('Success', 'নতুন মাস যোগ হয়েছে', colorText: Colors.green);
     } catch (e) {
@@ -450,9 +448,11 @@ class HomeController extends GetxController {
 
     // 🔹 UI update
     totalBalance.value = amount;
+    balance.value = totalBalance.value - expense.value;
 
     // ✅ ব্যালেন্স = মোট বাজেট - মোট ব্যয়
     balance.value = totalBalance.value - expense.value;
+    canAddTransaction.refresh();
 
     Get.back();
     Get.snackbar('Success', 'মোট বাজেট আপডেট হয়েছে', colorText: Colors.green);

@@ -26,8 +26,6 @@ class HomeScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.loginTextButtonColor,
         onPressed: () {
-          final controller = Get.find<HomeController>();
-
           if (!controller.canAddTransaction.value) {
             _showBudgetDialog(controller); // যদি কোনো বাজেট না থাকে
           } else {
@@ -351,8 +349,8 @@ class HomeScreen extends StatelessWidget {
           children: [
             // ✅ Budget Button
             ElevatedButton.icon(
-              icon: const Icon(Icons.account_balance_wallet),
-              label: const Text('বাজেট যোগ করুন'),
+              icon: const Icon(Icons.account_balance_wallet,color: Colors.white,),
+              label: const Text('বাজেট যোগ করুন',style: TextStyle(color: Colors.white),),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.loginTextButtonColor,
                 minimumSize: const Size(double.infinity, 45),

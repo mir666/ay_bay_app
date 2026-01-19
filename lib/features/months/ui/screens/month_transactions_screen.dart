@@ -44,7 +44,7 @@ class MonthTransactionsScreen extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
-                elevation: 0, // 👈 AppBar এর সাথে clean look
+                elevation: 2, // 👈 AppBar এর সাথে clean look
               ),
               onPressed: () async {
                 await _generatePdf(controller);

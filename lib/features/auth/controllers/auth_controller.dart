@@ -1,4 +1,5 @@
 import 'package:ay_bay_app/app/app_routes.dart';
+import 'package:ay_bay_app/core/settings/controllers/user_controller.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -40,11 +41,16 @@ class AuthController extends GetxController {
         password: password,
       );
 
+      final uid = userCredential.user!.uid;
+
       await _db.collection('users').doc(userCredential.user!.uid).set({
         'name': name,
         'phone': phone,
         'createdAt': Timestamp.now(),
       });
+
+      final userController = Get.find<UserController>();
+      userController.setUser(name: name, phone: phone);
 
       saveFcmToken(); // fire-and-forget
 

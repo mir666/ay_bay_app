@@ -49,7 +49,7 @@ class AppDrawer extends StatelessWidget {
               padding: verticalPadding,
               onTap: () {
                 Get.back();
-
+                Get.toNamed(AppRoutes.appProfile);
               },
             ),
 
@@ -85,7 +85,7 @@ class AppDrawer extends StatelessWidget {
               padding: verticalPadding,
               onTap: () {
                 Get.back();
-
+                Get.toNamed(AppRoutes.appSettings);
               },
             ),
 
