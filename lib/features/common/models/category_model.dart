@@ -1,12 +1,10 @@
-import 'package:flutter/material.dart';
-
 class CategoryModel {
   final String name;
-  final IconData icon;
+  final int iconId;
 
   const CategoryModel({
     required this.name,
-    required this.icon,
+    required this.iconId,
   });
 
   @override
@@ -15,9 +13,9 @@ class CategoryModel {
 
     return other is CategoryModel &&
         other.name == name &&
-        other.icon.codePoint == icon.codePoint;
+        other.iconId == iconId;
   }
 
   @override
-  int get hashCode => name.hashCode ^ icon.codePoint.hashCode;
+  int get hashCode => name.hashCode ^ iconId.hashCode;
 }

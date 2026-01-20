@@ -307,6 +307,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 }
 */
 
+import 'package:ay_bay_app/features/common/models/category_icon.dart';
 import 'package:ay_bay_app/features/common/models/category_model.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/add_transaction_controller.dart';
@@ -359,7 +360,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
     final cat = list.firstWhere(
           (c) => c.name == trx.category,
-      orElse: () => CategoryModel(name: 'Other', icon: Icons.more_horiz),
+      orElse: () => CategoryModel(name: 'Other', iconId: 5),
     );
 
     controller.selectedCategory.value = cat;
@@ -540,12 +541,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                           ),
                                         ),
                                         child: Icon(
-                                          cat.icon,
-                                          color: isSelected
-                                              ? Colors.blue
-                                              : Colors.grey,
+                                          CategoryIcons.fromId(cat.iconId),
+                                          color: isSelected ? Colors.blue : Colors.grey,
                                           size: 26,
                                         ),
+
                                       ),
                                       const SizedBox(height: 6),
                                       SizedBox(

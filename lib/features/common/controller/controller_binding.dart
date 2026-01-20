@@ -1,4 +1,5 @@
 import 'package:ay_bay_app/core/budget/controllers/budget_controller.dart';
+import 'package:ay_bay_app/core/settings/controllers/user_controller.dart';
 import 'package:ay_bay_app/features/auth/controllers/auth_controller.dart';
 import 'package:ay_bay_app/features/home/controllers/add_transaction_controller.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
@@ -11,5 +12,6 @@ class ControllerBinding extends Bindings {
     Get.put(HomeController());
     Get.put(AddTransactionController());
     Get.put(BudgetController());
+    Get.put(UserController());
   }
 }

@@ -35,7 +35,7 @@ class TransactionModel {
       amount: (json['amount'] ?? 0).toDouble(),
       type: _parseType(json['type']),
       category: json['category'] ?? '',
-      categoryIcon: json['categoryIcon'] ?? Icons.help_outline.codePoint, // default icon
+      categoryIcon: json['categoryIcon'] ?? 0, // default icon
       date: json['date'] is Timestamp
           ? (json['date'] as Timestamp).toDate()
           : DateTime.now(),

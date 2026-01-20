@@ -1,5 +1,6 @@
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
+import 'package:ay_bay_app/features/common/models/category_icon.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:ay_bay_app/features/home/ui/screens/add_month_screen.dart';
@@ -175,7 +176,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     child: ListTile(
                       leading: Icon(
-                        IconData(trx.categoryIcon, fontFamily: 'MaterialIcons'),
+                        CategoryIcons.fromId(trx.categoryIcon),
                         color: AppColors.addButtonColor,
                         size: 28,
                       ),

@@ -19,14 +19,16 @@ class UserController extends GetxController {
   /// Firebase থেকে ইউজারের তথ্য নাও
   Future<void> loadUser() async {
     final uid = _auth.currentUser?.uid;
-    if (uid != null) {
-      final doc = await _db.collection('users').doc(uid).get();
-      if (doc.exists) {
-        fullName.value = doc['name'] ?? '';
-        phoneNumber.value = doc['phone'] ?? '';
-        avatarUrl.value = doc['avatarUrl'] ?? '';
-      }
-    }
+    if (uid == null) return;
+
+    final doc = await _db.collection('users').doc(uid).get();
+    if (!doc.exists) return;
+
+    final data = doc.data(); // 🔥 SAFE MAP
+
+    fullName.value = data?['name'] ?? '';
+    phoneNumber.value = data?['phone'] ?? '';
+    avatarUrl.value = data?['avatarUrl'] ?? '';
   }
 
   /// নতুন ইউজার সাইন আপ হলে ডেটা আপডেট

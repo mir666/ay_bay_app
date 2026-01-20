@@ -30,26 +30,27 @@ class AddTransactionController extends GetxController {
   final otherCategoryCtrl = TextEditingController();
 
   final incomeCategories = const [
-    CategoryModel(name: 'Salary', icon: Icons.account_balance_wallet),
-    CategoryModel(name: 'Gift', icon: Icons.card_giftcard),
-    CategoryModel(name: 'Tuition', icon: Icons.school),
-    CategoryModel(name: 'Bonuses', icon: Icons.attach_money),
-    CategoryModel(name: 'Business income', icon: Icons.business),
-    CategoryModel(name: 'Other', icon: Icons.more_horiz),
+    CategoryModel(name: 'Salary', iconId: 0),
+    CategoryModel(name: 'Gift', iconId: 1),
+    CategoryModel(name: 'Tuition', iconId: 2),
+    CategoryModel(name: 'Bonuses', iconId: 3),
+    CategoryModel(name: 'Business income', iconId: 4),
+    CategoryModel(name: 'Other', iconId: 5),
   ];
 
   final expenseCategories = const [
-    CategoryModel(name: 'Food', icon: Icons.restaurant),
-    CategoryModel(name: 'Transport', icon: Icons.directions_bus),
-    CategoryModel(name: 'Shopping', icon: Icons.shopping_bag),
-    CategoryModel(name: 'Electric Bill', icon: Icons.receipt_long),
-    CategoryModel(name: 'Net Bill', icon: Icons.wifi),
-    CategoryModel(name: 'Gas Bill', icon: Icons.gas_meter_outlined),
-    CategoryModel(name: 'Bazaar', icon: Icons.shopping_cart_outlined),
-    CategoryModel(name: 'Hospital', icon: Icons.local_hospital_outlined),
-    CategoryModel(name: 'School', icon: Icons.school_outlined),
-    CategoryModel(name: 'Other', icon: Icons.more_horiz),
+    CategoryModel(name: 'Food', iconId: 10),
+    CategoryModel(name: 'Transport', iconId: 11),
+    CategoryModel(name: 'Shopping', iconId: 12),
+    CategoryModel(name: 'Electric Bill', iconId: 13),
+    CategoryModel(name: 'Net Bill', iconId: 14),
+    CategoryModel(name: 'Gas Bill', iconId: 15),
+    CategoryModel(name: 'Bazaar', iconId: 16),
+    CategoryModel(name: 'Hospital', iconId: 17),
+    CategoryModel(name: 'School', iconId: 18),
+    CategoryModel(name: 'Other', iconId: 5),
   ];
+
 
   RxDouble calculatedAmount = 0.0.obs; // ক্যালকুলেটেড মান
 
@@ -133,7 +134,7 @@ class AddTransactionController extends GetxController {
         'amount': amount.toInt(),
         'type': type.value.name,
         'category': categoryName,
-        'categoryIcon': selectedCat.icon.codePoint,
+        'categoryIcon': selectedCat.iconId,
         'date': Timestamp.fromDate(selectedDate.value),
         'isMonthly': isMonthly.value,
         'createdAt': Timestamp.now(),
