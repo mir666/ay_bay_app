@@ -1,6 +1,7 @@
 
 import 'package:ay_bay_app/core/analysis/ui/screens/analysis_screen.dart';
 import 'package:ay_bay_app/core/budget/ui/screens/budget_planning_screen.dart';
+import 'package:ay_bay_app/core/privacy/ui/screens/privacy_policy.dart';
 import 'package:ay_bay_app/core/profile/ui/screens/profile_screen.dart';
 import 'package:ay_bay_app/core/settings/ui/screens/settings_screen.dart';
 import 'package:ay_bay_app/features/auth/ui/screens/forget_password_screen.dart';
@@ -27,6 +28,7 @@ class AppRoutes {
   static const appProfile = '/app-profile';
   static const appAnalysis = '/app-analysis';
   static const appBudget = '/app-budget';
+  static const appPrivacy = '/app-privacy';
 
   static final pages = [
     GetPage(name: splash, page: () => SplashScreen()),
@@ -41,5 +43,6 @@ class AppRoutes {
     GetPage(name: appProfile, page: () => ProfileScreen()),
     GetPage(name: appAnalysis, page: () => AnalysisScreen()),
     GetPage(name: appBudget, page: () => BudgetScreen()),
+    GetPage(name: appPrivacy, page: () => PrivacyPolicyScreen()),
   ];
 }

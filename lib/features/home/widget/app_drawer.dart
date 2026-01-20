@@ -1,6 +1,8 @@
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_path.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
+import 'package:ay_bay_app/core/about/ui/widget/about_app.dart';
+import 'package:ay_bay_app/core/help/ui/widget/help_app.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -97,10 +99,9 @@ class AppDrawer extends StatelessWidget {
               padding: verticalPadding,
               onTap: () {
                 Get.back();
-
+                AboutAppDialog.show();
               },
             ),
-
             _DrawerItem(
               icon: Icons.help_outline_sharp,
               title: 'Help / FAQ',
@@ -109,7 +110,18 @@ class AppDrawer extends StatelessWidget {
               padding: verticalPadding,
               onTap: () {
                 Get.back();
-
+                HelpDialog.show();
+              },
+            ),
+            _DrawerItem(
+              icon: Icons.warning_amber_outlined,
+              title: 'Privacy Policy',
+              iconSize: iconSize,
+              textSize: textSize,
+              padding: verticalPadding,
+              onTap: () {
+                Get.back();
+                Get.toNamed(AppRoutes.appPrivacy);
               },
             ),
 

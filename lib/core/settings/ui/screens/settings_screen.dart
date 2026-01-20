@@ -3,7 +3,7 @@ import 'package:ay_bay_app/app/app_config.dart';
 import 'package:ay_bay_app/core/controllers/theme_controller.dart';
 import 'package:ay_bay_app/core/profile/ui/screens/profile_screen.dart';
 import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
-import 'package:ay_bay_app/core/settings/controllers/user_controller.dart';
+import 'package:ay_bay_app/core/profile/controllers/user_controller.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

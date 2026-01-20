@@ -1,9 +1,10 @@
 
+import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:ay_bay_app/core/settings/controllers/user_controller.dart';
+import 'package:ay_bay_app/core/profile/controllers/user_controller.dart';
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({super.key});
@@ -154,12 +155,15 @@ class ProfileScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         elevation: 5,
-                        shadowColor: Colors.grey.withOpacity(0.3),
+                        shadowColor: Colors.grey.withValues(alpha: 0.3),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: BarChart(
                             BarChartData(
-                              maxY: (homeController.income.value + 500),
+                              maxY: (homeController.allTransactions
+                                  .where((t) => t.type == TransactionType.income)
+                                  .map((t) => t.amount)
+                                  .fold<double>(0, (prev, amt) => amt > prev ? amt : prev)),
                               alignment: BarChartAlignment.spaceAround,
                               borderData: FlBorderData(show: false),
                               titlesData: FlTitlesData(
@@ -167,22 +171,16 @@ class ProfileScreen extends StatelessWidget {
                                   sideTitles: SideTitles(
                                     showTitles: true,
                                     reservedSize: 40,
-                                    getTitlesWidget:
-                                        (double value, TitleMeta meta) {
-                                          if (value.toInt() == 0) {
-                                            return const Padding(
-                                              padding: EdgeInsets.only(
-                                                top: 8.0,
-                                              ),
-                                              child: Text(
-                                                'আয়',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black87,
-                                                ),
-                                              ),
-                                            );
-                                          }
+                                    getTitlesWidget: (value, meta) {
+                                      final incomes = homeController.allTransactions
+                                          .where((t) => t.type == TransactionType.income)
+                                          .toList();
+                                      if (value.toInt() < incomes.length) {
+                                        return Text(
+                                          incomes[value.toInt()].category,
+                                          style: const TextStyle(fontSize: 12),
+                                        );
+                                      }
                                           return const SizedBox.shrink();
                                         },
                                   ),
@@ -191,14 +189,21 @@ class ProfileScreen extends StatelessWidget {
                                   sideTitles: SideTitles(showTitles: false),
                                 ),
                               ),
-                              barGroups: [
-                                BarChartGroupData(
-                                  x: 0,
+                              barGroups: homeController.allTransactions
+                                  .where((t) => t.type == TransactionType.income)
+                                  .toList()
+                                  .asMap()
+                                  .entries
+                                  .map((e) {
+                                final index = e.key;
+                                final trx = e.value;
+                                return BarChartGroupData(
+                                  x: index,
                                   barRods: [
                                     BarChartRodData(
-                                      toY: homeController.income.value,
-                                      width: 40,
-                                      borderRadius: BorderRadius.circular(12),
+                                      toY: trx.amount.toDouble(),
+                                      width: 20,
+                                      borderRadius: BorderRadius.circular(16),
                                       gradient: LinearGradient(
                                         colors: [
                                           Colors.greenAccent.shade100,
@@ -209,14 +214,14 @@ class ProfileScreen extends StatelessWidget {
                                       ),
                                     ),
                                   ],
-                                ),
-                              ],
+                                );
+                              }).toList(),
                               gridData: FlGridData(
                                 show: true,
                                 drawVerticalLine: false,
                                 getDrawingHorizontalLine: (value) {
                                   return FlLine(
-                                    color: Colors.grey.withOpacity(0.2),
+                                    color: Colors.grey.withValues(alpha: 0.2),
                                     strokeWidth: 1,
                                   );
                                 },

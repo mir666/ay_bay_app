@@ -1,5 +1,5 @@
 import 'package:ay_bay_app/app/app_routes.dart';
-import 'package:ay_bay_app/core/settings/controllers/user_controller.dart';
+import 'package:ay_bay_app/core/profile/controllers/user_controller.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
