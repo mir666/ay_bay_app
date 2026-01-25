@@ -4,6 +4,7 @@ import 'package:ay_bay_app/core/controllers/theme_controller.dart';
 import 'package:ay_bay_app/core/profile/ui/screens/profile_screen.dart';
 import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
 import 'package:ay_bay_app/core/profile/controllers/user_controller.dart';
+import 'package:ay_bay_app/core/settings/ui/screens/change_password_screen.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,168 +30,204 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Settings'), centerTitle: true),
+      backgroundColor: themeController.isDarkMode.value
+          ? Colors.grey.shade900
+          : Colors.grey.shade200,
+      appBar: AppBar(
+        title: const Text('Settings'),
+        centerTitle: true,
+        backgroundColor: AppColors.loginTextButtonColor,
+        elevation: 0,
+      ),
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         children: [
           _buildSectionTitle('Account'),
-          ListTile(
-            leading: Obx(() => CircleAvatar(
-              backgroundImage: userController.avatarUrl.value.isNotEmpty
-                  ? NetworkImage(userController.avatarUrl.value)
-                  : null,
-              child: userController.avatarUrl.value.isEmpty
-                  ? const Icon(Icons.person)
-                  : null,
-            )),
-            title: Obx(() => Text(
-              userController.fullName.value.isNotEmpty
-                  ? userController.fullName.value
-                  : 'Your Name',
-            )),
-            subtitle: Obx(() => Text(
-              userController.phoneNumber.value.isNotEmpty
-                  ? userController.phoneNumber.value
-                  : 'Phone Number',
-            )),
-            onTap: () {
-              Get.to(() =>  ProfileScreen());
-            },
+          _premiumCard(
+            child: ListTile(
+              leading: Obx(() => CircleAvatar(
+                radius: 26,
+                backgroundImage: userController.avatarUrl.value.isNotEmpty
+                    ? NetworkImage(userController.avatarUrl.value)
+                    : null,
+                child: userController.avatarUrl.value.isEmpty
+                    ? const Icon(Icons.person, size: 28)
+                    : null,
+              )),
+              title: Obx(() => Text(
+                userController.fullName.value.isNotEmpty
+                    ? userController.fullName.value
+                    : 'Your Name',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              )),
+              subtitle: Obx(() => Text(
+                userController.phoneNumber.value.isNotEmpty
+                    ? userController.phoneNumber.value
+                    : 'Phone Number',
+              )),
+              onTap: () => Get.to(() => ProfileScreen()),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 18),
+            ),
           ),
-
-          ListTile(
-            leading: const Icon(Icons.lock),
-            title: const Text('Change Password'),
-            onTap: () {},
+          _premiumCard(
+            child: ListTile(
+              leading: const Icon(Icons.lock, color: Colors.orangeAccent),
+              title: const Text('Change Password'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 18),
+              onTap: () => Get.to(() => ChangePasswordScreen()),
+            ),
           ),
-          ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text('Logout'),
-            onTap: () {
-              homeController.logout();
-            },
+          _premiumCard(
+            child: ListTile(
+              leading: const Icon(Icons.logout, color: Colors.redAccent),
+              title: const Text('Logout'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 18),
+              onTap: () => homeController.logout(),
+            ),
           ),
 
           _buildSectionTitle('Data & Backup'),
-          ListTile(
-            leading: const Icon(Icons.backup),
-            title: const Text('Backup Data'),
-            onTap: () async {
-              // userId আসলে Firebase Auth থেকে নিতে হবে
-              String userId = 'USER_ID'; // FirebaseAuth.instance.currentUser!.uid;
-              await controller.backupData(userId);
-            },
+          _premiumCard(
+            child: ListTile(
+              leading: const Icon(Icons.backup, color: Colors.blueAccent),
+              title: const Text('Backup Data'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 18),
+              onTap: () async {
+                String userId = 'USER_ID';
+                await controller.backupData(userId);
+              },
+            ),
           ),
-          ListTile(
-            leading: const Icon(Icons.restore),
-            title: const Text('Restore Data'),
-            onTap: () async {
-              String userId = 'USER_ID'; // FirebaseAuth.instance.currentUser!.uid;
-              await controller.restoreData(userId);
-            },
+          _premiumCard(
+            child: ListTile(
+              leading: const Icon(Icons.restore, color: Colors.greenAccent),
+              title: const Text('Restore Data'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 18),
+              onTap: () async {
+                String userId = 'USER_ID';
+                await controller.restoreData(userId);
+              },
+            ),
           ),
-          ListTile(
-            leading: const Icon(Icons.delete_forever),
-            title: const Text('Clear All Data'),
-            onTap: () async {
-              await controller.clearLocalData();
-            },
+          _premiumCard(
+            child: ListTile(
+              leading: const Icon(Icons.delete_forever, color: Colors.red),
+              title: const Text('Clear All Data'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 18),
+              onTap: () async => await controller.clearLocalData(),
+            ),
           ),
 
           _buildSectionTitle('Currency & Budget'),
           Obx(
-            () => ListTile(
-              leading: const Icon(Icons.attach_money),
-              title: const Text('Default Currency'),
-              trailing: DropdownButton<String>(
-                value: controller.defaultCurrency.value,
-                items: ['৳', '\$', '€', '₹']
-                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                    .toList(),
+                () => _premiumCard(
+              child: ListTile(
+                leading: const Icon(Icons.attach_money, color: Colors.green),
+                title: const Text('Default Currency'),
+                trailing: DropdownButton<String>(
+                  value: controller.defaultCurrency.value,
+                  items: ['৳', '\$', '€', '₹']
+                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                      .toList(),
+                  onChanged: (val) {
+                    controller.defaultCurrency.value = val!;
+                    controller.saveSettings();
+                  },
+                ),
+              ),
+            ),
+          ),
+          _premiumCard(
+            child: ListTile(
+              leading: const Icon(Icons.calendar_today, color: Colors.orange),
+              title: const Text('Month Start Date'),
+              onTap: () {},
+            ),
+          ),
+
+          _buildSectionTitle('Notifications'),
+          Obx(
+                () => _premiumCard(
+              child: SwitchListTile(
+                title: const Text('Enable Notifications'),
+                value: controller.notificationsEnabled.value,
                 onChanged: (val) {
-                  controller.defaultCurrency.value = val!;
+                  controller.notificationsEnabled.value = val;
                   controller.saveSettings();
                 },
               ),
             ),
           ),
-          ListTile(
-            leading: const Icon(Icons.calendar_today),
-            title: const Text('Month Start Date'),
-            onTap: () {},
-          ),
-
-          _buildSectionTitle('Notifications'),
-          Obx(
-            () => SwitchListTile(
-              title: const Text('Enable Notifications'),
-              value: controller.notificationsEnabled.value,
-              onChanged: (val) {
-                controller.notificationsEnabled.value = val;
-                controller.saveSettings();
-              },
-            ),
-          ),
 
           _buildSectionTitle('Appearance'),
-          Obx(() => SwitchListTile(
-              title: const Text('Dark Mode'),
-              value: themeController.isDarkMode.value,
-              onChanged: (val) async {
-                await themeController.toggleTheme();
-              },
+          Obx(
+                () => _premiumCard(
+              child: SwitchListTile(
+                title: const Text('Dark Mode'),
+                value: themeController.isDarkMode.value,
+                onChanged: (val) => themeController.toggleTheme(),
+              ),
             ),
           ),
-          const SizedBox(height: 10),
+
           _buildSectionTitle('Accent Color'),
-          Obx(
-            () => Wrap(
-              spacing: 12,
-              children: colorOptions
-                  .map(
-                    (color) => GestureDetector(
-                      onTap: () => themeController.changePrimaryColor(color),
-                      child: CircleAvatar(
-                        backgroundColor: color,
-                        radius: 20,
-                        child: themeController.primaryColor.value == color
-                            ? const Icon(Icons.check, color: Colors.white)
-                            : null,
-                      ),
+          _premiumCard(
+            child: Obx(
+                  () => Wrap(
+                spacing: 12,
+                children: colorOptions
+                    .map(
+                      (color) => GestureDetector(
+                    onTap: () => themeController.changePrimaryColor(color),
+                    child: CircleAvatar(
+                      backgroundColor: color,
+                      radius: 20,
+                      child: themeController.primaryColor.value == color
+                          ? const Icon(Icons.check, color: Colors.white)
+                          : null,
                     ),
-                  )
-                  .toList(),
+                  ),
+                )
+                    .toList(),
+              ),
             ),
           ),
 
           _buildSectionTitle('Security'),
-          Obx(() => SwitchListTile(
-            title: const Text('Enable App Lock'),
-            value: controller.isAppLockEnabled.value,
-            onChanged: (val) {
-              controller.isAppLockEnabled.value = val;
-              controller.saveSettings();
-
-              if (val) {
-                Get.snackbar('App Lock', 'App Lock is enabled');
-              } else {
-                Get.snackbar('App Lock', 'App Lock is disabled');
-              }
-            },
-          )),
-
+          Obx(
+                () => _premiumCard(
+              child: SwitchListTile(
+                title: const Text('Enable App Lock'),
+                value: controller.isAppLockEnabled.value,
+                onChanged: (val) {
+                  controller.isAppLockEnabled.value = val;
+                  controller.saveSettings();
+                  Get.snackbar(
+                    'App Lock',
+                    val ? 'App Lock is enabled' : 'App Lock is disabled',
+                  );
+                },
+              ),
+            ),
+          ),
 
           _buildSectionTitle('Support'),
-          ListTile(
-            leading: const Icon(Icons.feedback),
-            title: const Text('Send Feedback'),
-            onTap: () {},
+          _premiumCard(
+            child: ListTile(
+              leading: const Icon(Icons.feedback, color: Colors.deepPurple),
+              title: const Text('Send Feedback'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 18),
+              onTap: () {},
+            ),
           ),
-          ListTile(
-            leading: const Icon(Icons.info),
-            title: const Text('App Version'),
-            trailing: Text(AppConfig.currentAppVersion,style: TextStyle(fontSize: 16),),
-            onTap: () {},
+          _premiumCard(
+            child: ListTile(
+              leading: const Icon(Icons.info, color: Colors.blueAccent),
+              title: const Text('App Version'),
+              trailing: Text(AppConfig.currentAppVersion,
+                  style: const TextStyle(fontSize: 16)),
+              onTap: () {},
+            ),
           ),
         ],
       ),
@@ -202,8 +239,28 @@ class SettingsScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Text(
         title,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        style: const TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black54),
       ),
+    );
+  }
+
+  Widget _premiumCard({required Widget child}) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26.withValues(alpha: 0.1),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          )
+        ],
+      ),
+      child: child,
     );
   }
 }

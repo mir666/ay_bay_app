@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppColors{
-  static const Color bannerTopColor = Color(0xFF0E2656);
-  static const Color bannerBottomColor = Color(0xFF1F53BC);
+  static const Color bannerTopColor = Color(0xFF0F2C59);
+  static const Color bannerBottomColor = Color(0xFF1E4FA1);
   static const Color accountTextColor = Color(0xFFAFAFAF);
   static const Color textFieldBorderColor = Color(0xFF1C4DAF);
   static const Color textFieldTitleColor = Color(0xFFABA9A9);

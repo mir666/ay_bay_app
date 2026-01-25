@@ -8,8 +8,8 @@ import 'package:ay_bay_app/features/auth/ui/screens/forget_password_screen.dart'
 import 'package:ay_bay_app/features/auth/ui/screens/log_in_screen.dart';
 import 'package:ay_bay_app/features/auth/ui/screens/sigh_up_screen.dart';
 import 'package:ay_bay_app/features/auth/ui/screens/splash_screen.dart';
-import 'package:ay_bay_app/features/home/ui/screens/add_month_screen.dart';
-import 'package:ay_bay_app/features/home/ui/screens/add_transaction_screen.dart';
+import 'package:ay_bay_app/features/common/transaction/ui/screens/add_month_screen.dart';
+import 'package:ay_bay_app/features/common/transaction/ui/screens/add_transaction_screen.dart';
 import 'package:ay_bay_app/features/home/ui/screens/home_screen.dart';
 import 'package:ay_bay_app/features/months/ui/screens/month_transactions_screen.dart';
 import 'package:get/get.dart';

@@ -9,8 +9,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      throw 'Could not launch $url';
     }
   }
 
@@ -20,101 +18,227 @@ class PrivacyPolicyScreen extends StatelessWidget {
         'https://farhanasblogsidemidia.blogspot.com/2026/01/privacy-policy-aybay-app-body-font.html';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Privacy Policy'), centerTitle: true),
+      backgroundColor: Colors.grey.shade100,
+      appBar: AppBar(
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Theme.of(context).primaryColor,
+        title: const Text(
+          'Privacy Policy',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: RichText(
-          text: TextSpan(
-            style: const TextStyle(
-              fontSize: 16,
-              height: 1.5,
-              color: Colors.black,
-            ),
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 12,
+                offset: Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const TextSpan(
-                text: '''
-Privacy Policy for AyBay App
-
-Effective Date: January 2026
-
-1. Information We Collect
--------------------------
-AyBay app collects the following personal information:
-- Full Name
-- Phone Number
-- Profile Picture (Avatar)
-- Email (used for password reset via Firebase)
-- Transactions, categories, monthly records
-
-2. How We Use Your Information
--------------------------------
-- To create and manage your account (Sign up / Login)
-- To save and retrieve your financial transactions
-- To provide analysis of income, expenses, and monthly reports
-- To allow you to view and download your monthly summaries
-- To display your profile information within the app
-
-3. Data Sharing and Security
------------------------------
-- Your personal information and financial data are **never shared** with third parties.
-- All data is securely stored in Firebase Firestore.
-- Only you can access your data using your authenticated account.
-
-4. Third-Party Services
------------------------
-- The app uses Flutter packages for charts, reports, and UI.
-- Firebase Authentication and Firestore are used for login and data storage.
-- No third-party services collect your personal data without your consent.
-
-5. User Control
-----------------
-- You can edit your profile information (name, avatar) anytime.
-- You can delete or modify your transactions anytime.
-- Your financial data remains private and secure.
-
-6. Downloads
--------------
-- Monthly summaries or reports can be downloaded by you only.
-- These reports contain only your personal financial data.
-
-7. Consent
------------
-- By using AyBay app, you agree to this Privacy Policy.
-- If you do not agree, please do not use the app.
-
-Contact Us
------------
-If you have any questions about this Privacy Policy, please contact us via farhanaakter10506264robi@gmail.com
-
-- All personal and financial data is encrypted using TLS/HTTPS during transmission and encrypted at rest in Firebase.
-- We do not sell or rent your personal data to third parties.
-- We may update this Privacy Policy occasionally; the latest version will be available at ''',
+              /// HEADER
+              _header(
+                title: 'AyBay App Privacy Policy',
+                subtitle: 'Effective Date: January 2026',
               ),
-              TextSpan(
-                text: policyURL,
-                style: const TextStyle(
-                  color: Colors.blue,
-                  decoration: TextDecoration.underline,
+
+              const SizedBox(height: 20),
+
+              _section(
+                icon: Icons.info_outline,
+                title: 'Information We Collect',
+                content:
+                '• Full Name\n'
+                    '• Phone Number\n'
+                    '• Profile Picture (Avatar)\n'
+                    '• Email (for password reset via Firebase)\n'
+                    '• Transactions, categories, monthly records',
+              ),
+
+              _section(
+                icon: Icons.settings_outlined,
+                title: 'How We Use Your Information',
+                content:
+                '• Account creation and login\n'
+                    '• Saving and retrieving transactions\n'
+                    '• Income & expense analysis\n'
+                    '• Monthly reports and summaries\n'
+                    '• Displaying your profile information',
+              ),
+
+              _section(
+                icon: Icons.security_outlined,
+                title: 'Data Sharing & Security',
+                content:
+                '• We never share your data with third parties\n'
+                    '• Securely stored in Firebase Firestore\n'
+                    '• Accessible only by you via authentication\n'
+                    '• Encrypted using TLS/HTTPS and at rest',
+              ),
+
+              _section(
+                icon: Icons.extension_outlined,
+                title: 'Third-Party Services',
+                content:
+                '• Flutter packages for UI & charts\n'
+                    '• Firebase Authentication & Firestore\n'
+                    '• No third-party data collection without consent',
+              ),
+
+              _section(
+                icon: Icons.person_outline,
+                title: 'User Control',
+                content:
+                '• Edit profile anytime\n'
+                    '• Add, update, or delete transactions\n'
+                    '• Your data always remains private',
+              ),
+
+              _section(
+                icon: Icons.download_outlined,
+                title: 'Downloads',
+                content:
+                '• Monthly reports can be downloaded\n'
+                    '• Reports include only your personal data',
+              ),
+
+              _section(
+                icon: Icons.check_circle_outline,
+                title: 'Consent',
+                content:
+                'By using AyBay App, you agree to this Privacy Policy.\n'
+                    'Minimum user age: 13+',
+              ),
+
+              const SizedBox(height: 16),
+
+              /// LINK
+              RichText(
+                text: TextSpan(
+                  style: const TextStyle(fontSize: 14, color: Colors.black87),
+                  children: [
+                    const TextSpan(
+                      text: 'Latest version available at:\n',
+                    ),
+                    TextSpan(
+                      text: policyURL,
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => _launchURL(policyURL),
+                    ),
+                  ],
                 ),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    _launchURL(policyURL);
-                  },
               ),
-              const TextSpan(
-                text: '''
-.
-- Minimum user age: 13+.
 
-Thank you for trusting AyBay App.
+              const SizedBox(height: 20),
 
-Copyright© 2026
-''',
+              /// CONTACT
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color:
+                  Theme.of(context).primaryColor.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(
+                  children: const [
+                    Icon(Icons.email_outlined),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Contact: farhanaakter10506264robi@gmail.com',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              const Center(
+                child: Text(
+                  '© 2026 AyBay App',
+                  style: TextStyle(color: Colors.grey),
+                ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  /// 🔹 SECTION WIDGET
+  Widget _section({
+    required IconData icon,
+    required String title,
+    required String content,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            content,
+            style: const TextStyle(
+              fontSize: 14,
+              height: 1.5,
+              color: Colors.black54,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 🔹 HEADER
+  Widget _header({required String title, required String subtitle}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          subtitle,
+          style: const TextStyle(color: Colors.grey),
+        ),
+      ],
     );
   }
 }

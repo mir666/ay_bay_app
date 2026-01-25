@@ -5,7 +5,6 @@ import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:ay_bay_app/features/home/widget/app_drawer.dart';
 import 'package:ay_bay_app/features/home/widget/search_highlite_text.dart';
-import 'package:ay_bay_app/features/home/widget/summary_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -31,8 +30,8 @@ class _BalanceCardState extends State<BalanceCard> {
           Container(
             width: double.infinity,
             padding: EdgeInsets.only(
-              top: size.height * 0.03,
-              bottom: size.height * 0.015,
+              top: size.height * 0.01,
+              bottom: size.height * 0.010,
             ),
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.only(
@@ -40,13 +39,13 @@ class _BalanceCardState extends State<BalanceCard> {
                 bottomRight: Radius.circular(16),
               ),
               gradient: const LinearGradient(
-                colors: [Color(0xFF0F2C59), Color(0xFF1E4FA1)],
+                colors: [AppColors.bannerTopColor, AppColors.bannerBottomColor],
               ),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.bannerShadowColor,
-                  blurRadius: 12,
-                  offset: const Offset(4, 4),
+                  blurRadius: 8,
+                  offset: const Offset(2, 2),
                 ),
               ],
             ),
@@ -54,41 +53,27 @@ class _BalanceCardState extends State<BalanceCard> {
               children: [
                 _buildHeaderProfileSection(context, controller),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 6),
 
                 _buildHomeMonthMenuSection(controller),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
 
                 // Dashboard Summary
                 Container(
                   width: double.infinity,
                   margin: const EdgeInsets.symmetric(horizontal: 12),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppColors.monthAddButtonColor.withValues(alpha: 0.5),
+                    color: AppColors.monthAddButtonColor.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: AppColors.bannerBottomColor,
                       style: BorderStyle.solid,
                     ),
                   ),
-                  child: Row(
-                    children: [
-                      _buildTotalBudget(controller),
-
-                      Container(
-                        height: 50,
-                        width: 1,
-                        color: AppColors.addButtonColor.withValues(alpha: 0.3),
-                      ),
-
-                      _buildCurrentBalance(controller),
-                    ],
-                  ),
+                  child: Row(children: [_buildCurrentBalance(controller)]),
                 ),
-                const SizedBox(height: 20),
-                const SummaryCard(),
               ],
             ),
           ),
@@ -229,54 +214,208 @@ class _BalanceCardState extends State<BalanceCard> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
-            'ব্যালেন্স',
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Obx(
-            () => Text(
-              '${controller.balance.value.toInt()} ৳',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: AppColors.bannerBottomColor,
+                style: BorderStyle.solid,
               ),
             ),
+            child: Obx(
+                  () => Row(
+                children: [
+                  /// 🔹 TOTAL BUDGET (conditional)
+                  if (controller.showTotalBudget.value)
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'মোট বাজেট',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'HindSiliguri',
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+
+                              /// 👁 Toggle Button
+                              GestureDetector(
+                                onTap: () =>
+                                    controller.showTotalBudget.toggle(),
+                                child: const Icon(
+                                  Icons.visibility_off,
+                                  size: 18,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            '${controller.totalBalance.value.toInt()} ৳',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  /// Divider only when budget visible
+                  if (controller.showTotalBudget.value)
+                    Container(
+                      height: 50,
+                      width: 1,
+                      margin: const EdgeInsets.symmetric(horizontal: 12),
+                      color: AppColors.addButtonColor.withValues(alpha: 0.3),
+                    ),
+
+                  /// 🔹 BALANCE (auto expand)
+                  Expanded(
+                    flex: controller.showTotalBudget.value ? 1 : 2,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'ব্যালেন্স',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'HindSiliguri',
+                              ),
+                            ),
+
+                            /// 👁 Show button when hidden
+                            if (!controller.showTotalBudget.value) ...[
+                              const SizedBox(width: 6),
+                              GestureDetector(
+                                onTap: () =>
+                                    controller.showTotalBudget.toggle(),
+                                child: Icon(
+                                  Icons.visibility,
+                                  size: 18,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          '${controller.balance.value.toInt()} ৳',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
           ),
+          SizedBox(height: 10),
+          Obx(() {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    padding: EdgeInsets.only(top: 5),
+                    height: 70,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: AppColors.bannerBottomColor,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                    child: _item(
+                      'আয়',
+                      controller.income.value,
+                      Colors.greenAccent,
+                      Icons.trending_up, // 📈 like icon
+                    ),
+                  ),
+                ),
+
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    padding: EdgeInsets.only(top: 5),
+                    height: 70,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: AppColors.bannerBottomColor,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                    child: _item(
+                      'ব্যয়',
+                      controller.expense.value,
+                      Colors.redAccent,
+                      Icons.trending_down, // 📉 like icon
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }),
         ],
       ),
     );
   }
 
-  Widget _buildTotalBudget(HomeController controller) {
-    return Expanded(
-      child: Column(
-        children: [
-          const Text(
-            'মোট বাজেট',
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          Obx(
-            () => Text(
-              '${controller.totalBalance.value.toInt()} ৳',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+  Widget _item(String title, double value, Color color, IconData icon) {
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 22),
+            const SizedBox(width: 6),
+            Text(
+              title,
+              style: TextStyle(
+                color: color,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: 'HindSiliguri',
               ),
             ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '${value.toStringAsFixed(0)} ৳',
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -300,7 +439,7 @@ class _BalanceCardState extends State<BalanceCard> {
             child: const Icon(
               Icons.arrow_back_ios,
               color: Colors.white,
-              size: 20,
+              size: 16,
             ),
           ),
 
@@ -321,7 +460,7 @@ class _BalanceCardState extends State<BalanceCard> {
             child: const Icon(
               Icons.arrow_forward_ios,
               color: Colors.white,
-              size: 20,
+              size: 16,
             ),
           ),
         ],
@@ -359,7 +498,7 @@ class _BalanceCardState extends State<BalanceCard> {
                     : '$safeSelectedMonth (${DateFormat('dd MMM').format(today)})',
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
               ),

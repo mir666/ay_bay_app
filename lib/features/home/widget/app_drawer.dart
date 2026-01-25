@@ -3,6 +3,7 @@ import 'package:ay_bay_app/app/app_path.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/core/about/ui/widget/about_app.dart';
 import 'package:ay_bay_app/core/help/ui/widget/help_app.dart';
+import 'package:ay_bay_app/core/profile/controllers/user_controller.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,6 +14,7 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController controller = Get.find<HomeController>();
+    final UserController userController = Get.find<UserController>();
     final size = MediaQuery.sizeOf(context);
 
     final bool isSmall = size.width < 360;
@@ -33,13 +35,134 @@ class AppDrawer extends StatelessWidget {
               height: headerHeight,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: AppColors.bannerBottomColor,
-                image: DecorationImage(
-                  image: AssetImage(AssetsPath.drawerBannerImg),
-                  fit: BoxFit.cover,
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.loginTextButtonColor,
+                    AppColors.bannerBottomColor,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
               ),
+              child: Stack(
+                children: [
+                  /// Background image
+                  Positioned.fill(
+                    child: Opacity(
+                      opacity: 0.45,
+                      child: Image.asset(
+                        AssetsPath.drawerBannerImg,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+
+                  /// Glass overlay
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.black.withValues(alpha: 0.25),
+                            Colors.transparent,
+                          ],
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  /// Content
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 36),
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Obx(() => Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            /// Avatar with glow
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.white.withValues(alpha: 0.35),
+                                    blurRadius: 12,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                              ),
+                              child: CircleAvatar(
+                                radius: 34,
+                                backgroundColor:
+                                Colors.blueGrey.withValues(alpha: 0.9),
+                                backgroundImage: userController.avatarUrl.value.isNotEmpty ? NetworkImage(userController.avatarUrl.value) : null,
+                                child: userController.avatarUrl.value.isEmpty ? const Icon(
+                                  Icons.person,
+                                  size: 32,
+                                  color: Colors.white,
+                                ) : null,
+                              ),
+                            ),
+
+                            SizedBox(width: 16),
+
+                            /// Text
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text(
+                                  'Welcome!',
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 15,
+                                    letterSpacing: 0.6,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  userController.fullName.value.isNotEmpty ? userController.fullName.value : 'User',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  /// Bottom accent line
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 3,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.white.withValues(alpha: 0.4),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
+
+
 
             const SizedBox(height: 12),
 
@@ -76,7 +199,7 @@ class AppDrawer extends StatelessWidget {
               onTap: () {
                 Get.back();
                 Get.toNamed(AppRoutes.appBudget);
-              }
+              },
             ),
 
             _DrawerItem(
@@ -129,28 +252,47 @@ class AppDrawer extends StatelessWidget {
 
             /// 🔹 LOGOUT
             Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: verticalPadding,
-              ),
-              child: InkWell(
-                onTap: () {
-                  Get.back();
-                  controller.logout();
-                },
-                child: Row(
-                  children: [
-                    Icon(Icons.logout, color: Colors.red, size: iconSize),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Log Out',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: textSize,
-                        fontWeight: FontWeight.w600,
-                      ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Material(
+                color: Colors.red.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(14),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: () {
+                    Get.back();
+                    controller.logout();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 16,
                     ),
-                  ],
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.logout,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        const Text(
+                          'Log Out',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -158,7 +300,6 @@ class AppDrawer extends StatelessWidget {
         ),
       ),
     );
-
   }
 }
 
@@ -182,25 +323,51 @@ class _DrawerItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: padding),
-        child: Row(
-          children: [
-            Icon(icon, size: iconSize, color: AppColors.addButtonColor),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                title,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: textSize,
-                  fontWeight: FontWeight.w500,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        elevation: 1.5,
+        shadowColor: Colors.black12,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: padding),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.addButtonColor.withOpacity(0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    icon,
+                    size: iconSize,
+                    color: AppColors.addButtonColor,
+                  ),
                 ),
-              ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: textSize,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14,
+                  color: Colors.black38,
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
