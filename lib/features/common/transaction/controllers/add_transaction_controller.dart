@@ -153,6 +153,22 @@ class AddTransactionController extends GetxController {
         await ref.doc(editingTransactionId).update(data);
       }
 
+      // 🔥 Income হলে মোট বাজেট বাড়াও
+      if (type.value == TransactionType.income &&
+          editingTransactionId == null) {
+        home.totalBalance.value += amount;
+
+        await _db
+            .collection('users')
+            .doc(uid)
+            .collection('months')
+            .doc(home.selectedMonthId.value)
+            .update({
+          'totalBalance': home.totalBalance.value,
+        });
+      }
+
+
       // 🔥 SAFE RELOAD (NO BUG)
       await home.fetchMonthSummary(home.selectedMonthId.value);
       home.setFilter('সব');

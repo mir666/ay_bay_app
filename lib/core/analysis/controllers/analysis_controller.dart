@@ -90,7 +90,7 @@ class AnalysisController extends GetxController {
 
     income.value = inc;
     expense.value = exp;
-    balance.value = (monthSnap['totalBalance'] ?? 0).toDouble() - exp;
+    balance.value = (monthSnap['totalBalance'] ?? 0).toDouble() + inc - exp;
 
     // Category-wise update
     categoryData.value = catMap.entries

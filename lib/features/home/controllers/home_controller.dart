@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:ay_bay_app/features/auth/ui/screens/log_in_screen.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
-import 'package:ay_bay_app/features/home/ui/screens/add_transaction_screen.dart';
+import 'package:ay_bay_app/features/common/transaction/ui/screens/add_transaction_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +32,7 @@ class HomeController extends GetxController {
   RxBool canAddTransaction = false.obs;
   Rx<DateTime> todayDate = DateTime.now().obs;
   RxBool isMonthDropdownOpen = false.obs;
+  RxBool showTotalBudget = false.obs;
 
   String? get uid => _auth.currentUser?.uid;
 
@@ -200,7 +201,7 @@ class HomeController extends GetxController {
     _saveState();
   }
 
-  /// 💰 Dashboard Calculation (MODEL BASED)
+  /// 💰 Dashboard Calculation (MODEL BASED
   void _calculateDashboard(List<TransactionModel> data) {
     double inc = 0;
     double exp = 0;
@@ -208,12 +209,12 @@ class HomeController extends GetxController {
     for (final trx in data) {
       if (trx.type == TransactionType.income) {
         inc += trx.amount;
-      } else {
+      } else if (trx.type == TransactionType.expense) {
         exp += trx.amount;
       }
     }
 
-    // শুধু দেখানোর জন্য
+    // শুধু UI stats
     income.value = inc;
     expense.value = exp;
 

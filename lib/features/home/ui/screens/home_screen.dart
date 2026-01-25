@@ -3,8 +3,7 @@ import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/features/common/models/category_icon.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
-import 'package:ay_bay_app/features/home/ui/screens/add_month_screen.dart';
-import 'package:ay_bay_app/features/home/ui/screens/add_transaction_screen.dart';
+import 'package:ay_bay_app/features/common/transaction/ui/screens/add_transaction_screen.dart';
 import 'package:ay_bay_app/features/home/widget/balance_card.dart';
 import 'package:ay_bay_app/features/months/ui/screens/month_transactions_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,66 +23,71 @@ class HomeScreen extends StatelessWidget {
     final isSmall = size.width < 360;
 
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.loginTextButtonColor,
+        elevation: 8,
         onPressed: () {
-          if (!controller.canAddTransaction.value) {
-            _showBudgetDialog(controller); // যদি কোনো বাজেট না থাকে
-          } else {
-            Get.to(() => const AddTransactionScreen()); // সরাসরি income/expense যোগ
-          }
+          Get.to(() => const AddTransactionScreen());
         },
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: Colors.white, size: 28),
       ),
-
-
       body: SafeArea(
         child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           slivers: [
             /// 🔹 BALANCE CARD
             const SliverToBoxAdapter(child: BalanceCard()),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
-
             /// 🔹 FILTER BUTTONS
             SliverToBoxAdapter(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 12),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.dateIconBgColor,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.categoryShadowColor,
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: SingleChildScrollView(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _filterButton('সব', isSmall),
-                      const SizedBox(width: 10),
-                      _filterButton('আয়', isSmall),
-                      const SizedBox(width: 10),
-                      _filterButton('ব্যয়', isSmall),
-                      const SizedBox(width: 10),
-                      _filterButton('মাসিক', isSmall),
-                    ],
-                  ),
-                ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Obx(() {
+                  final filterCategory = controller.filterCategory.value;
+                  final filters = ['সব', 'আয়', 'ব্যয়', 'মাসিক'];
+
+                  return Wrap(
+                    children: filters.map((f) {
+                      final isSelected = filterCategory == f;
+                      return Container(
+                        margin: const EdgeInsets.only(right: 10),
+                        child: ChoiceChip(
+                          label: Text(
+                            f,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'HindSiliguri',
+                              color: isSelected
+                                  ? Colors.white
+                                  : Colors.grey.withValues(alpha: 0.65),
+                            ),
+                          ),
+                          selected: isSelected,
+                          onSelected: (_) => controller.setFilter(f),
+                          selectedColor: AppColors.loginTextButtonColor,
+                          backgroundColor: Colors.white,
+                          elevation: 3,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(
+                              color: isSelected
+                                  ? AppColors.loginTextButtonColor
+                                  : Colors.grey.shade200,
+                            ),
+                          ),
+                          showCheckmark: false,
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }),
               ),
             ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 12)),
-
-            /// 🔹 MAIN CONTENT
+            /// 🔹 MONTH LIST / TRANSACTION LIST
             Obx(() {
-              /// 🟢 MONTH LIST
               if (controller.filterCategory.value == 'মাসিক') {
                 if (controller.months.isEmpty) {
                   return const SliverFillRemaining(
@@ -93,63 +97,78 @@ class HomeScreen extends StatelessWidget {
                 }
 
                 return SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    final m = controller.months[index];
+                  delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                      final m = controller.months[index];
 
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ListTile(
-                        title: Text(
-                          m['month'],
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: isSmall ? 14 : 16,
-                          ),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _buildMonthExpense(controller, m),
-                            const SizedBox(width: 16),
-                            _deleteIcon(() {
-                              Get.defaultDialog(
-                                title: 'Confirm Delete',
-                                middleText:
-                                    '${m['month']} মাস ডিলিট করতে চাচ্ছো?',
-                                textConfirm: 'হ্যাঁ',
-                                textCancel: 'না',
-                                confirmTextColor: Colors.white,
-                                buttonColor: Colors.red,
-                                onConfirm: () {
-                                  Get.back();
-                                  controller.deleteMonth(m['id'], m['month']);
-                                },
-                              );
-                            }),
-                          ],
-                        ),
+                      return GestureDetector(
                         onTap: () {
                           controller.selectMonth(m);
-                          Get.to(
-                            () => MonthTransactionsScreen(
-                              monthId: m['id'],
-                              monthName: m['month'],
-                            ),
-                          );
+                          Get.to(() => MonthTransactionsScreen(
+                            monthId: m['id'],
+                            monthName: m['month'],
+                          ));
                         },
-                      ),
-                    );
-                  }, childCount: controller.months.length),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF1E88E5), Colors.white],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blueAccent.withValues(alpha: 0.3),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                m['month'],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  _buildMonthExpense(controller, m),
+                                  const SizedBox(width: 12),
+                                  _deleteIcon(() {
+                                    Get.defaultDialog(
+                                      title: 'Confirm Delete',
+                                      middleText: '${m['month']} মাস ডিলিট করতে চাচ্ছো?',
+                                      textConfirm: 'হ্যাঁ',
+                                      textCancel: 'না',
+                                      confirmTextColor: Colors.white,
+                                      buttonColor: Colors.red,
+                                      onConfirm: () {
+                                        Get.back();
+                                        controller.deleteMonth(m['id'], m['month']);
+                                      },
+                                    );
+                                  }),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                    childCount: controller.months.length,
+                  ),
                 );
               }
 
-              /// 🟢 TRANSACTION LIST
+              /// TRANSACTIONS LIST
               if (controller.transactions.isEmpty) {
                 return const SliverFillRemaining(
                   hasScrollBody: false,
@@ -158,45 +177,51 @@ class HomeScreen extends StatelessWidget {
               }
 
               return SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  final trx = controller.transactions[index];
-                  final isIncome = trx.type == TransactionType.income;
+                delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                    final trx = controller.transactions[index];
+                    final isIncome = trx.type == TransactionType.income;
 
-                  return Card(
-                    color: isIncome
-                        ? AppColors.ayCardColor
-                        : AppColors.bayCardColor,
-                    elevation: 6,
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ListTile(
-                      leading: Icon(
-                        CategoryIcons.fromId(trx.categoryIcon),
-                        color: AppColors.addButtonColor,
-                        size: 28,
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 6,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      title: Text(
-                        trx.category,
-                        style: TextStyle(fontSize: isSmall ? 14 : 16),
+                      child: ListTile(
+                        leading: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: isIncome ? Colors.green.shade50 : Colors.red.shade50,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            CategoryIcons.fromId(trx.categoryIcon),
+                            color: isIncome ? Colors.green : Colors.red,
+                            size: 22,
+                          ),
+                        ),
+                        title: Text(
+                          trx.category,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        subtitle: Text(
+                          DateFormat('dd MMM yyyy').format(trx.date),
+                          style: const TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
+                        trailing: _buildTransactionAction(isIncome, trx, isSmall, controller),
                       ),
-                      subtitle: Text(
-                        DateFormat('dd MMM yyyy').format(trx.date),
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                      trailing: _buildTransactionAction(
-                        isIncome,
-                        trx,
-                        isSmall,
-                        controller,
-                      ),
-                    ),
-                  );
-                }, childCount: controller.transactions.length),
+                    );
+                  },
+                  childCount: controller.transactions.length,
+                ),
               );
             }),
 
@@ -211,39 +236,6 @@ class HomeScreen extends StatelessWidget {
 
   // ---------------- HELPERS ----------------
 
-  Widget _filterButton(String text, bool isSmall) {
-    final controller = Get.find<HomeController>();
-
-    return Obx(() {
-      final isSelected = controller.filterCategory.value == text;
-
-      return ChoiceChip(
-        label: Text(
-          text,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: isSmall ? 13 : 14,
-            color: isSelected
-                ? AppColors.addButtonColor
-                : AppColors.unSelectedColor,
-          ),
-        ),
-        selected: isSelected,
-        onSelected: (_) => controller.setFilter(text),
-        selectedColor: AppColors.categoryTitleBgColor,
-        backgroundColor: Colors.white,
-        showCheckmark: false,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-          side: BorderSide(
-            color: isSelected ? AppColors.categoryTitleBgColor : Colors.white,
-          ),
-        ),
-      );
-    });
-  }
-
   Widget _deleteIcon(VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
@@ -251,7 +243,7 @@ class HomeScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: Colors.red.withValues(alpha: 0.1),
+          color: Colors.red.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(8),
         ),
         child: const Icon(Icons.delete_outline, color: Colors.red, size: 22),
@@ -259,39 +251,25 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTransactionAction(
-    bool isIncome,
-    TransactionModel trx,
-    bool isSmall,
-    HomeController controller,
-  ) {
+  Widget _buildTransactionAction(bool isIncome, trx, bool isSmall, HomeController controller) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(width: 12),
-
-        // ২️⃣ Amount
         Text(
           '${isIncome ? '+' : '-'} ${trx.amount.toInt()} ৳',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: isSmall ? 12 : 14,
             color: isIncome ? Colors.green : Colors.red,
           ),
         ),
-
-        const SizedBox(width: 12),
-
-        // ৩️⃣ Edit Button
-        IconButton(
-          icon: const Icon(Icons.edit_note, color: Colors.blue),
-          onPressed: () => controller.editTransaction(trx),
+        const SizedBox(width: 16),
+        InkWell(
+          onTap: () => controller.editTransaction(trx),
+          child: const Icon(Icons.edit_note, color: Colors.blue),
         ),
-
-        // ৪️⃣ Delete Button
-        IconButton(
-          icon: const Icon(Icons.delete_outline, color: Colors.red),
-          onPressed: () {
+        const SizedBox(width: 8),
+        InkWell(
+          onTap: () {
             Get.defaultDialog(
               title: 'Confirm Delete',
               middleText: 'এই ট্রানজেকশন ডিলিট করতে চাচ্ছো?',
@@ -305,6 +283,7 @@ class HomeScreen extends StatelessWidget {
               },
             );
           },
+          child: const Icon(Icons.delete_outline, color: Colors.red),
         ),
       ],
     );
@@ -323,73 +302,16 @@ class HomeScreen extends StatelessWidget {
       builder: (context, snapshot) {
         if (!snapshot.hasData) return const SizedBox(width: 40);
 
-        final total = snapshot.data!.docs.fold<double>(0,
-          (double sum, doc) => sum + (doc['amount']?.toDouble() ?? 0),
+        final total = snapshot.data!.docs.fold<double>(
+          0,
+              (double sum, doc) => sum + (doc['amount']?.toDouble() ?? 0),
         );
 
         return Text(
           '${total.toInt()}৳',
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.red,
-            fontSize: 16,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red, fontSize: 16),
         );
       },
     );
   }
-  void _showBudgetDialog(HomeController controller) {
-    Get.dialog(
-      AlertDialog(
-        title: const Text(
-          'এই মাসে বাজেট যোগ করে লেনদেন শুরু করুন',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // ✅ Budget Button
-            ElevatedButton.icon(
-              icon: const Icon(Icons.account_balance_wallet,color: Colors.white,),
-              label: const Text('বাজেট যোগ করুন',style: TextStyle(color: Colors.white),),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.loginTextButtonColor,
-                minimumSize: const Size(double.infinity, 45),
-              ),
-              onPressed: () {
-                Get.back();
-                Get.to(
-                      () => const AddMonthScreen(),
-                  arguments: 'UPDATE_BUDGET',
-                );
-              },
-            ),
-
-            const SizedBox(height: 12),
-
-            // ❌ Transaction disabled
-            Obx(() {
-              return ElevatedButton.icon(
-                icon: const Icon(Icons.swap_vert),
-                label: const Text('আয়-ব্যয় যোগ করুন'),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 45),
-                  backgroundColor: Colors.grey.shade300,
-                ),
-                onPressed: controller.canAddTransaction.value
-                    ? () {
-                  Get.back();
-                  Get.to(() => const AddTransactionScreen());
-                }
-                    : null,
-              );
-            }),
-          ],
-        ),
-      ),
-      barrierDismissible: true,
-    );
-  }
-
-
 }

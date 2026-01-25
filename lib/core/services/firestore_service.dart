@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 class FirestoreService {
   static final _db = FirebaseFirestore.instance;
@@ -12,8 +13,16 @@ class FirestoreService {
 
   /// ADD TRANSACTION
   static Future<void> addTransaction(Map<String, dynamic> data) async {
-    await transactionRef.add(data);
+    try {
+      await transactionRef.add(data);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to add transaction: $e');
+      }
+      throw Exception('Transaction could not be added');
+    }
   }
+
 
   /// STREAM TRANSACTIONS
   static Stream<QuerySnapshot> transactionStream() {
