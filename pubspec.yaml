@@ -36,6 +36,7 @@ dependencies:
   shared_preferences: ^2.5.4
   local_auth: ^3.0.0
   url_launcher: ^6.3.2
+  flutter_local_notifications: ^20.0.0
 
 
 dev_dependencies:
@@ -97,4 +98,7 @@ flutter:
         - asset: assets/fonts/Poppins-SemiBold.ttf
         - asset: assets/fonts/Poppins-Bold.ttf
           weight: 700
+    - family: Noto_Sans_Bengali
+      fonts:
+        - asset: assets/fonts/NotoSansBengali-Regular.ttf
 

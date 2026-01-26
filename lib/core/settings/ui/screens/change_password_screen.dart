@@ -122,7 +122,7 @@ class ChangePasswordScreen extends StatelessWidget {
           prefixIcon: Icon(icon,color: Colors.grey,),
           suffixIcon: IconButton(
             icon: Icon(
-              obscureRx.value ? Icons.visibility_off : Icons.visibility,
+              obscureRx.value ? Icons.visibility_off : Icons.visibility, color: Colors.grey,
             ),
             onPressed: () => obscureRx.toggle(),
           ),

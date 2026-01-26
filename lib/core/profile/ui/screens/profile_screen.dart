@@ -19,7 +19,12 @@ class ProfileScreen extends StatelessWidget {
         MediaQuery.of(context).orientation == Orientation.landscape;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('প্রোফাইল'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('প্রোফাইল', style: TextStyle(color: Colors.white)),
+        iconTheme: IconThemeData(color: Colors.white),
+        centerTitle: true,
+        backgroundColor: AppColors.loginTextButtonColor,
+      ),
       body: Obx(() {
         return SingleChildScrollView(
           child: Column(
@@ -121,7 +126,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             child: IconButton(
               onPressed: () => _showEditProfileDialog(),
-              icon: const Icon(Icons.edit, color: Colors.white,size: 20,),
+              icon: const Icon(Icons.edit, color: Colors.white, size: 20),
             ),
           ),
         ],
@@ -130,18 +135,24 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _showEditProfileDialog() {
-    final nameController = TextEditingController(text: userController.fullName.value);
-    final phoneController = TextEditingController(text: userController.phoneNumber.value);
+    final nameController = TextEditingController(
+      text: userController.fullName.value,
+    );
+    final phoneController = TextEditingController(
+      text: userController.phoneNumber.value,
+    );
 
     RxBool hasChanged = false.obs;
 
     // Detect changes
     nameController.addListener(() {
-      hasChanged.value = nameController.text.trim() != userController.fullName.value ||
+      hasChanged.value =
+          nameController.text.trim() != userController.fullName.value ||
           phoneController.text.trim() != userController.phoneNumber.value;
     });
     phoneController.addListener(() {
-      hasChanged.value = nameController.text.trim() != userController.fullName.value ||
+      hasChanged.value =
+          nameController.text.trim() != userController.fullName.value ||
           phoneController.text.trim() != userController.phoneNumber.value;
     });
 
@@ -171,7 +182,10 @@ class ProfileScreen extends StatelessWidget {
                   Text(
                     'Edit Profile',
                     style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
                   ),
                   const SizedBox(height: 20),
 
@@ -190,7 +204,10 @@ class ProfileScreen extends StatelessWidget {
                     child: TextField(
                       controller: nameController,
                       decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.person, color: Colors.blueAccent),
+                        prefixIcon: const Icon(
+                          Icons.person,
+                          color: Colors.blueAccent,
+                        ),
                         labelText: 'Full Name',
                         filled: true,
                         fillColor: Colors.white,
@@ -200,7 +217,10 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.blueAccent, width: 2),
+                          borderSide: const BorderSide(
+                            color: Colors.blueAccent,
+                            width: 2,
+                          ),
                         ),
                       ),
                     ),
@@ -223,7 +243,10 @@ class ProfileScreen extends StatelessWidget {
                       controller: phoneController,
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.phone, color: Colors.green),
+                        prefixIcon: const Icon(
+                          Icons.phone,
+                          color: Colors.green,
+                        ),
                         labelText: 'Phone Number',
                         filled: true,
                         fillColor: Colors.white,
@@ -233,7 +256,10 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.green, width: 2),
+                          borderSide: const BorderSide(
+                            color: Colors.green,
+                            width: 2,
+                          ),
                         ),
                       ),
                     ),
@@ -241,78 +267,91 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: 25),
 
                   // Buttons
-                  Obx(() => Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Cancel
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => Get.back(),
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Colors.red, width: 1.5),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                  Obx(
+                    () => Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Cancel
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Get.back(),
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(
+                                color: Colors.red,
+                                width: 1.5,
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
-                          ),
-                          child: const Text(
-                            'Cancel',
-                            style: TextStyle(
+                            child: const Text(
+                              'Cancel',
+                              style: TextStyle(
                                 color: Colors.red,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-
-                      // Save
-                      // Save Button
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: hasChanged.value
-                              ? () async {
-                            final newName = nameController.text.trim();
-                            final newPhone = phoneController.text.trim();
-
-                            if (newName.isEmpty || newPhone.isEmpty) {
-                              Get.snackbar(
-                                'Error',
-                                'Name & Phone cannot be empty',
-                                snackPosition: SnackPosition.BOTTOM,
-                              );
-                              return;
-                            }
-
-                            try {
-                              await userController.updateProfile(name: newName, phone: newPhone);
-                              if (Get.isDialogOpen!) Get.back();
-                            } catch (e) {
-                              Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
-                            }
-                          }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green, // সবসময় সবুজ
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 3,
-                          ),
-                          child: const Text(
-                            'Save',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                        const SizedBox(width: 16),
 
-                    ],
-                  )),
+                        // Save
+                        // Save Button
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: hasChanged.value
+                                ? () async {
+                                    final newName = nameController.text.trim();
+                                    final newPhone = phoneController.text
+                                        .trim();
+
+                                    if (newName.isEmpty || newPhone.isEmpty) {
+                                      Get.snackbar(
+                                        'Error',
+                                        'Name & Phone cannot be empty',
+                                        snackPosition: SnackPosition.BOTTOM,
+                                      );
+                                      return;
+                                    }
+
+                                    try {
+                                      await userController.updateProfile(
+                                        name: newName,
+                                        phone: newPhone,
+                                      );
+                                      if (Get.isDialogOpen!) Get.back();
+                                    } catch (e) {
+                                      Get.snackbar(
+                                        'Error',
+                                        e.toString(),
+                                        snackPosition: SnackPosition.BOTTOM,
+                                      );
+                                    }
+                                  }
+                                : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green, // সবসময় সবুজ
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 3,
+                            ),
+                            child: const Text(
+                              'Save',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -322,9 +361,6 @@ class ProfileScreen extends StatelessWidget {
       barrierDismissible: false,
     );
   }
-
-
-
 
   /// 🔹 মাসের হরিজন্টাল লিস্ট
   Widget _buildMonthList() {
@@ -347,42 +383,47 @@ class ProfileScreen extends StatelessWidget {
                   left: index == 0 ? 16 : 10, // প্রথম বাটনের জন্য বাম margin
                   right: 10, // বাকি বাটনের জন্য right margin
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   gradient: isSelected
                       ? const LinearGradient(
-                    colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  )
+                          colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        )
                       : LinearGradient(
-                    colors: [Colors.grey.shade200, Colors.grey.shade300],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                          colors: [Colors.grey.shade200, Colors.grey.shade300],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: isSelected
                       ? [
-                    BoxShadow(
-                      color: Colors.blueAccent.withOpacity(0.4),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
+                          BoxShadow(
+                            color: Colors.blueAccent.withOpacity(0.4),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
                       : [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                 ),
                 child: Center(
                   child: Text(
                     month['month'] ?? '',
                     style: TextStyle(
                       color: isSelected ? Colors.white : Colors.black87,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.w500,
                       fontSize: 14,
                     ),
                   ),
@@ -394,8 +435,6 @@ class ProfileScreen extends StatelessWidget {
       }),
     );
   }
-
-
 
   /// 🔹 আয় (Income) বার চার্ট
   Widget _buildIncomeBarChart(Size size) {

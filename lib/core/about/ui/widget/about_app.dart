@@ -1,3 +1,4 @@
+import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,12 +31,12 @@ class AboutAppDialog {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Theme.of(Get.context!).primaryColor.withOpacity(0.12),
+                    color: Theme.of(Get.context!).primaryColor.withValues(alpha: 0.12),
                   ),
                   child: Icon(
                     Icons.account_balance_wallet_rounded,
                     size: 40,
-                    color: Theme.of(Get.context!).primaryColor,
+                    color: AppColors.loginTextButtonColor,
                   ),
                 ),
 
@@ -104,8 +105,7 @@ class AboutAppDialog {
                   child: ElevatedButton(
                     onPressed: () => Get.back(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                      Theme.of(Get.context!).primaryColor,
+                      backgroundColor: AppColors.loginTextButtonColor,
                       elevation: 6,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),

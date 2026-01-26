@@ -1,8 +1,10 @@
 import 'dart:ui';
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
+import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
+import 'package:ay_bay_app/features/home/controllers/notification_controller.dart';
 import 'package:ay_bay_app/features/home/widget/app_drawer.dart';
 import 'package:ay_bay_app/features/home/widget/search_highlite_text.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +20,8 @@ class BalanceCard extends StatefulWidget {
 }
 
 class _BalanceCardState extends State<BalanceCard> {
+
+  final settingsController = Get.find<SettingsController>();
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<HomeController>();
@@ -261,7 +265,7 @@ class _BalanceCardState extends State<BalanceCard> {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            '${controller.totalBalance.value.toInt()} ৳',
+                            '${controller.balance.value.toInt()} ${settingsController.defaultCurrency.value}',
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -316,7 +320,7 @@ class _BalanceCardState extends State<BalanceCard> {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          '${controller.balance.value.toInt()} ৳',
+                          '${controller.balance.value.toInt()} ${settingsController.defaultCurrency.value}',
                           style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -388,6 +392,7 @@ class _BalanceCardState extends State<BalanceCard> {
   }
 
   Widget _item(String title, double value, Color color, IconData icon) {
+    final settingsController = Get.find<SettingsController>();
     return Column(
       children: [
         Row(
@@ -408,7 +413,7 @@ class _BalanceCardState extends State<BalanceCard> {
         ),
         const SizedBox(height: 4),
         Text(
-          '${value.toStringAsFixed(0)} ৳',
+          '${value.toStringAsFixed(0)} ${settingsController.defaultCurrency.value}',
           style: const TextStyle(
             color: Colors.white70,
             fontSize: 16,
@@ -580,9 +585,11 @@ class _BalanceCardState extends State<BalanceCard> {
   }
 
   Widget _buildHeaderProfileSection(
-    BuildContext context,
-    HomeController controller,
-  ) {
+      BuildContext context,
+      HomeController controller,
+      ) {
+    final notificationController = Get.put(NotificationController());
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -602,19 +609,80 @@ class _BalanceCardState extends State<BalanceCard> {
             ),
           ),
 
-          // 🔹 Search Button
-          IconButton(
-            icon: Icon(
-              controller.isSearching.value
-                  ? Icons.close
-                  : Icons.search_outlined,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              controller.isSearching.value
-                  ? controller.closeSearch()
-                  : controller.isSearching.value = true;
-            },
+          Row(
+            children: [
+              // 🔹 Search Button
+              IconButton(
+                icon: Icon(
+                  controller.isSearching.value
+                      ? Icons.close
+                      : Icons.search_outlined,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  controller.isSearching.value
+                      ? controller.closeSearch()
+                      : controller.isSearching.value = true;
+                },
+              ),
+
+              // 🔹 Notification Button with Badge
+              Obx(() => Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications_outlined,
+                        color: Colors.white),
+                    onPressed: () async {
+                      // Show notification dialog or screen
+                      await showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          title: const Text('Notifications'),
+                          content: SizedBox(
+                            width: double.maxFinite,
+                            child: Obx(() => ListView.builder(
+                              shrinkWrap: true,
+                              itemCount:
+                              notificationController.notifications.length,
+                              itemBuilder: (_, index) => ListTile(
+                                title: Text(notificationController
+                                    .notifications[index]),
+                              ),
+                            )),
+                          ),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  notificationController.markAllRead();
+                                  Navigator.pop(context);
+                                },
+                                child: const Text('Mark all as read')),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  if (notificationController.unreadCount.value > 0)
+                    Positioned(
+                      right: 4,
+                      top: 4,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Obx(() => Text(
+                          '${notificationController.unreadCount.value}',
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12),
+                        )),
+                      ),
+                    )
+                ],
+              )),
+            ],
           ),
         ],
       ),

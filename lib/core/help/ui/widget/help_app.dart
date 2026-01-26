@@ -1,3 +1,4 @@
+import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,7 +12,7 @@ class HelpDialog {
             margin: const EdgeInsets.symmetric(horizontal: 20),
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Get.isDarkMode ? Colors.grey.shade900 : Colors.white,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(24),
               boxShadow: const [
                 BoxShadow(
@@ -38,7 +39,7 @@ class HelpDialog {
                       child: Icon(
                         Icons.help_outline_rounded,
                         size: 26,
-                        color: Theme.of(Get.context!).primaryColor,
+                        color: AppColors.loginTextButtonColor,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -106,8 +107,7 @@ class HelpDialog {
                   child: ElevatedButton(
                     onPressed: () => Get.back(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                      Theme.of(Get.context!).primaryColor,
+                      backgroundColor: AppColors.loginTextButtonColor,
                       elevation: 6,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
