@@ -1,3 +1,4 @@
+import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/core/analysis/controllers/analysis_controller.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,9 @@ class AnalysisScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        title: const Text('Monthly Analysis'),
+        title: Text('Monthly Analysis', style: TextStyle(color: Colors.white),),
+        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: AppColors.loginTextButtonColor,
         centerTitle: true,
       ),
       body: Obx(() {

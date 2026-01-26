@@ -4,10 +4,13 @@ import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/common/transaction/ui/screens/add_transaction_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
+
+import 'notification_controller.dart';
 
 class HomeController extends GetxController {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -45,6 +48,12 @@ class HomeController extends GetxController {
     fetchGlobalTransactions();
     Timer.periodic(const Duration(minutes: 1), (_) {
       todayDate.value = DateTime.now();
+      final now = DateTime.now();
+      final lastDay = DateTime(now.year, now.month + 1, 0);
+
+      if (now.day == lastDay.day && now.hour == 23 && now.minute == 59) {
+        _sendMonthlyExpenseNotification();
+      }
     });
   }
 
@@ -672,6 +681,90 @@ class HomeController extends GetxController {
 
     _saveState();
   }
+
+  double getMonthlyExpense(List<TransactionModel> data, DateTime month) {
+    return data
+        .where((trx) =>
+    trx.type == TransactionType.expense &&
+        trx.date.month == month.month &&
+        trx.date.year == month.year)
+        .fold(0.0, (sum, trx) => sum + trx.amount);
+  }
+
+  /// 📝 Decide notification message
+  String getMonthlyNotificationMessage(
+      double currentMonthExpense, double previousMonthExpense) {
+    if (currentMonthExpense > previousMonthExpense) {
+      return "আপনার খরচ বেড়ে গেছে, হিসাব করে খরচ করুন";
+    } else if (currentMonthExpense < previousMonthExpense) {
+      return "খুব ভাল! আপনি সাশ্রয়ী হয়েছেন";
+    } else {
+      return "এই মাসের খরচ পূর্বের মাসের সমান";
+    }
+  }
+
+  /// 📝 Send notification locally
+  void sendMonthlyNotification(String message) {
+    final notificationController = Get.find<NotificationController>();
+    notificationController.addNotification(message);
+
+    // Optionally: Use FirebaseMessaging or local notification plugin
+    // Example: foreground push
+    FirebaseMessaging.instance.subscribeToTopic('monthly'); // optional
+  }
+
+  Future<void> _sendMonthlyExpenseNotification() async {
+    if (months.length < 2) return; // আগে মাসের data না থাকলে skip
+
+    final notificationController = Get.find<NotificationController>();
+
+    // 🔹 চলতি মাস
+    final currentMonthId = selectedMonthId.value;
+    if (currentMonthId.isEmpty) return;
+
+    final currentMonthSnap = await _db
+        .collection('users')
+        .doc(uid)
+        .collection('months')
+        .doc(currentMonthId)
+        .collection('transactions')
+        .get();
+
+    double currentExpense = 0;
+    for (var trx in currentMonthSnap.docs) {
+      if (trx['type'] == 'expense') {
+        currentExpense += (trx['amount'] ?? 0).toDouble();
+      }
+    }
+
+    // 🔹 আগের মাস
+    final currentIndex = months.indexWhere((m) => m['id'] == currentMonthId);
+    if (currentIndex + 1 >= months.length) return; // কোনো previous month নাই
+
+    final previousMonthId = months[currentIndex + 1]['id'];
+    final previousMonthSnap = await _db
+        .collection('users')
+        .doc(uid)
+        .collection('months')
+        .doc(previousMonthId)
+        .collection('transactions')
+        .get();
+
+    double previousExpense = 0;
+    for (var trx in previousMonthSnap.docs) {
+      if (trx['type'] == 'expense') {
+        previousExpense += (trx['amount'] ?? 0).toDouble();
+      }
+    }
+
+    // 🔹 Decide message
+    final message =
+    getMonthlyNotificationMessage(currentExpense, previousExpense);
+
+    // 🔹 Send
+    sendMonthlyNotification(message);
+  }
+
 
   /// 🚪 Logout
   Future<void> logout() async {

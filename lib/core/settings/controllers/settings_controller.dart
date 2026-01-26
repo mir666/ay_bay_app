@@ -11,6 +11,7 @@ class SettingsController extends GetxController {
   RxString fullName = ''.obs;
   RxString phoneNumber = ''.obs;
   RxString avatarUrl = ''.obs; // যদি অ্যাভাটার Firebase বা URL থাকে
+  Rx<DateTime> monthStartDate = DateTime.now().obs;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -30,6 +31,9 @@ class SettingsController extends GetxController {
     fullName.value = prefs.getString('fullName') ?? '';
     phoneNumber.value = prefs.getString('phoneNumber') ?? '';
     avatarUrl.value = prefs.getString('avatarUrl') ?? '';
+    String? savedDate = prefs.getString('monthStartDate');
+    monthStartDate.value = savedDate != null ? DateTime.parse(savedDate) : DateTime.now();
+
   }
 
   /// Save local settings
@@ -42,6 +46,8 @@ class SettingsController extends GetxController {
     await prefs.setString('fullName', fullName.value);
     await prefs.setString('phoneNumber', phoneNumber.value);
     await prefs.setString('avatarUrl', avatarUrl.value);
+
+    await prefs.setString('monthStartDate', monthStartDate.value.toString());
   }
 
   /// Backup data to Firebase
@@ -122,4 +128,5 @@ class SettingsController extends GetxController {
 
     Get.snackbar('Data', 'All local data cleared!');
   }
+
 }

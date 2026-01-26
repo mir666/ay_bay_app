@@ -196,7 +196,7 @@ class MonthTransactionsScreen extends StatelessWidget {
         ],
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(

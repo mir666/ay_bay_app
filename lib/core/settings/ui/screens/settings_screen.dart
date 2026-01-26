@@ -1,18 +1,17 @@
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_config.dart';
-import 'package:ay_bay_app/core/controllers/theme_controller.dart';
 import 'package:ay_bay_app/core/profile/ui/screens/profile_screen.dart';
 import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
 import 'package:ay_bay_app/core/profile/controllers/user_controller.dart';
 import 'package:ay_bay_app/core/settings/ui/screens/change_password_screen.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SettingsScreen extends StatelessWidget {
-  final SettingsController controller = Get.put(SettingsController());
-  final ThemeController themeController = Get.put(ThemeController());
-  final HomeController homeController = Get.put(HomeController());
+  final SettingsController controller = Get.find<SettingsController>();
+  final HomeController homeController = Get.find<HomeController>();
   final userController = Get.put(UserController());
 
   SettingsScreen({super.key});
@@ -30,11 +29,9 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: themeController.isDarkMode.value
-          ? Colors.grey.shade900
-          : Colors.grey.shade200,
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text('Settings', style: TextStyle(color: Colors.white),),
+        iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         backgroundColor: AppColors.loginTextButtonColor,
         elevation: 0,
@@ -93,9 +90,15 @@ class SettingsScreen extends StatelessWidget {
               title: const Text('Backup Data'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 18),
               onTap: () async {
-                String userId = 'USER_ID';
+                final user = FirebaseAuth.instance.currentUser;
+                if (user == null) {
+                  Get.snackbar('Error', 'Please log in first!');
+                  return;
+                }
+                String userId = user.uid;
                 await controller.backupData(userId);
               },
+
             ),
           ),
           _premiumCard(
@@ -104,9 +107,15 @@ class SettingsScreen extends StatelessWidget {
               title: const Text('Restore Data'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 18),
               onTap: () async {
-                String userId = 'USER_ID';
+                final user = FirebaseAuth.instance.currentUser;
+                if (user == null) {
+                  Get.snackbar('Error', 'Please log in first!');
+                  return;
+                }
+                String userId = user.uid;
                 await controller.restoreData(userId);
               },
+
             ),
           ),
           _premiumCard(
@@ -114,36 +123,40 @@ class SettingsScreen extends StatelessWidget {
               leading: const Icon(Icons.delete_forever, color: Colors.red),
               title: const Text('Clear All Data'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 18),
-              onTap: () async => await controller.clearLocalData(),
+              onTap: () async {
+                final user = FirebaseAuth.instance.currentUser;
+                if (user == null) {
+                  Get.snackbar('Error', 'Please log in first!');
+                  return;
+                }
+                String userId = user.uid;
+                await controller.clearLocalData();
+              },
+
             ),
           ),
 
           _buildSectionTitle('Currency & Budget'),
-          Obx(
-                () => _premiumCard(
-              child: ListTile(
-                leading: const Icon(Icons.attach_money, color: Colors.green),
-                title: const Text('Default Currency'),
-                trailing: DropdownButton<String>(
-                  value: controller.defaultCurrency.value,
-                  items: ['৳', '\$', '€', '₹']
-                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                      .toList(),
-                  onChanged: (val) {
-                    controller.defaultCurrency.value = val!;
-                    controller.saveSettings();
-                  },
-                ),
+          Obx(() => _premiumCard(
+            child: ListTile(
+              leading: const Icon(Icons.attach_money, color: Colors.green),
+              title: const Text('Default Currency'),
+              trailing: DropdownButton<String>(
+                value: controller.defaultCurrency.value,
+                items: ['৳', '\$', '€', '₹']
+                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                    .toList(),
+                onChanged: (val) {
+                  if (val != null) {
+                    controller.defaultCurrency.value = val;
+                    controller.saveSettings(); // save locally
+                  }
+                },
               ),
             ),
-          ),
-          _premiumCard(
-            child: ListTile(
-              leading: const Icon(Icons.calendar_today, color: Colors.orange),
-              title: const Text('Month Start Date'),
-              onTap: () {},
-            ),
-          ),
+          )),
+
+
 
           _buildSectionTitle('Notifications'),
           Obx(
@@ -159,39 +172,6 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
 
-          _buildSectionTitle('Appearance'),
-          Obx(
-                () => _premiumCard(
-              child: SwitchListTile(
-                title: const Text('Dark Mode'),
-                value: themeController.isDarkMode.value,
-                onChanged: (val) => themeController.toggleTheme(),
-              ),
-            ),
-          ),
-
-          _buildSectionTitle('Accent Color'),
-          _premiumCard(
-            child: Obx(
-                  () => Wrap(
-                spacing: 12,
-                children: colorOptions
-                    .map(
-                      (color) => GestureDetector(
-                    onTap: () => themeController.changePrimaryColor(color),
-                    child: CircleAvatar(
-                      backgroundColor: color,
-                      radius: 20,
-                      child: themeController.primaryColor.value == color
-                          ? const Icon(Icons.check, color: Colors.white)
-                          : null,
-                    ),
-                  ),
-                )
-                    .toList(),
-              ),
-            ),
-          ),
 
           _buildSectionTitle('Security'),
           Obx(

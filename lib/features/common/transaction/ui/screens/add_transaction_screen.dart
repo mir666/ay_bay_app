@@ -69,14 +69,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.loginTextButtonColor,
         elevation: 1,
         title: Text(
           isEdit ? 'লেনদেন এডিট করুন' : 'আয়-ব্যয় যোগ',
-          style: const TextStyle(color: Colors.black),
+          style: const TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SafeArea(
         child: LayoutBuilder(

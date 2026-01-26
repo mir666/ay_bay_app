@@ -19,7 +19,9 @@ class BudgetScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        title: const Text('বাজেট প্ল্যানিং'),
+        title: Text('বাজেট প্ল্যানিং', style: TextStyle(color: Colors.white),),
+        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: AppColors.loginTextButtonColor,
         centerTitle: true,
         elevation: 0,
       ),

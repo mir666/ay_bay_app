@@ -20,16 +20,15 @@ class _AddMonthScreenState extends State<AddMonthScreen> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.loginTextButtonColor,
         elevation: 1,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           mode == 'NEW_MONTH' ? 'মাস যোগ করুন' : 'বাজেট আপডেট',
-          style: const TextStyle(color: Colors.black,fontFamily: 'HindSiliguri',),
+          style: const TextStyle(color: Colors.white,fontFamily: 'HindSiliguri',),
         ),
         centerTitle: true,
       ),
@@ -220,7 +219,7 @@ class _AddMonthScreenState extends State<AddMonthScreen> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.withOpacity(0.35),
+                        color: Colors.blue.withValues(alpha: 0.35),
                         blurRadius: 16,
                         offset: const Offset(0, 8),
                       ),
