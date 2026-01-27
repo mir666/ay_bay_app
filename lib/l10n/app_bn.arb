@@ -17,6 +17,7 @@
   "income": "আয়",
   "expense": "ব্যয়",
   "notifications": "নটিফিকেশন",
+  "noNotifications": "কোনো নোটিফিকেশন নেই",
   "makeAllAsRead": "সব পড়া হয়েছে হিসেবে চিহ্নিত করুন",
   "month": "মাস",
   "openNewMonth": "নতুন মাস খুলুন",
@@ -24,7 +25,7 @@
   "monthly": "মাসিক",
   "welcome": "স্বাগতম!",
   "profile": "প্রফাইল",
-  "analytics": "এনালাইটিক্স",
+  "analysis": "এনালাইসিস",
   "budgetPlanner": "বাজেট পরিকল্পনা",
   "setting": "সেটিং",
   "aboutApp": "অ্যাপ সম্পর্কে",
@@ -60,5 +61,6 @@
   "wantToDeleteTransaction": "এই ট্রানজেকশন ডিলিট করতে চাচ্ছো?",
   "no": "না",
   "yes": "হ্যাঁ",
-  "noTransactions": "কোনো ট্রানজাকশন নেই"
+  "noTransactions": "কোনো ট্রানজাকশন নেই",
+  "monthlyAnalysis": "মাসের এনালাইসিস"
 }

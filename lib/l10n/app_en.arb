@@ -17,6 +17,7 @@
   "income": "Income",
   "expense": "Expense",
   "notifications": "Notifications",
+  "noNotifications": "No Notifications",
   "makeAllAsRead": "Mark all as read",
   "month": "Month",
   "openNewMonth": "Open new month",
@@ -24,7 +25,7 @@
   "monthly": "Monthly",
   "welcome": "Welcome!",
   "profile": "Profile",
-  "analytics": "Analytics",
+  "analysis": "Analysis",
   "budgetPlanner": "Budget Planner",
   "setting": "Setting",
   "aboutApp": "About App",
@@ -60,5 +61,6 @@
   "wantToDeleteTransaction": "Do you want to delete this transaction?",
   "no": "No",
   "yes": "Yes",
-  "noTransactions": "No Transaction"
+  "noTransactions": "No Transaction",
+  "monthlyAnalysis": "Monthly Analysis"
 }

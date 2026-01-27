@@ -79,7 +79,8 @@ class AppDrawer extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(20, 20, 20, 36),
                     child: Align(
                       alignment: Alignment.bottomLeft,
-                      child: Obx(() => Row(
+                      child: Obx(
+                        () => Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             /// Avatar with glow
@@ -96,14 +97,22 @@ class AppDrawer extends StatelessWidget {
                               ),
                               child: CircleAvatar(
                                 radius: 34,
-                                backgroundColor:
-                                Colors.blueGrey.withValues(alpha: 0.9),
-                                backgroundImage: userController.avatarUrl.value.isNotEmpty ? NetworkImage(userController.avatarUrl.value) : null,
-                                child: userController.avatarUrl.value.isEmpty ? const Icon(
-                                  Icons.person,
-                                  size: 32,
-                                  color: Colors.white,
-                                ) : null,
+                                backgroundColor: Colors.blueGrey.withValues(
+                                  alpha: 0.9,
+                                ),
+                                backgroundImage:
+                                    userController.avatarUrl.value.isNotEmpty
+                                    ? NetworkImage(
+                                        userController.avatarUrl.value,
+                                      )
+                                    : null,
+                                child: userController.avatarUrl.value.isEmpty
+                                    ? const Icon(
+                                        Icons.person,
+                                        size: 32,
+                                        color: Colors.white,
+                                      )
+                                    : null,
                               ),
                             ),
 
@@ -124,7 +133,9 @@ class AppDrawer extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  userController.fullName.value.isNotEmpty ? userController.fullName.value : 'User',
+                                  userController.fullName.value.isNotEmpty
+                                      ? userController.fullName.value
+                                      : 'User',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
@@ -163,8 +174,6 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
 
-
-
             const SizedBox(height: 12),
 
             _DrawerItem(
@@ -181,7 +190,7 @@ class AppDrawer extends StatelessWidget {
 
             _DrawerItem(
               icon: Icons.analytics_outlined,
-              title: context.localization.analytics,
+              title: context.localization.analysis,
               iconSize: iconSize,
               textSize: textSize,
               padding: verticalPadding,
@@ -339,17 +348,29 @@ class _DrawerItem extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: AppColors.addButtonColor.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.addButtonColor.withValues(alpha: 0.9),
+                        AppColors.addButtonColor.withValues(alpha: 0.6),
+                      ],
+                    ),
+                    border: Border.all(color: AppColors.bannerBottomColor.withValues(alpha: 0.2)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.addButtonColor.withValues(alpha: 0.35),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
                   ),
-                  child: Icon(
-                    icon,
-                    size: iconSize,
-                    color: AppColors.addButtonColor,
-                  ),
+                  child: Icon(icon, size: 20, color: Colors.white),
                 ),
+
                 const SizedBox(width: 16),
                 Expanded(
                   child: Text(
