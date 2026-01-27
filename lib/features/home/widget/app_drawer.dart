@@ -2,6 +2,7 @@ import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_path.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/core/about/ui/widget/about_app.dart';
+import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/core/help/ui/widget/help_app.dart';
 import 'package:ay_bay_app/core/profile/controllers/user_controller.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
@@ -113,8 +114,8 @@ class AppDrawer extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Text(
-                                  'Welcome!',
+                                Text(
+                                  context.localization.welcome,
                                   style: TextStyle(
                                     color: Colors.white70,
                                     fontSize: 15,
@@ -168,7 +169,7 @@ class AppDrawer extends StatelessWidget {
 
             _DrawerItem(
               icon: Icons.person_2_outlined,
-              title: 'প্রোফাইল',
+              title: context.localization.profile,
               iconSize: iconSize,
               textSize: textSize,
               padding: verticalPadding,
@@ -180,7 +181,7 @@ class AppDrawer extends StatelessWidget {
 
             _DrawerItem(
               icon: Icons.analytics_outlined,
-              title: 'Analytics',
+              title: context.localization.analytics,
               iconSize: iconSize,
               textSize: textSize,
               padding: verticalPadding,
@@ -192,7 +193,7 @@ class AppDrawer extends StatelessWidget {
 
             _DrawerItem(
               icon: Icons.next_plan_outlined,
-              title: 'Budget Planner',
+              title: context.localization.budgetPlanner,
               iconSize: iconSize,
               textSize: textSize,
               padding: verticalPadding,
@@ -204,7 +205,7 @@ class AppDrawer extends StatelessWidget {
 
             _DrawerItem(
               icon: Icons.settings_outlined,
-              title: 'সেটিংস',
+              title: context.localization.setting,
               iconSize: iconSize,
               textSize: textSize,
               padding: verticalPadding,
@@ -216,7 +217,7 @@ class AppDrawer extends StatelessWidget {
 
             _DrawerItem(
               icon: Icons.info_outline,
-              title: 'About App',
+              title: context.localization.aboutApp,
               iconSize: iconSize,
               textSize: textSize,
               padding: verticalPadding,
@@ -227,7 +228,7 @@ class AppDrawer extends StatelessWidget {
             ),
             _DrawerItem(
               icon: Icons.help_outline_sharp,
-              title: 'Help / FAQ',
+              title: context.localization.help,
               iconSize: iconSize,
               textSize: textSize,
               padding: verticalPadding,
@@ -238,7 +239,7 @@ class AppDrawer extends StatelessWidget {
             ),
             _DrawerItem(
               icon: Icons.warning_amber_outlined,
-              title: 'Privacy Policy',
+              title: context.localization.privacyPolicy,
               iconSize: iconSize,
               textSize: textSize,
               padding: verticalPadding,
@@ -254,7 +255,7 @@ class AppDrawer extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Material(
-                color: Colors.red.withOpacity(0.08),
+                color: Colors.red.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(14),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(14),
@@ -282,8 +283,8 @@ class AppDrawer extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 16),
-                        const Text(
-                          'Log Out',
+                        Text(
+                          context.localization.logOut,
                           style: TextStyle(
                             color: Colors.red,
                             fontSize: 16,
@@ -340,7 +341,7 @@ class _DrawerItem extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.addButtonColor.withOpacity(0.12),
+                    color: AppColors.addButtonColor.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(

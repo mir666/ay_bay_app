@@ -1,5 +1,6 @@
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
+import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/features/auth/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -54,17 +55,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        Colors.white.withOpacity(0.4),
-                        Colors.white.withOpacity(0.15),
+                        Colors.white.withValues(alpha: 0.4),
+                        Colors.white.withValues(alpha: 0.15),
                       ],
                     ),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.35),
+                      color: Colors.white.withValues(alpha: 0.35),
                       width: 1.2,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.07),
+                        color: Colors.black.withValues(alpha: 0.07),
                         blurRadius: 30,
                         spreadRadius: 4,
                         offset: const Offset(0, 14),
@@ -75,19 +76,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       /// Title
-                      const Text(
-                        'নতুন একাউন্ট খুলুন',
+                      Text(
+                        context.localization.createNewAccount,
                         style: TextStyle(
-                          fontSize: 34,
+                          fontSize: 32,
                           fontWeight: FontWeight.w700,
                           fontFamily: 'HindSiliguri',
                           color: AppColors.loginTextButtonColor,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
 
                       Text(
-                        'নতুন একাউন্ট খুলুন আর হিসাব রাখুন আপনার টাকার। থাকুন চিন্তা মুক্ত।',
+                        context.localization.signUpIntro,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14,
@@ -100,7 +101,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                       _buildGlassField(
                         nameCtrl,
-                        'নাম',
+                        context.localization.name,
                         false,
                         Icons.person_outline,
                       ),
@@ -109,7 +110,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                       _buildGlassField(
                         phoneCtrl,
-                        'মোবাইল নাম্বার',
+                        context.localization.mobileNumber,
                         false,
                         Icons.phone_outlined,
                       ),
@@ -118,7 +119,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                       _buildGlassField(
                         passCtrl,
-                        'পাসওয়ার্ড',
+                        context.localization.password,
                         true,
                         Icons.lock_outline,
                       ),
@@ -147,11 +148,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                             ),
                             child: controller.isLoading.value
-                                ? const CircularProgressIndicator(
+                                ? CircularProgressIndicator(
                               color: Colors.white,
                             )
-                                : const Text(
-                              'একাউন্ট খুলুন',
+                                : Text(
+                              context.localization.createAccount,
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
@@ -168,14 +169,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'একাউন্ট আছে?',
+                            context.localization.haveAccount,
                             style: TextStyle(color: Colors.grey.shade700),
                           ),
                           TextButton(
                             onPressed: () =>
                                 Get.offAllNamed(AppRoutes.login),
                             child: Text(
-                              'লগ ইন',
+                              context.localization.logIn,
                               style: TextStyle(
                                 color: AppColors.loginTextButtonColor,
                                 fontWeight: FontWeight.bold,
@@ -210,7 +211,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         prefixIcon: Icon(icon, color: Colors.grey.shade400),
         labelText: label,
         filled: true,
-        fillColor: Colors.white.withOpacity(0.25),
+        fillColor: Colors.white.withValues(alpha: 0.25),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide(

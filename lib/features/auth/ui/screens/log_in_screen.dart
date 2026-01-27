@@ -1,5 +1,7 @@
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
+import 'package:ay_bay_app/core/extension/localization_extension.dart';
+import 'package:ay_bay_app/core/localization/ui/widget/language_toggle_button.dart';
 import 'package:ay_bay_app/features/auth/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -38,6 +40,14 @@ class _LogInScreenState extends State<LogInScreen> {
             ),
           ),
 
+
+          /// 🌐 Language Toggle
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 16,
+            right: 16,
+            child: LanguageToggleButton(),
+          ),
+
           /// 🧊 Premium Glass Card
           Center(
             child: ClipRRect(
@@ -54,17 +64,17 @@ class _LogInScreenState extends State<LogInScreen> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        Colors.white.withOpacity(0.45),
-                        Colors.white.withOpacity(0.18),
+                        Colors.white.withValues(alpha: 0.45),
+                        Colors.white.withValues(alpha: 0.18),
                       ],
                     ),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.35),
+                      color: Colors.white.withValues(alpha: 0.35),
                       width: 1.3,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.06),
+                        color: Colors.black.withValues(alpha: 0.06),
                         blurRadius: 32,
                         spreadRadius: 6,
                         offset: const Offset(0, 18),
@@ -75,8 +85,8 @@ class _LogInScreenState extends State<LogInScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       /// Title
-                      const Text(
-                        'লগ ইন',
+                      Text(
+                        context.localization.logIn,
                         style: TextStyle(
                           fontSize: 34,
                           fontWeight: FontWeight.w700,
@@ -88,7 +98,7 @@ class _LogInScreenState extends State<LogInScreen> {
                       const SizedBox(height: 14),
 
                       Text(
-                        'আপনার একাউন্টে ঢুকুন আর হিসাব রাখুন আপনার টাকার।',
+                        context.localization.logIntoYourAccount,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14,
@@ -101,7 +111,7 @@ class _LogInScreenState extends State<LogInScreen> {
 
                       _buildGlassField(
                         phoneCtrl,
-                        'মোবাইল নাম্বার',
+                        context.localization.mobileNumber,
                         false,
                         Icons.phone_outlined,
                       ),
@@ -110,7 +120,7 @@ class _LogInScreenState extends State<LogInScreen> {
 
                       _buildGlassField(
                         passCtrl,
-                        'পাসওয়ার্ড',
+                        context.localization.password,
                         true,
                         Icons.lock_outline,
                       ),
@@ -120,7 +130,7 @@ class _LogInScreenState extends State<LogInScreen> {
                         child: TextButton(
                           onPressed: () => Get.toNamed(AppRoutes.forget),
                           child: Text(
-                            'পাসওয়ার্ড ভুলে গেছেন?',
+                            context.localization.forgetPassword,
                             style: TextStyle(
                               color: AppColors.loginTextButtonColor,
                               fontWeight: FontWeight.w500,
@@ -129,7 +139,7 @@ class _LogInScreenState extends State<LogInScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
 
                       /// 🚀 Premium Button
                       Obx(
@@ -152,11 +162,11 @@ class _LogInScreenState extends State<LogInScreen> {
                               ),
                             ),
                             child: controller.isLoading.value
-                                ? const CircularProgressIndicator(
+                                ? CircularProgressIndicator(
                               color: Colors.white,
                             )
-                                : const Text(
-                              'এগিয়ে যান',
+                                : Text(
+                              context.localization.submit,
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
@@ -173,14 +183,14 @@ class _LogInScreenState extends State<LogInScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'নতুন একাউন্ট খুলতে চান?',
+                            context.localization.wantToOpenNewAccount,
                             style: TextStyle(color: Colors.grey.shade700),
                           ),
                           TextButton(
                             onPressed: () =>
                                 Get.offAllNamed(AppRoutes.signup),
                             child: Text(
-                              'সাইন আপ',
+                              context.localization.signUp,
                               style: TextStyle(
                                 color: AppColors.loginTextButtonColor,
                                 fontWeight: FontWeight.bold,

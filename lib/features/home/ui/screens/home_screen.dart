@@ -1,5 +1,6 @@
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
+import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/features/common/models/category_icon.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
@@ -145,15 +146,86 @@ class HomeScreen extends StatelessWidget {
                                   _deleteIcon(() {
                                     Get.defaultDialog(
                                       title: 'Confirm Delete',
-                                      middleText: '${m['month']} মাস ডিলিট করতে চাচ্ছো?',
-                                      textConfirm: 'হ্যাঁ',
-                                      textCancel: 'না',
-                                      confirmTextColor: Colors.white,
-                                      buttonColor: Colors.red,
-                                      onConfirm: () {
-                                        Get.back();
-                                        controller.deleteMonth(m['id'], m['month']);
-                                      },
+                                      backgroundColor: Colors.transparent, // Transparent background for card effect
+                                      barrierDismissible: true,
+                                      content: Container(
+                                        padding: const EdgeInsets.all(20),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(20),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black26,
+                                              blurRadius: 12,
+                                              offset: Offset(0, 6),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            // 🔹 Title
+                                            Text(
+                                              'Confirm Delete',
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 12),
+
+                                            // 🔹 Message
+                                            Text(
+                                              '${m['month']} মাস ডিলিট করতে চাচ্ছো?',
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 24),
+
+                                            // 🔹 Buttons
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: OutlinedButton(
+                                                    onPressed: () => Get.back(),
+                                                    style: OutlinedButton.styleFrom(
+                                                      side: const BorderSide(color: Colors.grey),
+                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                                    ),
+                                                    child: const Text(
+                                                      'না',
+                                                      style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    onPressed: () {
+                                                      Get.back();
+                                                      controller.deleteMonth(m['id'], m['month']);
+                                                    },
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor: Colors.redAccent,
+                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                                      elevation: 6,
+                                                    ),
+                                                    child: const Text(
+                                                      'হ্যাঁ',
+                                                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     );
                                   }),
                                 ],
@@ -216,7 +288,7 @@ class HomeScreen extends StatelessWidget {
                           DateFormat('dd MMM yyyy').format(trx.date),
                           style: const TextStyle(color: Colors.grey, fontSize: 12),
                         ),
-                        trailing: _buildTransactionAction(isIncome, trx, isSmall, controller),
+                        trailing: _buildTransactionAction(context,isIncome, trx, isSmall, controller),
                       ),
                     );
                   },
@@ -251,7 +323,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTransactionAction(bool isIncome, trx, bool isSmall, HomeController controller) {
+  Widget _buildTransactionAction(BuildContext context, bool isIncome, trx, bool isSmall, HomeController controller) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -260,6 +332,7 @@ class HomeScreen extends StatelessWidget {
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: isIncome ? Colors.green : Colors.red,
+            fontSize: 15,
           ),
         ),
         const SizedBox(width: 16),
@@ -271,17 +344,95 @@ class HomeScreen extends StatelessWidget {
         InkWell(
           onTap: () {
             Get.defaultDialog(
-              title: 'Confirm Delete',
-              middleText: 'এই ট্রানজেকশন ডিলিট করতে চাচ্ছো?',
-              textConfirm: 'হ্যাঁ',
-              textCancel: 'না',
-              confirmTextColor: Colors.white,
-              buttonColor: Colors.red,
-              onConfirm: () {
-                Get.back();
-                controller.deleteTransaction(trx.id);
-              },
+              title: '',
+              backgroundColor: Colors.transparent, // Transparent for card effect
+              barrierDismissible: true,
+              content: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // 🔹 Title
+                    Text(
+                      'Confirm Delete',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // 🔹 Message
+                    Text(
+                      context.localization.wantToDeleteTransaction,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // 🔹 Buttons
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Get.back(),
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Colors.grey),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                            child: Text(
+                              context.localization.no,
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Get.back();
+                              controller.deleteTransaction(trx.id);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.redAccent,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              elevation: 6,
+                            ),
+                            child: Text(
+                              context.localization.yes,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             );
+
           },
           child: const Icon(Icons.delete_outline, color: Colors.red),
         ),
