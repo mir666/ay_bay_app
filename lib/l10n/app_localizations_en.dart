@@ -89,7 +89,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile => 'Profile';
 
   @override
-  String get analytics => 'Analytics';
+  String get analysis => 'Analysis';
 
   @override
   String get budgetPlanner => 'Budget Planner';
@@ -199,4 +199,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noTransactions => 'No Transaction';
+
+  @override
+  String get monthlyAnalysis => 'Monthly Analysis';
 }

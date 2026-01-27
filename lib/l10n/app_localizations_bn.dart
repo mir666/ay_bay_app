@@ -89,7 +89,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get profile => 'প্রফাইল';
 
   @override
-  String get analytics => 'এনালাইটিক্স';
+  String get analysis => 'এনালাইসিস';
 
   @override
   String get budgetPlanner => 'বাজেট পরিকল্পনা';
@@ -198,4 +198,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get noTransactions => 'কোনো ট্রানজাকশন নেই';
+
+  @override
+  String get monthlyAnalysis => 'মাসের এনালাইসিস';
 }

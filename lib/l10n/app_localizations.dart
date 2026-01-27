@@ -254,11 +254,11 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get profile;
 
-  /// No description provided for @analytics.
+  /// No description provided for @analysis.
   ///
   /// In en, this message translates to:
-  /// **'Analytics'**
-  String get analytics;
+  /// **'Analysis'**
+  String get analysis;
 
   /// No description provided for @budgetPlanner.
   ///
@@ -475,6 +475,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No Transaction'**
   String get noTransactions;
+
+  /// No description provided for @monthlyAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Analysis'**
+  String get monthlyAnalysis;
 }
 
 class _AppLocalizationsDelegate

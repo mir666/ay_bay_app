@@ -190,7 +190,7 @@ class AppDrawer extends StatelessWidget {
 
             _DrawerItem(
               icon: Icons.analytics_outlined,
-              title: context.localization.analytics,
+              title: context.localization.analysis,
               iconSize: iconSize,
               textSize: textSize,
               padding: verticalPadding,
