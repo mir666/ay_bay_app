@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
+import 'package:ay_bay_app/core/localization/ui/widget/language_toggle_button.dart';
 import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
@@ -620,6 +621,9 @@ class _BalanceCardState extends State<BalanceCard> {
                       : Icons.search_outlined,
                   color: Colors.white,
                 ),
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.categoryTitleBgColor.withValues(alpha: 0.2),
+                ),
                 onPressed: () {
                   controller.isSearching.value
                       ? controller.closeSearch()
@@ -632,36 +636,101 @@ class _BalanceCardState extends State<BalanceCard> {
                 clipBehavior: Clip.none,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.notifications_outlined,
+                    icon: Icon(Icons.notifications_outlined,
                         color: Colors.white),
+                    style: IconButton.styleFrom(
+                      backgroundColor: AppColors.categoryTitleBgColor.withValues(alpha: 0.2),
+                    ),
                     onPressed: () async {
                       // Show notification dialog or screen
                       await showDialog(
                         context: context,
-                        builder: (_) => AlertDialog(
-                          title: Text(context.localization.notifications),
-                          content: SizedBox(
-                            width: double.maxFinite,
-                            child: Obx(() => ListView.builder(
-                              shrinkWrap: true,
-                              itemCount:
-                              notificationController.notifications.length,
-                              itemBuilder: (_, index) => ListTile(
-                                title: Text(notificationController
-                                    .notifications[index]),
-                              ),
-                            )),
+                        builder: (_) => Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                          actions: [
-                            TextButton(
-                                onPressed: () {
-                                  notificationController.markAllRead();
-                                  Navigator.pop(context);
-                                },
-                                child: Text(context.localization.makeAllAsRead)),
-                          ],
+                          backgroundColor: Colors.white,
+                          child: Container(
+                            constraints: const BoxConstraints(maxHeight: 400),
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                /// 🔹 Title
+                                Text(
+                                  context.localization.notifications,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+
+                                /// 🔹 Notification List
+                                Expanded(
+                                  child: Obx(() {
+                                    final list = notificationController.notifications;
+                                    if (list.isEmpty) {
+                                      return Center(
+                                        child: Text(
+                                          context.localization.noNotifications,
+                                          style: TextStyle(color: Colors.grey.shade500),
+                                        ),
+                                      );
+                                    }
+                                    return ListView.separated(
+                                      itemCount: list.length,
+                                      separatorBuilder: (_, __) => const Divider(height: 1),
+                                      itemBuilder: (_, index) => Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 12, horizontal: 8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade50,
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Text(
+                                          list[index],
+                                          style: const TextStyle(fontSize: 16),
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                ),
+                                const SizedBox(height: 16),
+
+                                /// 🔹 Action Button
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.loginTextButtonColor,
+                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      elevation: 4,
+                                    ),
+                                    onPressed: () {
+                                      notificationController.markAllRead();
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      context.localization.makeAllAsRead,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       );
+
                     },
                   ),
                   if (notificationController.unreadCount.value > 0)
@@ -680,9 +749,14 @@ class _BalanceCardState extends State<BalanceCard> {
                               color: Colors.white, fontSize: 12),
                         )),
                       ),
-                    )
+                    ),
+
                 ],
               )),
+              const SizedBox(width: 8),
+
+              // 🔹 Language Toggle Button
+              const LanguageToggleButton(),
             ],
           ),
         ],

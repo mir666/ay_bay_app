@@ -17,6 +17,7 @@
   "income": "Income",
   "expense": "Expense",
   "notifications": "Notifications",
+  "noNotifications": "No Notifications",
   "makeAllAsRead": "Mark all as read",
   "month": "Month",
   "openNewMonth": "Open new month",

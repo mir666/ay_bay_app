@@ -17,6 +17,7 @@
   "income": "আয়",
   "expense": "ব্যয়",
   "notifications": "নটিফিকেশন",
+  "noNotifications": "কোনো নোটিফিকেশন নেই",
   "makeAllAsRead": "সব পড়া হয়েছে হিসেবে চিহ্নিত করুন",
   "month": "মাস",
   "openNewMonth": "নতুন মাস খুলুন",

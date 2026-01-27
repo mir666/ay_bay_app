@@ -1,4 +1,5 @@
 import 'package:ay_bay_app/core/budget/controllers/budget_controller.dart';
+import 'package:ay_bay_app/core/localization/controllers/localization_controller.dart';
 import 'package:ay_bay_app/core/profile/controllers/user_controller.dart';
 import 'package:ay_bay_app/core/settings/controllers/change_password_contoller.dart';
 import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
@@ -17,5 +18,6 @@ class ControllerBinding extends Bindings {
     Get.put(UserController());
     Get.put(ChangePasswordController());
     Get.put(SettingsController());
+    Get.put(LocaleController());
   }
 }
