@@ -29,7 +29,7 @@ class AddTransactionController extends GetxController {
 
   final otherCategoryCtrl = TextEditingController();
 
-  final incomeCategories = const [
+  final incomeCategories = [
     CategoryModel(name: 'Salary', iconId: 0),
     CategoryModel(name: 'Gift', iconId: 1),
     CategoryModel(name: 'Tuition', iconId: 2),
@@ -38,7 +38,7 @@ class AddTransactionController extends GetxController {
     CategoryModel(name: 'Other', iconId: 5),
   ];
 
-  final expenseCategories = const [
+  final expenseCategories = [
     CategoryModel(name: 'Food', iconId: 10),
     CategoryModel(name: 'Transport', iconId: 11),
     CategoryModel(name: 'Shopping', iconId: 12),

@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
+import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
@@ -112,7 +113,7 @@ class _BalanceCardState extends State<BalanceCard> {
           borderRadius: BorderRadius.circular(16),
           color: Colors.white,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
+            constraints: BoxConstraints(
               maxHeight: 400, // পুরো suggestions area scrollable
             ),
             child: SingleChildScrollView(
@@ -121,7 +122,7 @@ class _BalanceCardState extends State<BalanceCard> {
                 children: [
                   /// Search Bar
                   Padding(
-                    padding: const EdgeInsets.all(12),
+                    padding: EdgeInsets.all(12),
                     child: TextField(
                       autofocus: true,
                       onChanged: controller.searchTransaction,
@@ -138,13 +139,13 @@ class _BalanceCardState extends State<BalanceCard> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: 12,
                             vertical: 4,
                           ),
                           child: Text(
-                            'মাস',
+                            context.localization.month,
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -240,8 +241,8 @@ class _BalanceCardState extends State<BalanceCard> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
-                                'মোট বাজেট',
+                              Text(
+                                context.localization.budget,
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.white,
@@ -293,8 +294,8 @@ class _BalanceCardState extends State<BalanceCard> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text(
-                              'ব্যালেন্স',
+                            Text(
+                              context.localization.balance,
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.white,
@@ -354,7 +355,7 @@ class _BalanceCardState extends State<BalanceCard> {
                       ),
                     ),
                     child: _item(
-                      'আয়',
+                      context.localization.income,
                       controller.income.value,
                       Colors.greenAccent,
                       Icons.trending_up, // 📈 like icon
@@ -376,7 +377,7 @@ class _BalanceCardState extends State<BalanceCard> {
                       ),
                     ),
                     child: _item(
-                      'ব্যয়',
+                      context.localization.expense,
                       controller.expense.value,
                       Colors.redAccent,
                       Icons.trending_down, // 📉 like icon
@@ -499,7 +500,7 @@ class _BalanceCardState extends State<BalanceCard> {
               value: safeSelectedMonth,
               hint: Text(
                 safeSelectedMonth == null
-                    ? 'মাস'
+                    ? context.localization.month
                     : '$safeSelectedMonth (${DateFormat('dd MMM').format(today)})',
                 style: const TextStyle(
                   color: Colors.white,
@@ -555,8 +556,8 @@ class _BalanceCardState extends State<BalanceCard> {
                       }
                     },
                     icon: const Icon(Icons.add, color: Colors.white),
-                    label: const Text(
-                      'নতুন মাস খুলুন',
+                    label: Text(
+                      context.localization.openNewMonth,
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -638,7 +639,7 @@ class _BalanceCardState extends State<BalanceCard> {
                       await showDialog(
                         context: context,
                         builder: (_) => AlertDialog(
-                          title: const Text('Notifications'),
+                          title: Text(context.localization.notifications),
                           content: SizedBox(
                             width: double.maxFinite,
                             child: Obx(() => ListView.builder(
@@ -657,7 +658,7 @@ class _BalanceCardState extends State<BalanceCard> {
                                   notificationController.markAllRead();
                                   Navigator.pop(context);
                                 },
-                                child: const Text('Mark all as read')),
+                                child: Text(context.localization.makeAllAsRead)),
                           ],
                         ),
                       );

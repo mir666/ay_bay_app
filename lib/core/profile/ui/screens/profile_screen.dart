@@ -1,4 +1,5 @@
 import 'package:ay_bay_app/app/app_colors.dart';
+import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,7 +21,7 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('প্রোফাইল', style: TextStyle(color: Colors.white)),
+        title: Text(context.localization.profile, style: TextStyle(color: Colors.white)),
         iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         backgroundColor: AppColors.loginTextButtonColor,

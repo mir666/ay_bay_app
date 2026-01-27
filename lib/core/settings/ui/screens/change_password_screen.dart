@@ -13,7 +13,8 @@ class ChangePasswordScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        title: const Text('Change Password'),
+        title: const Text('Change Password',style: TextStyle(color: Colors.white),),
+        iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         backgroundColor: AppColors.loginTextButtonColor,
         elevation: 0,
