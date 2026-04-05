@@ -43,7 +43,7 @@ class _AppLockScreenState extends State<AppLockScreen> {
       setState(() => isAuthenticating = true);
 
       bool didAuthenticate = await auth.authenticate(
-        localizedReason: 'Please authenticate to access the app');
+          localizedReason: 'Please authenticate to access the app');
 
       setState(() => isAuthenticating = false);
 

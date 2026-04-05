@@ -1,4 +1,4 @@
-import 'package:ay_bay_app/core/budget/controllers/budget_controller.dart';
+import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/features/common/models/category_model.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
@@ -11,7 +11,6 @@ import 'package:math_expressions/math_expressions.dart';
 
 class AddTransactionController extends GetxController {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-
 
   String? editingTransactionId;
 
@@ -30,25 +29,25 @@ class AddTransactionController extends GetxController {
   final otherCategoryCtrl = TextEditingController();
 
   final incomeCategories = [
-    CategoryModel(name: 'Salary', iconId: 0),
-    CategoryModel(name: 'Gift', iconId: 1),
-    CategoryModel(name: 'Tuition', iconId: 2),
-    CategoryModel(name: 'Bonuses', iconId: 3),
-    CategoryModel(name: 'Business income', iconId: 4),
-    CategoryModel(name: 'Other', iconId: 5),
+    CategoryModel(name: 'salary', iconId: 0, color: Colors.green),
+    CategoryModel(name: 'gift', iconId: 1, color: Colors.blue),
+    CategoryModel(name: 'tuition', iconId: 2, color: Colors.purple),
+    CategoryModel(name: 'bonus', iconId: 3, color: Colors.orange),
+    CategoryModel(name: 'business', iconId: 4, color: Colors.teal),
+    CategoryModel(name: 'other', iconId: 5, color: Colors.grey),
   ];
 
   final expenseCategories = [
-    CategoryModel(name: 'Food', iconId: 10),
-    CategoryModel(name: 'Transport', iconId: 11),
-    CategoryModel(name: 'Shopping', iconId: 12),
-    CategoryModel(name: 'Electric Bill', iconId: 13),
-    CategoryModel(name: 'Net Bill', iconId: 14),
-    CategoryModel(name: 'Gas Bill', iconId: 15),
-    CategoryModel(name: 'Bazaar', iconId: 16),
-    CategoryModel(name: 'Hospital', iconId: 17),
-    CategoryModel(name: 'School', iconId: 18),
-    CategoryModel(name: 'Other', iconId: 5),
+    CategoryModel(name: 'food', iconId: 10, color: Colors.red),
+    CategoryModel(name: 'transport', iconId: 11, color: Colors.brown),
+    CategoryModel(name: 'shopping', iconId: 12, color: Colors.pink),
+    CategoryModel(name: 'electric_bill', iconId: 13, color: Colors.yellow),
+    CategoryModel(name: 'net_bill', iconId: 14, color: Colors.indigo),
+    CategoryModel(name: 'gas_bill', iconId: 15, color: Colors.cyan),
+    CategoryModel(name: 'bazaar', iconId: 16, color: Colors.lime),
+    CategoryModel(name: 'hospital', iconId: 17, color: Colors.deepOrange),
+    CategoryModel(name: 'school', iconId: 18, color: Colors.lightBlue),
+    CategoryModel(name: 'other', iconId: 5, color: Colors.grey),
   ];
 
 
@@ -60,7 +59,9 @@ class AddTransactionController extends GetxController {
   void onAmountChanged(String input) {
     try {
       // math expression parse
-      final exp = input.replaceAll('×', '*').replaceAll('÷', '/'); // যদি ইউজার × ÷ use করে
+      final exp = input
+          .replaceAll('×', '*')
+          .replaceAll('÷', '/'); // যদি ইউজার × ÷ use করে
       ExpressionParser p = GrammarParser();
       Expression expression = p.parse(exp);
       double eval = expression.evaluate(EvaluationType.REAL, ContextModel());
@@ -96,7 +97,7 @@ class AddTransactionController extends GetxController {
   // 🔹 Save Transaction
   // =========================
 
-  Future<void> saveTransaction() async {
+  Future<void> saveTransaction(BuildContext context) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     final home = Get.find<HomeController>();
 
@@ -104,7 +105,32 @@ class AddTransactionController extends GetxController {
 
     final amount = calculatedAmount.value;
     if (amount <= 0) {
-      Get.snackbar('Error', 'সঠিক এমাউন্ট দিন');
+      Get.snackbar(
+        context.localization.error,
+        context.localization.enterTheCorrectAmount,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.transparent,
+        colorText: Colors.red,
+        barBlur: 0,
+        titleText: Text(
+          context.localization.error,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.red,
+            fontSize: 16,
+          ),
+        ),
+        messageText: Text(
+          context.localization.enterTheCorrectAmount,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: TextStyle(
+            fontWeight: FontWeight.w600, // বোল্ড
+            color: Colors.red,           // টেক্স কালার
+            fontSize: 16,
+          ),
+        ),
+      );
       return;
     }
 
@@ -113,7 +139,32 @@ class AddTransactionController extends GetxController {
     final selectedCat = selectedCategory.value;
 
     if (selectedCat == null) {
-      Get.snackbar('Error', 'একটি ক্যাটাগরি নির্বাচন করুন');
+      Get.snackbar(
+        context.localization.error,
+        context.localization.selectACategory,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.transparent,
+        colorText: Colors.red,
+        barBlur: 0,
+        titleText: Text(
+          context.localization.error,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.red,
+            fontSize: 16,
+          ),
+        ),
+        messageText: Text(
+          context.localization.selectACategory,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: TextStyle(
+            fontWeight: FontWeight.w600, // বোল্ড
+            color: Colors.red,           // টেক্স কালার
+            fontSize: 16,
+          ),
+        ),
+      );
       isLoading.value = false;
       return;
     }
@@ -123,11 +174,35 @@ class AddTransactionController extends GetxController {
         : selectedCat.name;
 
     if (categoryName.isEmpty) {
-      Get.snackbar('Error', 'ক্যাটাগরির নাম লিখুন');
+      Get.snackbar(
+        context.localization.error,
+        context.localization.writeACategoryName,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.transparent,
+        colorText: Colors.red,
+        barBlur: 0,
+        titleText: Text(
+          context.localization.error,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.red,
+            fontSize: 16,
+          ),
+        ),
+        messageText: Text(
+          context.localization.writeACategoryName,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: TextStyle(
+            fontWeight: FontWeight.w600, // বোল্ড
+            color: Colors.red,           // টেক্স কালার
+            fontSize: 16,
+          ),
+        ),
+      );
       isLoading.value = false;
       return;
     }
-
 
     try {
       final data = {
@@ -163,32 +238,63 @@ class AddTransactionController extends GetxController {
             .doc(uid)
             .collection('months')
             .doc(home.selectedMonthId.value)
-            .update({
-          'totalBalance': home.totalBalance.value,
-        });
+            .update({'totalBalance': home.totalBalance.value});
       }
-
 
       // 🔥 SAFE RELOAD (NO BUG)
       await home.fetchMonthSummary(home.selectedMonthId.value);
       home.setFilter('সব');
-      // 🔹 Update budget spent after adding transaction
-      // 🔹 Save transaction শেষে budget update
-      final budgetController = Get.find<BudgetController>();
-      budgetController.updateSpentForBudgets(home.selectedMonthId.value);
-
 
       Get.back();
       clearForm();
-      Get.snackbar('Success', 'লেনদেন সফলভাবে যোগ হয়েছে');
+      Get.snackbar(
+        context.localization.success,
+        context.localization.successfullyAddYourTransaction,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.transparent,
+        colorText: Colors.green,
+        barBlur: 0,
+        titleText: Text(
+          context.localization.success,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.green,
+            fontSize: 16,
+          ),
+        ),
+        messageText: Text(
+          context.localization.successfullyAddYourTransaction,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: TextStyle(
+            fontWeight: FontWeight.w600, // বোল্ড
+            color: Colors.green,           // টেক্স কালার
+            fontSize: 16,
+          ),
+        ),
+      );
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar(
+        context.localization.error,
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.red,
+        backgroundColor: Colors.transparent,
+        barBlur: 0,
+        titleText: Text(
+          context.localization.error,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.red,
+            fontSize: 16,
+          ),
+        ),
+      );
     } finally {
       isLoading.value = false;
     }
-
   }
-
 
   @override
   void onClose() {

@@ -43,10 +43,7 @@ class _AddMonthScreenState extends State<AddMonthScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
-            16,
-            24,
-            16,
-            24 + media.viewInsets.bottom,
+            16, 24, 16, 24 + media.viewInsets.bottom,
           ),
           child: Center(
             child: ConstrainedBox(
@@ -234,11 +231,12 @@ class _AddMonthScreenState extends State<AddMonthScreen> {
 
                       if (mode == 'NEW_MONTH') {
                         await controller.addMonth(
+                          context,
                           monthDate: selectedDate!,
                           openingBalance: amount,
                         );
                       } else {
-                        await controller.updateCurrentMonthBudget(amount);
+                        await controller.updateCurrentMonthBudget(context,amount);
                       }
 
                       controller.canAddTransaction.value = true;

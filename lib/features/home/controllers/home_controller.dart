@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/features/auth/ui/screens/log_in_screen.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/common/transaction/ui/screens/add_transaction_screen.dart';
@@ -55,6 +56,7 @@ class HomeController extends GetxController {
         _sendMonthlyExpenseNotification();
       }
     });
+    checkMonthlyExpenseNotification();
   }
 
   // 🔍 Search & Suggestions
@@ -228,7 +230,8 @@ class HomeController extends GetxController {
     expense.value = exp;
 
     // 🔥 আসল ব্যালেন্স লজিক
-    balance.value = totalBalance.value - exp;
+    totalBalance = totalBalance;
+    balance.value = inc - exp;
   }
 
   /// 📅 Month Listener
@@ -242,10 +245,10 @@ class HomeController extends GetxController {
         .orderBy('monthKey', descending: true)
         .snapshots()
         .listen((snapshot) {
-          months.value = snapshot.docs
-              .map((e) => {'id': e.id, ...e.data()})
-              .toList();
-        });
+      months.value = snapshot.docs
+          .map((e) => {'id': e.id, ...e.data()})
+          .toList();
+    });
   }
 
   Future<void> fetchTransactions(String monthId) async {
@@ -305,10 +308,11 @@ class HomeController extends GetxController {
     fetchTransactions(monthId);
   }
 
-  Future<void> addMonth({
-    required DateTime monthDate,
-    required double openingBalance,
-  }) async {
+  Future<void> addMonth(
+      BuildContext context, {
+        required DateTime monthDate,
+        required double openingBalance,
+      }) async {
     if (uid == null) return;
 
     final monthKey = DateFormat('yyyy-MM').format(monthDate);
@@ -326,10 +330,30 @@ class HomeController extends GetxController {
 
       if (existing.docs.isNotEmpty) {
         Get.snackbar(
-          'Already Exists',
-          'এই মাসের হিসাব ইতিমধ্যে খোলা আছে',
+          context.localization.alreadyExists,
+          context.localization.thisMonthAccountIsAlreadyOpen,
           colorText: Colors.red,
           backgroundColor: Colors.transparent,
+          snackPosition: SnackPosition.BOTTOM,
+          barBlur: 0,
+          titleText: Text(
+            context.localization.alreadyExists,
+            textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.red,
+              fontSize: 16,
+            ),
+          ),
+          messageText: Text(
+            context.localization.thisMonthAccountIsAlreadyOpen,
+            textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+            style: TextStyle(
+              fontWeight: FontWeight.w600, // বোল্ড
+              color: Colors.red, // টেক্স কালার
+              fontSize: 16,
+            ),
+          ),
         );
         return;
       }
@@ -351,13 +375,13 @@ class HomeController extends GetxController {
           .doc(uid)
           .collection('months')
           .add({
-            'month': monthName,
-            'monthKey': monthKey,
-            'opening': openingBalance,
-            'totalBalance': openingBalance,
-            'createdAt': Timestamp.now(),
-            'isActive': true,
-          });
+        'month': monthName,
+        'monthKey': monthKey,
+        'opening': openingBalance,
+        'totalBalance': openingBalance,
+        'createdAt': Timestamp.now(),
+        'isActive': true,
+      });
 
       // UI Update
       selectedMonth.value = monthName;
@@ -377,17 +401,57 @@ class HomeController extends GetxController {
       canAddTransaction.value = true;
       await fetchTransactions(docRef.id);
 
-      Get.snackbar('Success', 'নতুন মাস যোগ হয়েছে', colorText: Colors.green);
+      Get.snackbar(
+        context.localization.success,
+        context.localization.addANewMonth,
+        colorText: Colors.green,
+        snackPosition: SnackPosition.BOTTOM,
+        barBlur: 0,
+        titleText: Text(
+          context.localization.success,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.green,
+            fontSize: 16,
+          ),
+        ),
+        messageText: Text(
+          context.localization.addANewMonth,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: TextStyle(
+            fontWeight: FontWeight.w600, // বোল্ড
+            color: Colors.green,           // টেক্স কালার
+            fontSize: 16,
+          ),
+        ),
+      );
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar(
+        context.localization.error,
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        messageText: Text(
+          context.localization.error,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: TextStyle(
+            fontWeight: FontWeight.w600, // বোল্ড
+            color: Colors.red,           // টেক্স কালার
+            fontSize: 16,
+          ),
+        ),
+      );
     }
   }
 
-  Future<void> createNewMonth({
-    required DateTime monthDate,
-    required double openingBalance,
-  }) async {
+  Future<void> createNewMonth(
+      BuildContext context, {
+        required DateTime monthDate,
+      }) async {
+    if (uid == null) return;
+
     final monthKey = DateFormat('yyyy-MM').format(monthDate);
+    final monthName = DateFormat('MMMM yyyy').format(monthDate);
 
     // ❌ same month block
     final exists = await _db
@@ -400,51 +464,99 @@ class HomeController extends GetxController {
 
     if (exists.docs.isNotEmpty) {
       Get.snackbar(
-        'Error',
-        'এই মাসের হিসাব আগেই খোলা আছে',
+        context.localization.error,
+        context.localization.thisMonthAccountIsAlreadyOpen,
         colorText: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,
+        barBlur: 0,
+        messageText: Text(
+          context.localization.error,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: TextStyle(
+            fontWeight: FontWeight.w600, // বোল্ড
+            color: Colors.red,           // টেক্স কালার
+            fontSize: 16,
+          ),
+        ),
       );
       return;
     }
 
-    // deactivate old month
-    final active = await _db
+    // 🔹 Get previous month balance
+    double openingBalance = 0.0;
+    final prevMonthSnap = await _db
         .collection('users')
         .doc(uid)
         .collection('months')
-        .where('isActive', isEqualTo: true)
+        .orderBy('monthKey', descending: true)
+        .limit(1)
         .get();
 
-    for (var doc in active.docs) {
-      await doc.reference.update({'isActive': false});
+    if (prevMonthSnap.docs.isNotEmpty) {
+      final prev = prevMonthSnap.docs.first;
+      openingBalance = (prev['totalBalance'] ?? 0).toDouble();
+
+      // deactivate old month
+      await prev.reference.update({'isActive': false});
     }
 
-    // create new
+    // 🔹 Create new month with previous balance
     final doc = await _db
         .collection('users')
         .doc(uid)
         .collection('months')
         .add({
-          'monthKey': monthKey,
-          'opening': openingBalance,
-          'totalBalance': openingBalance,
-          'income': 0,
-          'expense': 0,
-          'createdAt': Timestamp.now(),
-          'isActive': true,
-        });
+      'monthKey': monthKey,
+      'month': monthName,
+      'opening': openingBalance,
+      'totalBalance': openingBalance,
+      'income': 0,
+      'expense': 0,
+      'createdAt': Timestamp.now(),
+      'isActive': true,
+    });
 
     // UI update
     selectedMonthId.value = doc.id;
+    selectedMonth.value = monthName;
     totalBalance.value = openingBalance;
     income.value = 0;
     expense.value = 0;
     balance.value = openingBalance;
 
     Get.back();
+    await fetchTransactions(doc.id);
+
+    Get.snackbar(
+      context.localization.success,
+      context.localization.addANewMonth,
+      snackPosition: SnackPosition.BOTTOM,
+      barBlur: 0,
+      titleText: Text(
+        context.localization.success,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          color: Colors.green,
+          fontSize: 16,
+        ),
+      ),
+      messageText: Text(
+        context.localization.addANewMonth,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: Colors.green,
+          fontSize: 16,
+        ),
+      ),
+    );
   }
 
-  Future<void> updateCurrentMonthBudget(double amount) async {
+  Future<void> updateCurrentMonthBudget(
+      BuildContext context,
+      double amount,
+      ) async {
     final monthId = selectedMonthId.value;
     if (monthId.isEmpty) return;
 
@@ -465,11 +577,38 @@ class HomeController extends GetxController {
     canAddTransaction.refresh();
 
     Get.back();
-    Get.snackbar('Success', 'মোট বাজেট আপডেট হয়েছে', colorText: Colors.green);
+    Get.snackbar(
+      context.localization.success,
+      context.localization.updateTotalBalance,
+      snackPosition: SnackPosition.BOTTOM,
+      barBlur: 0,
+      titleText: Text(
+        context.localization.success,
+        textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          color: Colors.green,
+          fontSize: 16,
+        ),
+      ),
+      messageText: Text(
+        context.localization.updateTotalBalance,
+        textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+        style: TextStyle(
+          fontWeight: FontWeight.w600, // বোল্ড
+          color: Colors.green,           // টেক্স কালার
+          fontSize: 16,
+        ),
+      ),
+    );
   }
 
   /// 🗑️ Delete Month
-  Future<void> deleteMonth(String monthId, String monthName) async {
+  Future<void> deleteMonth(
+      BuildContext context,
+      String monthId,
+      String monthName,
+      ) async {
     if (uid == null) return;
 
     try {
@@ -522,18 +661,48 @@ class HomeController extends GetxController {
       }
 
       Get.snackbar(
-        'Success',
-        '$monthName মাস মুছে দেওয়া হয়েছে',
-        colorText: Colors.green,
+        context.localization.success,
+        '$monthName ${context.localization.monthDeleted}',
         backgroundColor: Colors.transparent,
+        snackPosition: SnackPosition.BOTTOM,
+        barBlur: 0,
+        titleText: Text(
+          context.localization.success,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.green,
+            fontSize: 16,
+          ),
+        ),
+        messageText: Text(
+          context.localization.monthDeleted,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: TextStyle(
+            fontWeight: FontWeight.w600, // বোল্ড
+            color: Colors.green,           // টেক্স কালার
+            fontSize: 16,
+          ),
+        ),
       );
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar(context.localization.error, e.toString(), snackPosition: SnackPosition.BOTTOM,
+        barBlur: 0,
+        messageText: Text(
+          context.localization.error,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: TextStyle(
+            fontWeight: FontWeight.w600, // বোল্ড
+            color: Colors.red,           // টেক্স কালার
+            fontSize: 16,
+          ),
+        ),
+      );
     }
   }
 
   /// ⬅️ Previous Month
-  void goToPreviousMonth() {
+  void goToPreviousMonth(BuildContext context) {
     if (months.isEmpty || selectedMonthId.value.isEmpty) return;
 
     final index = months.indexWhere((m) => m['id'] == selectedMonthId.value);
@@ -545,16 +714,27 @@ class HomeController extends GetxController {
       selectMonth(months[index + 1]);
     } else {
       Get.snackbar(
-        'Info',
-        'আর আগের কোনো মাস নেই',
-        colorText: Colors.white,
+        context.localization.info,
+        context.localization.noMonth,
+        colorText: Colors.blueGrey,
         backgroundColor: Colors.transparent,
+        snackPosition: SnackPosition.BOTTOM,
+        barBlur: 0,
+        messageText: Text(
+          context.localization.noMonth,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: TextStyle(
+            fontWeight: FontWeight.w600, // বোল্ড
+            color: Colors.blueGrey, // টেক্স কালার
+            fontSize: 16,
+          ),
+        ),
       );
     }
   }
 
   /// ➡️ Next Month
-  void goToNextMonth() {
+  void goToNextMonth(BuildContext context) {
     if (months.isEmpty || selectedMonthId.value.isEmpty) return;
 
     final index = months.indexWhere((m) => m['id'] == selectedMonthId.value);
@@ -566,10 +746,21 @@ class HomeController extends GetxController {
       selectMonth(months[index - 1]);
     } else {
       Get.snackbar(
-        'Info',
-        'এটাই সর্বশেষ মাস',
+        context.localization.info,
+        context.localization.thisIsLastMonth,
         colorText: Colors.red,
         backgroundColor: Colors.transparent,
+        snackPosition: SnackPosition.BOTTOM,
+        barBlur: 0,
+        messageText: Text(
+          context.localization.thisIsLastMonth,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: TextStyle(
+            fontWeight: FontWeight.w600, // বোল্ড
+            color: Colors.red,           // টেক্স কালার
+            fontSize: 16,
+          ),
+        ),
       );
     }
   }
@@ -580,7 +771,7 @@ class HomeController extends GetxController {
   }
 
   /// 🗑️ Delete Transaction (100% Working)
-  Future<void> deleteTransaction(String id) async {
+  Future<void> deleteTransaction(BuildContext context, String id) async {
     if (uid == null || selectedMonthId.isEmpty) return;
 
     try {
@@ -597,13 +788,33 @@ class HomeController extends GetxController {
       fetchTransactions(selectedMonthId.value);
 
       Get.snackbar(
-        'Success',
-        'লেনদেন ডিলিট হয়েছে',
+        context.localization.success,
+        context.localization.deleteTheTransaction,
         colorText: Colors.green,
         backgroundColor: Colors.transparent,
+        snackPosition: SnackPosition.BOTTOM,
+        barBlur: 0,
+        titleText: Text(
+          context.localization.success,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.green,
+            fontSize: 16,
+          ),
+        ),
+        messageText: Text(
+          context.localization.deleteTheTransaction,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: TextStyle(
+            fontWeight: FontWeight.w600, // বোল্ড
+            color: Colors.green,           // টেক্স কালার
+            fontSize: 16,
+          ),
+        ),
       );
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
     }
   }
 
@@ -624,6 +835,7 @@ class HomeController extends GetxController {
         .get();
 
     DocumentReference monthRef;
+    double openingBalance = 0.0;
 
     if (existing.docs.isNotEmpty) {
       // ✅ Month already exists
@@ -631,31 +843,36 @@ class HomeController extends GetxController {
     } else {
       // 🆕 Create new month automatically
 
-      // 🔻 Deactivate previous active months
-      final activeMonths = await _db
+      // 🔻 Get previous month balance
+      final prevMonthSnap = await _db
           .collection('users')
           .doc(uid)
           .collection('months')
-          .where('isActive', isEqualTo: true)
+          .orderBy('monthKey', descending: true)
+          .limit(1)
           .get();
 
-      for (var doc in activeMonths.docs) {
-        await doc.reference.update({'isActive': false});
+      if (prevMonthSnap.docs.isNotEmpty) {
+        final prev = prevMonthSnap.docs.first;
+        openingBalance = (prev['totalBalance'] ?? 0).toDouble();
+
+        // Deactivate previous month
+        await prev.reference.update({'isActive': false});
       }
 
-      // 🔻 Create new month
+      // 🔻 Create new month with previous balance
       monthRef = await _db
           .collection('users')
           .doc(uid)
           .collection('months')
           .add({
-            'month': monthName,
-            'monthKey': monthKey,
-            'opening': 0.0,
-            'totalBalance': 0.0,
-            'createdAt': Timestamp.now(),
-            'isActive': true,
-          });
+        'month': monthName,
+        'monthKey': monthKey,
+        'opening': openingBalance,
+        'totalBalance': openingBalance,
+        'createdAt': Timestamp.now(),
+        'isActive': true,
+      });
     }
 
     // 🔥 Load month data
@@ -667,14 +884,13 @@ class HomeController extends GetxController {
 
     totalBalance.value = (snap['totalBalance'] ?? 0).toDouble();
 
-    // ✅ RESET dashboard (VERY IMPORTANT)
+    // ✅ RESET dashboard
     income.value = 0;
     expense.value = 0;
     balance.value = totalBalance.value;
 
     canAddTransaction.value = true;
     canAddTransaction.value = totalBalance.value > 0;
-
 
     // 🔄 Load transactions & calculate dashboard
     await fetchTransactions(monthRef.id);
@@ -684,16 +900,20 @@ class HomeController extends GetxController {
 
   double getMonthlyExpense(List<TransactionModel> data, DateTime month) {
     return data
-        .where((trx) =>
-    trx.type == TransactionType.expense &&
-        trx.date.month == month.month &&
-        trx.date.year == month.year)
+        .where(
+          (trx) =>
+      trx.type == TransactionType.expense &&
+          trx.date.month == month.month &&
+          trx.date.year == month.year,
+    )
         .fold(0.0, (sum, trx) => sum + trx.amount);
   }
 
   /// 📝 Decide notification message
   String getMonthlyNotificationMessage(
-      double currentMonthExpense, double previousMonthExpense) {
+      double currentMonthExpense,
+      double previousMonthExpense,
+      ) {
     if (currentMonthExpense > previousMonthExpense) {
       return "আপনার খরচ বেড়ে গেছে, হিসাব করে খরচ করুন";
     } else if (currentMonthExpense < previousMonthExpense) {
@@ -704,9 +924,9 @@ class HomeController extends GetxController {
   }
 
   /// 📝 Send notification locally
-  void sendMonthlyNotification(String message) {
+  void sendMonthlyNotification(String title, String message) {
     final notificationController = Get.find<NotificationController>();
-    notificationController.addNotification(message);
+    notificationController.addNotification(title, message);
 
     // Optionally: Use FirebaseMessaging or local notification plugin
     // Example: foreground push
@@ -715,14 +935,13 @@ class HomeController extends GetxController {
 
   Future<void> _sendMonthlyExpenseNotification() async {
     if (months.length < 2) return; // আগে মাসের data না থাকলে skip
-
     final notificationController = Get.find<NotificationController>();
 
-    // 🔹 চলতি মাস
     final currentMonthId = selectedMonthId.value;
     if (currentMonthId.isEmpty) return;
 
-    final currentMonthSnap = await _db
+    // 🔹 Current month expense
+    final currentSnap = await _db
         .collection('users')
         .doc(uid)
         .collection('months')
@@ -731,18 +950,17 @@ class HomeController extends GetxController {
         .get();
 
     double currentExpense = 0;
-    for (var trx in currentMonthSnap.docs) {
-      if (trx['type'] == 'expense') {
+    for (var trx in currentSnap.docs) {
+      if (trx['type'] == 'expense')
         currentExpense += (trx['amount'] ?? 0).toDouble();
-      }
     }
 
-    // 🔹 আগের মাস
+    // 🔹 Previous month expense
     final currentIndex = months.indexWhere((m) => m['id'] == currentMonthId);
-    if (currentIndex + 1 >= months.length) return; // কোনো previous month নাই
+    if (currentIndex + 1 >= months.length) return;
 
     final previousMonthId = months[currentIndex + 1]['id'];
-    final previousMonthSnap = await _db
+    final previousSnap = await _db
         .collection('users')
         .doc(uid)
         .collection('months')
@@ -751,29 +969,125 @@ class HomeController extends GetxController {
         .get();
 
     double previousExpense = 0;
-    for (var trx in previousMonthSnap.docs) {
-      if (trx['type'] == 'expense') {
+    for (var trx in previousSnap.docs) {
+      if (trx['type'] == 'expense')
         previousExpense += (trx['amount'] ?? 0).toDouble();
-      }
     }
 
     // 🔹 Decide message
-    final message =
-    getMonthlyNotificationMessage(currentExpense, previousExpense);
+    String message;
+    String title;
+    if (currentExpense > previousExpense) {
+      title = "";
+      message = "আপনার খরচ বেড়ে গেছে, হিসাব করে খরচ করুন";
+    } else if (currentExpense < previousExpense) {
+      title = "";
+      message = "খুব ভাল! আপনি সাশ্রয়ী হয়েছেন";
+    } else {
+      title = "";
+      message = "এই মাসের খরচ পূর্বের মাসের সমান";
+    }
 
-    // 🔹 Send
-    sendMonthlyNotification(message);
+    // 🔹 Add to NotificationController
+    notificationController.addNotification(title,message);
   }
 
 
+  double getMonthExpense(DateTime month) {
+    return transactions
+        .where(
+          (t) =>
+      t.type == TransactionType.expense &&
+          t.date.month == month.month &&
+          t.date.year == month.year,
+    )
+        .fold(0.0, (sum, t) => sum + t.amount);
+  }
+
+  bool isLastDayOfMonth(DateTime date) {
+    final nextDay = date.add(const Duration(days: 1));
+    return nextDay.month != date.month;
+  }
+
+  void checkMonthlyExpenseNotification() {
+    final now = DateTime.now();
+
+    if (!isLastDayOfMonth(now)) return;
+
+    final currentMonthExpense = getMonthExpense(now);
+
+    final previousMonth = DateTime(now.year, now.month - 1, 1);
+    final previousMonthExpense = getMonthExpense(previousMonth);
+
+    final notificationController = Get.find<NotificationController>();
+
+    /// 🔹 Month End Summary
+    notificationController.addNotification(
+      '',
+      'এই মাসে আপনার মোট খরচ হয়েছে ৳${currentMonthExpense.toInt()}',
+    );
+
+    /// 🔹 Compare
+    if (currentMonthExpense > previousMonthExpense) {
+      final diff = (currentMonthExpense - previousMonthExpense).toInt();
+
+      notificationController.addNotification(
+        '',
+        '⚠️ আগের মাসের তুলনায় এই মাসে খরচ বেড়েছে ৳$diff',
+      );
+    } else if (currentMonthExpense < previousMonthExpense) {
+      final diff = (previousMonthExpense - currentMonthExpense).toInt();
+
+      notificationController.addNotification(
+        '',
+        '✅ আগের মাসের তুলনায় এই মাসে খরচ কমেছে ৳$diff',
+      );
+    } else {
+      notificationController.addNotification(
+        '',
+        'ℹ️ আগের মাসের মতোই এই মাসে খরচ হয়েছে',
+      );
+    }
+  }
+
   /// 🚪 Logout
-  Future<void> logout() async {
+  Future<void> logout(BuildContext context) async {
     try {
       await _auth.signOut();
       Get.offAll(() => LogInScreen());
-      Get.snackbar('Success', 'Successfully logged out');
+      Get.snackbar(
+        context.localization.success,
+        context.localization.logout_success,
+        snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.green,
+        barBlur: 0,
+        titleText: Text(
+          context.localization.success,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.red,
+            fontSize: 16,
+          ),
+        ),
+      );
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar(
+        context.localization.error,
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.red,
+        barBlur: 0,
+        messageText: Text(
+          context.localization.error,
+          textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+          style: TextStyle(
+            fontWeight: FontWeight.w600, // বোল্ড
+            color: Colors.red,           // টেক্স কালার
+            fontSize: 16,
+          ),
+        ),
+      );
     }
   }
 }

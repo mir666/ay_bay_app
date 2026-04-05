@@ -1,7 +1,6 @@
-
-import 'package:ay_bay_app/app/app_config.dart';
 import 'package:ay_bay_app/app/app_path.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
+import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -58,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
               Wrap(
                 children: [
                   Text(
-                    'ভার্সন ${AppConfig.currentAppVersion}',
+                    '${context.localization.version} ${context.localization.versionNumber}',
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ],

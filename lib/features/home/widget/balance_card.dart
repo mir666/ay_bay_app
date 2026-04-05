@@ -4,6 +4,7 @@ import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/core/localization/ui/widget/language_toggle_button.dart';
 import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
+import 'package:ay_bay_app/core/utils/number_util.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:ay_bay_app/features/home/controllers/notification_controller.dart';
@@ -22,8 +23,16 @@ class BalanceCard extends StatefulWidget {
 }
 
 class _BalanceCardState extends State<BalanceCard> {
-
   final settingsController = Get.find<SettingsController>();
+  final controller = Get.find<HomeController>();
+  late String locale;
+
+  @override
+  void initState() {
+    super.initState();
+    locale = Get.locale?.languageCode ?? 'en'; // init once
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<HomeController>();
@@ -57,6 +66,7 @@ class _BalanceCardState extends State<BalanceCard> {
             ),
             child: Column(
               children: [
+                SizedBox(height: 48),
                 _buildHeaderProfileSection(context, controller),
 
                 const SizedBox(height: 6),
@@ -196,7 +206,10 @@ class _BalanceCardState extends State<BalanceCard> {
                                 : Colors.red,
                           ),
                           subtitle: Text(
-                            DateFormat('dd MMM yyyy').format(trx.date),
+                            DateFormat(
+                              'dd MMM yyyy',
+                              Get.locale?.languageCode,
+                            ).format(trx.date),
                           ),
                           trailing: Text('৳ ${trx.amount}'),
                           onTap: () {
@@ -232,64 +245,10 @@ class _BalanceCardState extends State<BalanceCard> {
               ),
             ),
             child: Obx(
-                  () => Row(
+              () => Row(
                 children: [
-                  /// 🔹 TOTAL BUDGET (conditional)
-                  if (controller.showTotalBudget.value)
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                context.localization.budget,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'HindSiliguri',
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-
-                              /// 👁 Toggle Button
-                              GestureDetector(
-                                onTap: () =>
-                                    controller.showTotalBudget.toggle(),
-                                child: const Icon(
-                                  Icons.visibility_off,
-                                  size: 18,
-                                  color: Colors.white70,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            '${controller.balance.value.toInt()} ${settingsController.defaultCurrency.value}',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                  /// Divider only when budget visible
-                  if (controller.showTotalBudget.value)
-                    Container(
-                      height: 50,
-                      width: 1,
-                      margin: const EdgeInsets.symmetric(horizontal: 12),
-                      color: AppColors.addButtonColor.withValues(alpha: 0.3),
-                    ),
-
                   /// 🔹 BALANCE (auto expand)
                   Expanded(
-                    flex: controller.showTotalBudget.value ? 1 : 2,
                     child: Column(
                       children: [
                         Row(
@@ -304,25 +263,17 @@ class _BalanceCardState extends State<BalanceCard> {
                                 fontFamily: 'HindSiliguri',
                               ),
                             ),
-
-                            /// 👁 Show button when hidden
-                            if (!controller.showTotalBudget.value) ...[
-                              const SizedBox(width: 6),
-                              GestureDetector(
-                                onTap: () =>
-                                    controller.showTotalBudget.toggle(),
-                                child: Icon(
-                                  Icons.visibility,
-                                  size: 18,
-                                  color: Colors.white70,
-                                ),
-                              ),
-                            ],
                           ],
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          '${controller.balance.value.toInt()} ${settingsController.defaultCurrency.value}',
+                          context.localization.balanceAmount.trParams({
+                            'balance': localizedNumber(
+                              controller.balance.value,
+                            ),
+                            'defaultCurrency':
+                                settingsController.defaultCurrency.value,
+                          }),
                           style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -335,7 +286,6 @@ class _BalanceCardState extends State<BalanceCard> {
                 ],
               ),
             ),
-
           ),
           SizedBox(height: 10),
           Obx(() {
@@ -415,7 +365,7 @@ class _BalanceCardState extends State<BalanceCard> {
         ),
         const SizedBox(height: 4),
         Text(
-          '${value.toStringAsFixed(0)} ${settingsController.defaultCurrency.value}',
+          '${localizedNumber(value)} ${settingsController.defaultCurrency.value}',
           style: const TextStyle(
             color: Colors.white70,
             fontSize: 16,
@@ -434,7 +384,7 @@ class _BalanceCardState extends State<BalanceCard> {
         children: [
           // Previous Month
           ElevatedButton(
-            onPressed: controller.goToPreviousMonth,
+            onPressed: () => controller.goToPreviousMonth(context),
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
               padding: const EdgeInsets.all(12),
@@ -455,7 +405,7 @@ class _BalanceCardState extends State<BalanceCard> {
 
           // Next Month
           ElevatedButton(
-            onPressed: controller.goToNextMonth,
+            onPressed: () => controller.goToNextMonth(context),
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
               padding: const EdgeInsets.all(12),
@@ -464,11 +414,7 @@ class _BalanceCardState extends State<BalanceCard> {
               ),
               elevation: 2,
             ),
-            child: const Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.white,
-              size: 16,
-            ),
+            child: Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
           ),
         ],
       ),
@@ -502,7 +448,8 @@ class _BalanceCardState extends State<BalanceCard> {
               hint: Text(
                 safeSelectedMonth == null
                     ? context.localization.month
-                    : '$safeSelectedMonth (${DateFormat('dd MMM').format(today)})',
+                    : _localizedMonth(safeSelectedMonth, today),
+                // <-- লোকালাইজড
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14,
@@ -526,11 +473,14 @@ class _BalanceCardState extends State<BalanceCard> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          m['month'],
+                          _localizedMonth(m['month'], today), // <-- লোকালাইজড
                           style: const TextStyle(color: Colors.white),
                         ),
                         Text(
-                          DateFormat('dd MMM').format(today),
+                          DateFormat(
+                            'dd MMM',
+                            Get.locale?.languageCode ?? 'en',
+                          ).format(today),
                           style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 14,
@@ -551,15 +501,13 @@ class _BalanceCardState extends State<BalanceCard> {
                       final result = await Get.toNamed(AppRoutes.addMonth);
                       if (result != null && result is Map<String, dynamic>) {
                         controller.selectMonth(result);
-
-                        // 🔹 নতুন মাস add করার পরে dropdown close
                         controller.isMonthDropdownOpen.value = false;
                       }
                     },
                     icon: const Icon(Icons.add, color: Colors.white),
                     label: Text(
                       context.localization.openNewMonth,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
@@ -570,12 +518,9 @@ class _BalanceCardState extends State<BalanceCard> {
                   (m) => m['month'] == monthName,
                 );
                 controller.selectMonth(month);
-
-                // 🔹 মাস select করার পরে dropdown close
                 controller.isMonthDropdownOpen.value = false;
               },
               onTap: () {
-                // 🔹 tap করলে dropdown toggle হবে
                 controller.isMonthDropdownOpen.value =
                     !controller.isMonthDropdownOpen.value;
               },
@@ -587,9 +532,9 @@ class _BalanceCardState extends State<BalanceCard> {
   }
 
   Widget _buildHeaderProfileSection(
-      BuildContext context,
-      HomeController controller,
-      ) {
+    BuildContext context,
+    HomeController controller,
+  ) {
     final notificationController = Get.put(NotificationController());
 
     return Padding(
@@ -607,7 +552,7 @@ class _BalanceCardState extends State<BalanceCard> {
                   body: SafeArea(child: AppDrawer()),
                 );
               },
-              icon: const Icon(Icons.person_2_outlined, color: Colors.white),
+              icon: const Icon(Icons.menu_rounded, color: Colors.white),
             ),
           ),
 
@@ -622,7 +567,9 @@ class _BalanceCardState extends State<BalanceCard> {
                   color: Colors.white,
                 ),
                 style: IconButton.styleFrom(
-                  backgroundColor: AppColors.categoryTitleBgColor.withValues(alpha: 0.2),
+                  backgroundColor: AppColors.categoryTitleBgColor.withValues(
+                    alpha: 0.2,
+                  ),
                 ),
                 onPressed: () {
                   controller.isSearching.value
@@ -632,127 +579,171 @@ class _BalanceCardState extends State<BalanceCard> {
               ),
 
               // 🔹 Notification Button with Badge
-              Obx(() => Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.notifications_outlined,
-                        color: Colors.white),
-                    style: IconButton.styleFrom(
-                      backgroundColor: AppColors.categoryTitleBgColor.withValues(alpha: 0.2),
-                    ),
-                    onPressed: () async {
-                      // Show notification dialog or screen
-                      await showDialog(
-                        context: context,
-                        builder: (_) => Dialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          backgroundColor: Colors.white,
-                          child: Container(
-                            constraints: const BoxConstraints(maxHeight: 400),
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                /// 🔹 Title
-                                Text(
-                                  context.localization.notifications,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
+              Obx(
+                () => Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    // 🔹 Notification Icon
+                    IconButton(
+                      icon: Icon(
+                        Icons.notifications_outlined,
+                        color: Colors.white,
+                      ),
+                      style: IconButton.styleFrom(
+                        backgroundColor: AppColors.categoryTitleBgColor
+                            .withValues(alpha: 0.2),
+                      ),
+                      onPressed: () async {
+                        await showDialog(
+                          context: context,
+                          builder: (_) => Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            backgroundColor: Colors.white,
+                            child: Container(
+                              constraints: const BoxConstraints(maxHeight: 400),
+                              padding: const EdgeInsets.all(20),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // 🔹 Title
+                                  Text(
+                                    context.localization.notifications,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 16),
+                                  const SizedBox(height: 16),
 
-                                /// 🔹 Notification List
-                                Expanded(
-                                  child: Obx(() {
-                                    final list = notificationController.notifications;
-                                    if (list.isEmpty) {
-                                      return Center(
-                                        child: Text(
-                                          context.localization.noNotifications,
-                                          style: TextStyle(color: Colors.grey.shade500),
-                                        ),
+                                  // 🔹 Notification List
+                                  Expanded(
+                                    child: Obx(() {
+                                      final list =
+                                          notificationController.notifications;
+
+                                      if (list.isEmpty) {
+                                        return Center(
+                                          child: Text(
+                                            context
+                                                .localization
+                                                .noNotifications,
+                                            style: TextStyle(
+                                              color: Colors.grey.shade500,
+                                            ),
+                                          ),
+                                        );
+                                      }
+
+                                      return ListView.separated(
+                                        itemCount: list.length,
+                                        separatorBuilder: (_, __) =>
+                                            const Divider(height: 1),
+                                        itemBuilder: (_, index) {
+                                          final notification = list[index];
+                                          return Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12,
+                                              horizontal: 8,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade50,
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  notification.title,
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  notification.body,
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
                                       );
-                                    }
-                                    return ListView.separated(
-                                      itemCount: list.length,
-                                      separatorBuilder: (_, __) => const Divider(height: 1),
-                                      itemBuilder: (_, index) => Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 12, horizontal: 8),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey.shade50,
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        child: Text(
-                                          list[index],
-                                          style: const TextStyle(fontSize: 16),
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                                ),
-                                const SizedBox(height: 16),
+                                    }),
+                                  ),
+                                  const SizedBox(height: 16),
 
-                                /// 🔹 Action Button
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.loginTextButtonColor,
-                                      padding: const EdgeInsets.symmetric(vertical: 14),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(14),
+                                  // 🔹 Action Button
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            AppColors.loginTextButtonColor,
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 14,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                        ),
+                                        elevation: 4,
                                       ),
-                                      elevation: 4,
-                                    ),
-                                    onPressed: () {
-                                      notificationController.markAllRead();
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text(
-                                      context.localization.makeAllAsRead,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white,
+                                      onPressed: () {
+                                        notificationController.markAllRead();
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text(
+                                        context.localization.makeAllAsRead,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+
+                    // 🔴 Unread dot
+                    if (notificationController.unreadCount.value > 0)
+                      Positioned(
+                        right: 4,
+                        top: 4,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Obx(
+                            () => Text(
+                              '${notificationController.unreadCount.value}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
                         ),
-                      );
-
-                    },
-                  ),
-                  if (notificationController.unreadCount.value > 0)
-                    Positioned(
-                      right: 4,
-                      top: 4,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Obx(() => Text(
-                          '${notificationController.unreadCount.value}',
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 12),
-                        )),
                       ),
-                    ),
-
-                ],
-              )),
+                  ],
+                ),
+              ),
               const SizedBox(width: 8),
 
               // 🔹 Language Toggle Button
@@ -762,5 +753,54 @@ class _BalanceCardState extends State<BalanceCard> {
         ],
       ),
     );
+  }
+
+  String _localizedMonth(String monthName, DateTime date) {
+    try {
+      final monthNumber = DateFormat('MMMM', 'en').parse(monthName).month;
+      final localizedDate = DateTime(date.year, monthNumber);
+      return DateFormat.yMMMM(
+        Get.locale?.languageCode ?? 'en',
+      ).format(localizedDate);
+    } catch (_) {
+      return monthName; // fallback
+    }
+  }
+
+  /// Convert month name (বাংলা/ইংরেজি) to 1-12 index
+  int _monthNameToIndex(String monthName) {
+    const monthsEn = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    const monthsBn = [
+      'জানুয়ারি',
+      'ফেব্রুয়ারি',
+      'মার্চ',
+      'এপ্রিল',
+      'মে',
+      'জুন',
+      'জুলাই',
+      'অগাস্ট',
+      'সেপ্টেম্বর',
+      'অক্টোবর',
+      'নভেম্বর',
+      'ডিসেম্বর',
+    ];
+
+    int index = monthsEn.indexOf(monthName);
+    if (index == -1) index = monthsBn.indexOf(monthName);
+    if (index == -1) throw 'Invalid month name: $monthName';
+    return index + 1; // 1-12
   }
 }

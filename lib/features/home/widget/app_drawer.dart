@@ -23,7 +23,7 @@ class AppDrawer extends StatelessWidget {
 
     final double headerHeight = isTablet ? 220 : isSmall ? 130 : 160;
     final double iconSize = isTablet ? 28 : isSmall ? 20 : 24;
-    final double textSize = isTablet ? 18 : isSmall ? 14 : 16;
+    final double textSize = isTablet ? 20 : isSmall ? 14 : 16;
     final double verticalPadding = isTablet ? 18 : isSmall ? 12 : 14;
 
     return SafeArea(
@@ -127,7 +127,7 @@ class AppDrawer extends StatelessWidget {
                                   context.localization.welcome,
                                   style: TextStyle(
                                     color: Colors.white70,
-                                    fontSize: 15,
+                                    fontSize: 18,
                                     letterSpacing: 0.6,
                                   ),
                                 ),
@@ -140,7 +140,7 @@ class AppDrawer extends StatelessWidget {
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     color: Colors.white,
-                                    fontSize: 22,
+                                    fontSize: 28,
                                     fontWeight: FontWeight.w700,
                                     letterSpacing: 0.3,
                                   ),
@@ -202,13 +202,13 @@ class AppDrawer extends StatelessWidget {
 
             _DrawerItem(
               icon: Icons.next_plan_outlined,
-              title: context.localization.budgetPlanner,
+              title: context.localization.loan,
               iconSize: iconSize,
               textSize: textSize,
               padding: verticalPadding,
               onTap: () {
                 Get.back();
-                Get.toNamed(AppRoutes.appBudget);
+                Get.toNamed(AppRoutes.appLoan);
               },
             ),
 
@@ -269,8 +269,122 @@ class AppDrawer extends StatelessWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(14),
                   onTap: () {
-                    Get.back();
-                    controller.logout();
+                    // 🔹 Show confirmation dialog
+                    Get.dialog(
+                      Dialog(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        elevation: 10,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // 🔹 Icon or illustration
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.logout,
+                                  color: Colors.red,
+                                  size: 40,
+                                ),
+                              ),
+                              SizedBox(height: 16),
+
+                              // 🔹 Title
+                              Text(
+                                context.localization.confirmLogout,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 12),
+
+                              // 🔹 Description
+                              Text(
+                                context.localization.wantToConfirmLogout,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black54,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 24),
+
+                              // 🔹 Buttons
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: OutlinedButton(
+                                      onPressed: () {
+                                        Get.back(); // Close dialog
+                                      },
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(
+                                          color: Colors.grey.shade400,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 14,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        context.localization.no,
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 16),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        Get.back(); // Close dialog
+                                        controller.logout(
+                                          context,
+                                        ); // Perform logout
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 14,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        context.localization.yes,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -294,7 +408,7 @@ class AppDrawer extends StatelessWidget {
                         const SizedBox(width: 16),
                         Text(
                           context.localization.logOut,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.red,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -359,7 +473,9 @@ class _DrawerItem extends StatelessWidget {
                         AppColors.addButtonColor.withValues(alpha: 0.6),
                       ],
                     ),
-                    border: Border.all(color: AppColors.bannerBottomColor.withValues(alpha: 0.2)),
+                    border: Border.all(
+                      color: AppColors.bannerBottomColor.withValues(alpha: 0.2),
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.addButtonColor.withValues(alpha: 0.35),

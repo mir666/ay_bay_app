@@ -1,5 +1,8 @@
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
+import 'package:ay_bay_app/core/utils/number_util.dart';
+import 'package:ay_bay_app/features/common/data/category_data.dart';
+import 'package:ay_bay_app/features/common/models/category_model.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,7 +19,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final isLandscape =
+    final _ =
         MediaQuery.of(context).orientation == Orientation.landscape;
 
     return Scaffold(
@@ -35,6 +38,43 @@ class ProfileScreen extends StatelessWidget {
 
               SizedBox(height: size.height * 0.02),
 
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _buildStatCard(
+                        title: context.localization.transactions,
+                        value: localizedNumber(homeController.allTransactions.length),
+                        icon: Icons.swap_horiz,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildStatCard(
+                        title: context.localization.income,
+                        value: localizedNumber(homeController.income.value),
+                        icon: Icons.trending_up,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildStatCard(
+                        title: context.localization.expense,
+                        value: localizedNumber(homeController.expense.value),
+                        icon: Icons.trending_down,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+
+              SizedBox(height: size.height * 0.035),
+              _buildCategoryColorLegend(),
+
+              SizedBox(height: size.height * 0.04),
+
               _buildMonthList(),
 
               SizedBox(height: size.height * 0.08),
@@ -47,15 +87,21 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  /// 🔹 প্রোফাইল হেডার
   Widget _buildProfileHeader(Size size) {
+    DateTime? firstTransactionDate;
+    if (homeController.allTransactions.isNotEmpty) {
+      firstTransactionDate = homeController.allTransactions
+          .map((e) => e.date) // ধরছি transaction এ date ফিল্ড আছে
+          .reduce((a, b) => a.isBefore(b) ? a : b);
+    }
+
     return Container(
       padding: EdgeInsets.symmetric(
         vertical: size.height * 0.035,
         horizontal: size.width * 0.04,
       ),
       decoration: const BoxDecoration(
-        color: AppColors.bannerBottomColor,
+        color: AppColors.loginTextButtonColor,
         boxShadow: [
           BoxShadow(
             color: AppColors.categoryShadowColor,
@@ -71,6 +117,7 @@ class ProfileScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
+          // Avatar
           CircleAvatar(
             radius: size.width * 0.09,
             backgroundColor: Colors.blueGrey.withValues(alpha: 0.3),
@@ -79,22 +126,26 @@ class ProfileScreen extends StatelessWidget {
                 : null,
             child: userController.avatarUrl.value.isEmpty
                 ? Text(
-                    userController.fullName.value.isNotEmpty
-                        ? userController.fullName.value[0]
-                        : '?',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: size.width * 0.085,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
+              userController.fullName.value.isNotEmpty
+                  ? userController.fullName.value[0]
+                  : '?',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: size.width * 0.085,
+                fontWeight: FontWeight.bold,
+              ),
+            )
                 : null,
           ),
+
           SizedBox(width: size.width * 0.04),
+
+          // User Info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Name
                 Text(
                   userController.fullName.value.isNotEmpty
                       ? userController.fullName.value
@@ -106,7 +157,10 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
+
                 SizedBox(height: size.height * 0.007),
+
+                // Phone
                 Text(
                   userController.phoneNumber.value.isNotEmpty
                       ? userController.phoneNumber.value
@@ -117,9 +171,33 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
+
+                SizedBox(height: size.height * 0.007),
+
+                // Member Since (সব ইউজারের জন্য)
+                if (userController.createdAt.value != null)
+                  Text(
+                    'Member since: ${userController.createdAt.value!.day}/${userController.createdAt.value!.month}/${userController.createdAt.value!.year}',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: size.width * 0.035,
+                    ),
+                  ),
+
+                // Transactions Since (শুধু প্রিমিয়ামের জন্য)
+                if (userController.isPremium.value && firstTransactionDate != null)
+                  Text(
+                    'Transactions since: ${firstTransactionDate.day}/${firstTransactionDate.month}/${firstTransactionDate.year}',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: size.width * 0.035,
+                    ),
+                  ),
               ],
             ),
           ),
+
+          // Edit Button
           Container(
             decoration: BoxDecoration(
               color: Colors.grey.withValues(alpha: 0.1),
@@ -135,6 +213,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+
   void _showEditProfileDialog() {
     final nameController = TextEditingController(
       text: userController.fullName.value,
@@ -149,12 +228,12 @@ class ProfileScreen extends StatelessWidget {
     nameController.addListener(() {
       hasChanged.value =
           nameController.text.trim() != userController.fullName.value ||
-          phoneController.text.trim() != userController.phoneNumber.value;
+              phoneController.text.trim() != userController.phoneNumber.value;
     });
     phoneController.addListener(() {
       hasChanged.value =
           nameController.text.trim() != userController.fullName.value ||
-          phoneController.text.trim() != userController.phoneNumber.value;
+              phoneController.text.trim() != userController.phoneNumber.value;
     });
 
     Get.dialog(
@@ -269,7 +348,7 @@ class ProfileScreen extends StatelessWidget {
 
                   // Buttons
                   Obx(
-                    () => Row(
+                        () => Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         // Cancel
@@ -304,33 +383,33 @@ class ProfileScreen extends StatelessWidget {
                           child: ElevatedButton(
                             onPressed: hasChanged.value
                                 ? () async {
-                                    final newName = nameController.text.trim();
-                                    final newPhone = phoneController.text
-                                        .trim();
+                              final newName = nameController.text.trim();
+                              final newPhone = phoneController.text
+                                  .trim();
 
-                                    if (newName.isEmpty || newPhone.isEmpty) {
-                                      Get.snackbar(
-                                        'Error',
-                                        'Name & Phone cannot be empty',
-                                        snackPosition: SnackPosition.BOTTOM,
-                                      );
-                                      return;
-                                    }
+                              if (newName.isEmpty || newPhone.isEmpty) {
+                                Get.snackbar(
+                                  'Error',
+                                  'Name & Phone cannot be empty',
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                                return;
+                              }
 
-                                    try {
-                                      await userController.updateProfile(
-                                        name: newName,
-                                        phone: newPhone,
-                                      );
-                                      if (Get.isDialogOpen!) Get.back();
-                                    } catch (e) {
-                                      Get.snackbar(
-                                        'Error',
-                                        e.toString(),
-                                        snackPosition: SnackPosition.BOTTOM,
-                                      );
-                                    }
-                                  }
+                              try {
+                                await userController.updateProfile(
+                                  name: newName,
+                                  phone: newPhone,
+                                );
+                                if (Get.isDialogOpen!) Get.back();
+                              } catch (e) {
+                                Get.snackbar(
+                                  'Error',
+                                  e.toString(),
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                              }
+                            }
                                 : null,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green, // সবসময় সবুজ
@@ -391,31 +470,31 @@ class ProfileScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: isSelected
                       ? const LinearGradient(
-                          colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        )
+                    colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
                       : LinearGradient(
-                          colors: [Colors.grey.shade200, Colors.grey.shade300],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
+                    colors: [Colors.grey.shade200, Colors.grey.shade300],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: isSelected
                       ? [
-                          BoxShadow(
-                            color: Colors.blueAccent.withOpacity(0.4),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ]
+                    BoxShadow(
+                      color: Colors.blueAccent.withValues(alpha: 0.4),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
                       : [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Center(
                   child: Text(
@@ -451,8 +530,9 @@ class ProfileScreen extends StatelessWidget {
       );
     }
 
-    // ===== Category-wise income
+    /// 🔹 Category-wise Income
     final Map<String, double> categoryIncome = {};
+
     for (var trx in homeController.allTransactions) {
       if (trx.type == TransactionType.income) {
         categoryIncome[trx.category] =
@@ -460,8 +540,13 @@ class ProfileScreen extends StatelessWidget {
       }
     }
 
+    if (categoryIncome.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     final categories = categoryIncome.keys.toList();
     final amounts = categoryIncome.values.toList();
+    final maxY = amounts.reduce((a, b) => a > b ? a : b);
 
     return SizedBox(
       height: size.height * 0.4,
@@ -470,63 +555,89 @@ class ProfileScreen extends StatelessWidget {
         elevation: 5,
         shadowColor: Colors.grey.withValues(alpha: 0.3),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           child: BarChart(
             BarChartData(
+              maxY: maxY * 1.2,
               alignment: BarChartAlignment.spaceAround,
-              maxY: amounts.isEmpty
-                  ? 0
-                  : amounts.reduce((a, b) => a > b ? a : b),
               borderData: FlBorderData(show: false),
+
+              /// 🔹 Grid
               gridData: FlGridData(
                 show: true,
                 drawVerticalLine: false,
+                horizontalInterval: maxY / 4,
                 getDrawingHorizontalLine: (value) => FlLine(
                   color: Colors.grey.withValues(alpha: 0.2),
                   strokeWidth: 1,
                 ),
               ),
+
+              /// 🔹 Titles
               titlesData: FlTitlesData(
-                bottomTitles: AxisTitles(
+                leftTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
                     reservedSize: 40,
+                    interval: maxY / 4,
+                  ),
+                ),
+                rightTitles:
+                AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles:
+                AxisTitles(sideTitles: SideTitles(showTitles: false)),
+
+                /// 🔻 Bottom: ONLY COLOR DOT
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 26,
                     getTitlesWidget: (value, meta) {
-                      if (value.toInt() < categories.length) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            categories[value.toInt()],
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                        );
+                      if (value.toInt() >= categories.length) {
+                        return const SizedBox.shrink();
                       }
-                      return const SizedBox.shrink();
+
+                      final category = categories[value.toInt()];
+                      final color = getCategoryColor(category);
+
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: color,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      );
                     },
                   ),
                 ),
-                rightTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-                topTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
               ),
-              barGroups: categoryIncome.entries.toList().asMap().entries.map((
-                e,
-              ) {
-                final index = e.key;
-                final entry = e.value;
+
+              /// 🔹 Bars
+              barGroups: categoryIncome.entries
+                  .toList()
+                  .asMap()
+                  .entries
+                  .map((entry) {
+                final index = entry.key;
+                final data = entry.value;
+                final barColor = getCategoryColor(data.key);
 
                 return BarChartGroupData(
                   x: index,
                   barRods: [
                     BarChartRodData(
-                      toY: entry.value,
+                      toY: data.value,
                       width: 22,
                       borderRadius: BorderRadius.circular(12),
                       gradient: LinearGradient(
-                        colors: [Colors.greenAccent.shade100, Colors.green],
+                        colors: [
+                          barColor.withValues(alpha: 0.4),
+                          barColor,
+                        ],
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
                       ),
@@ -534,9 +645,10 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 );
               }).toList(),
+
+              /// 🔹 Tooltip (name থাকবে)
               barTouchData: BarTouchData(
                 enabled: true,
-                handleBuiltInTouches: true,
                 touchTooltipData: BarTouchTooltipData(
                   getTooltipItem: (group, groupIndex, rod, rodIndex) {
                     final category = categories[group.x.toInt()];
@@ -559,4 +671,156 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
+
+  Color getCategoryColor(String name) {
+    final allCategories = [...incomeCategories, ...expenseCategories];
+    return allCategories
+        .firstWhere(
+          (cat) => cat.name == name,
+      orElse: () =>
+          CategoryModel(name: name, iconId: 0, color: Colors.grey),
+    )
+        .color;
+  }
+
+  Widget _buildCategoryColorLegend() {
+    final allCategories = [...incomeCategories];
+
+    return SizedBox(
+      height: 46,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: allCategories.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 12),
+        itemBuilder: (context, index) {
+          final category = allCategories[index];
+
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: category.color.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: category.color.withValues(alpha: 0.4),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 🔵 Color Dot
+                Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: category.color,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 8),
+
+                // 📝 Category Name
+                Text(
+                  category.name,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: category.color,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+
+  Widget _buildStatCard({
+    required String title,
+    required String value,
+    required IconData icon,
+  }) {
+    final isPressed = false.obs;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+
+        // Responsive sizing
+        final iconSize = width * 0.22; // ~28–32
+        final valueSize = width * 0.18; // ~16–18
+        final titleSize = width * 0.13; // ~12–14
+
+        return Obx(() {
+          return GestureDetector(
+            onTapDown: (_) => isPressed.value = true,
+            onTapUp: (_) => isPressed.value = false,
+            onTapCancel: () => isPressed.value = false,
+            child: AnimatedScale(
+              scale: isPressed.value ? 0.96 : 1,
+              duration: const Duration(milliseconds: 120),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.blue.shade400, Colors.blue.shade600],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: isPressed.value ? 8 : 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(width * 0.08),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(icon, color: Colors.white, size: iconSize),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      value,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: valueSize,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        fontSize: titleSize,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+      },
+    );
+  }
+
+
+
+
 }

@@ -1,9 +1,11 @@
 import 'package:ay_bay_app/app/app_colors.dart';
+import 'package:ay_bay_app/core/extension/category_localization_extension.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/features/common/models/category_icon.dart';
 import 'package:ay_bay_app/features/common/models/category_model.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/common/transaction/controllers/add_transaction_controller.dart';
+import 'package:ay_bay_app/features/common/transaction/ui/widget/calculator_keyboard.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,6 +24,8 @@ class AddTransactionScreen extends StatefulWidget {
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
   late final AddTransactionController controller;
   late final HomeController hController;
+  final locale = Get.locale?.languageCode ?? 'en';
+
 
   @override
   void initState() {
@@ -50,7 +54,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
     final cat = list.firstWhere(
           (c) => c.name == trx.category,
-      orElse: () => CategoryModel(name: 'Other', iconId: 5),
+      orElse: () => CategoryModel(name: 'Other', iconId: 5, color: Colors.grey),
     );
 
     controller.selectedCategory.value = cat;
@@ -94,10 +98,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               child: Center(
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    minHeight: height -
-                        kToolbarHeight -
-                        media.padding.top -
-                        media.padding.bottom,
+                    minHeight: height - kToolbarHeight - media.padding.top - media.padding.bottom,
                     maxWidth: 520, // tablet friendly
                   ),
                   child: Column(
@@ -124,7 +125,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
+                                color: Colors.black.withValues(alpha: 0.01),
                                 blurRadius: 12,
                                 offset: const Offset(0, 6),
                               ),
@@ -132,29 +133,48 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           ),
                           child: TextField(
                             controller: controller.amountCtrl,
-                            keyboardType: TextInputType.number,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            readOnly: true, // এটি VERY IMPORTANT, Flutter-এর ডিফল্ট keyboard বন্ধ করতে
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                             decoration: InputDecoration(
+                              labelText: context.localization.amountOfMoney,
                               filled: true,
                               fillColor: Colors.white,
-                              labelText: context.localization.amountOfMoney,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide.none,
                               ),
-                              suffixText:
-                              "৳ ${controller.calculatedAmount.value.toStringAsFixed(0)}",
-                              suffixStyle: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey.withValues(alpha: 0.15),
-                              ),
+                              suffixText: "৳ ${controller.calculatedAmount.value.toStringAsFixed(0)}",suffixStyle: TextStyle(color: Colors.grey.withValues(alpha: 0.4)),
                             ),
-                            onChanged: controller.onAmountChanged,
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (_) {
+                                  return CalculatorKeyboard(
+                                    onKeyTap: (key) {
+                                      if (key == '=') {
+                                        controller.onAmountChanged(controller.amountCtrl.text);
+                                      } else {
+                                        controller.amountCtrl.text += key;
+                                        controller.onAmountChanged(controller.amountCtrl.text);
+                                      }
+                                    },
+                                    onBackspace: () {
+                                      if (controller.amountCtrl.text.isNotEmpty) {
+                                        controller.amountCtrl.text =
+                                            controller.amountCtrl.text.substring(0, controller.amountCtrl.text.length - 1);
+                                        controller.onAmountChanged(controller.amountCtrl.text);
+                                      }
+                                    },
+                                    onClear: () {
+                                      controller.amountCtrl.clear();
+                                      controller.calculatedAmount.value = 0;
+                                    },
+                                  );
+                                },
+                              );
+                            },
                           ),
+
                         );
                       }),
                       const SizedBox(height: 16),
@@ -225,7 +245,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                             child: Obx(() {
                               return InkWell(
                                 onTap: () async {
-                                  final now = DateTime.now();
+                                  final _ = DateTime.now();
                                   final date = await showDatePicker(
                                     context: context,
                                     initialDate: controller.selectedDate.value,
@@ -277,7 +297,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        DateFormat('dd MMM yyyy').format(controller.selectedDate.value),
+                                        DateFormat('dd MMM yyyy',Get.locale?.languageCode).format(controller.selectedDate.value),
                                       ),
                                       Icon(Icons.calendar_today, size: 20),
 
@@ -309,10 +329,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const Padding(
+                            Padding(
                               padding: EdgeInsets.only(bottom: 12),
                               child: Text(
-                                'CATEGORY SELECT',
+                                context.localization.categorySelect,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1,
@@ -397,7 +417,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                               Container(
                                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                                                 child: Text(
-                                                  cat.name,
+                                                  cat.localizedName(context),
                                                   textAlign: TextAlign.center,
                                                   maxLines: 1,
                                                   overflow: TextOverflow.ellipsis,
@@ -421,7 +441,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
                             /// Smart Other Category Field
                             Obx(() {
-                              if (controller.selectedCategory.value?.name != 'Other') return const SizedBox.shrink();
+                              if (controller.selectedCategory.value?.name != 'other') return const SizedBox.shrink();
                               return AnimatedContainer(
                                 duration: const Duration(milliseconds: 300),
                                 curve: Curves.easeInOut,
@@ -432,7 +452,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                   decoration: InputDecoration(
                                     filled: true,
                                     fillColor: Colors.grey.shade100,
-                                    labelText: 'খরচের বর্ণনা লিখুন',
+                                    labelText: context.localization.category_describe_other,
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(16),
                                       borderSide: BorderSide.none,
@@ -452,9 +472,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       /// Save Button
                       Obx(() {
                         return GestureDetector(
-                          onTap: controller.isLoading.value
+                          onTap: () => controller.isLoading.value
                               ? null
-                              : controller.saveTransaction,
+                              : controller.saveTransaction(context),
                           child: Container(
                             height: 56,
                             decoration: BoxDecoration(
