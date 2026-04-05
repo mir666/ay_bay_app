@@ -1,4 +1,5 @@
 import 'package:ay_bay_app/app/app_colors.dart';
+import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -24,8 +25,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
         backgroundColor: AppColors.loginTextButtonColor,
-        title: const Text(
-          'Privacy Policy',
+        title: Text(
+          context.localization.privacyPolicy,
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -50,76 +51,76 @@ class PrivacyPolicyScreen extends StatelessWidget {
             children: [
               /// HEADER
               _header(
-                title: 'AyBay App Privacy Policy',
-                subtitle: 'Effective Date: January 2026',
+                title: context.localization.ayBayAppPrivacyPolicy,
+                subtitle: context.localization.effectiveDate,
               ),
 
               const SizedBox(height: 20),
 
               _section(
                 icon: Icons.info_outline,
-                title: 'Information We Collect',
+                title: context.localization.informationWeCollect,
                 content:
-                '• Full Name\n'
-                    '• Phone Number\n'
-                    '• Profile Picture (Avatar)\n'
-                    '• Email (for password reset via Firebase)\n'
-                    '• Transactions, categories, monthly records',
+                '${context.localization.readFullName}'
+                    '${context.localization.readPhoneNumber}'
+                    '${context.localization.readProfilePicture}'
+                    '${context.localization.readEmail}'
+                    '${context.localization.readTransactionsCategoriesMonthlyRecords}',
               ),
 
               _section(
                 icon: Icons.settings_outlined,
-                title: 'How We Use Your Information',
+                title: context.localization.howWeUseYourInformation,
                 content:
-                '• Account creation and login\n'
-                    '• Saving and retrieving transactions\n'
-                    '• Income & expense analysis\n'
-                    '• Monthly reports and summaries\n'
-                    '• Displaying your profile information',
+                '${context.localization.readAccountCreationAndLogin}'
+                    '${context.localization.readSavingAndRetrievingTransactions}'
+                    '${context.localization.incomeAndExpenseAnalysis}'
+                    '${context.localization.monthlyReportsAndSummaries}'
+                    '${context.localization.displayingYourProfileInformation}',
               ),
 
               _section(
                 icon: Icons.security_outlined,
-                title: 'Data Sharing & Security',
+                title: context.localization.dataSharingAndSecurity,
                 content:
-                '• We never share your data with third parties\n'
-                    '• Securely stored in Firebase Firestore\n'
-                    '• Accessible only by you via authentication\n'
-                    '• Encrypted using TLS/HTTPS and at rest',
+                '${context.localization.weNeverShareYourDataWithThirdParties}'
+                    '${context.localization.securelyStoredInFirebaseFirestore}'
+                    '${context.localization.accessibleOnlyByYouViaAuthentication}'
+                    '${context.localization.encryptedUsingAndAtRest}',
               ),
 
               _section(
                 icon: Icons.extension_outlined,
-                title: 'Third-Party Services',
+                title: context.localization.thirdPartyServices,
                 content:
-                '• Flutter packages for UI & charts\n'
-                    '• Firebase Authentication & Firestore\n'
-                    '• No third-party data collection without consent',
+                '${context.localization.flutterPackagesForUIAndCharts}'
+                    '${context.localization.firebaseAuthenticationFirestore}'
+                    '${context.localization.noThirdPartyDataCollectionWithoutConsent}',
               ),
 
               _section(
                 icon: Icons.person_outline,
-                title: 'User Control',
+                title: context.localization.userControl,
                 content:
-                '• Edit profile anytime\n'
-                    '• Add, update, or delete transactions\n'
-                    '• Your data always remains private',
+                '${context.localization.editProfileAnytime}'
+                    '${context.localization.addUpdateOrDeleteTransactions}'
+                    '${context.localization.yourDataAlwaysRemainsPrivate}',
               ),
 
               _section(
                 icon: Icons.download_outlined,
-                title: 'Downloads',
+                title: context.localization.downloads,
                 content:
-                '• Monthly reports can be downloaded\n'
-                    '• Reports include only your personal data',
+                '${context.localization.monthlyReportsCanBeDownloaded}'
+                    '${context.localization.reportsIncludeOnlyYourPersonalData}',
               ),
 
               _section(
                 icon: Icons.check_circle_outline,
-                title: 'Consent',
+                title: context.localization.consent,
                 content:
-                'By using AyBay App, you agree to this Privacy Policy.\n'
-                    'Minimum user age: 13+',
+                '${context.localization.byUsingAyBayAppYouAgreeToThisPrivacyPolicy}'
+                    '${context.localization.minimumUserAge}',
               ),
 
               const SizedBox(height: 16),
@@ -129,8 +130,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 text: TextSpan(
                   style: const TextStyle(fontSize: 14, color: Colors.black87),
                   children: [
-                    const TextSpan(
-                      text: 'Latest version available at:\n',
+                    TextSpan(
+                      text: context.localization.latestVersionAvailableAt,
                     ),
                     TextSpan(
                       text: policyURL,
@@ -153,17 +154,17 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color:
-                  Theme.of(context).primaryColor.withOpacity(0.08),
+                  Theme.of(context).primaryColor.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Row(
-                  children: const [
-                    Icon(Icons.email_outlined),
+                  children: [
+                    Icon(Icons.email_outlined,size: 20,),
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Contact: farhanaakter10506264robi@gmail.com',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        '${context.localization.contact} farhanaakter10506264robi@gmail.com',
+                        style: TextStyle(fontWeight: FontWeight.w600,fontSize: 13),
                       ),
                     ),
                   ],
@@ -172,9 +173,9 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              const Center(
+              Center(
                 child: Text(
-                  '© 2026 AyBay App',
+                  context.localization.copyright,
                   style: TextStyle(color: Colors.grey),
                 ),
               ),

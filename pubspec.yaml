@@ -38,6 +38,8 @@ dependencies:
   url_launcher: ^6.3.2
   flutter_localizations:
     sdk: flutter
+  flutter_local_notifications: ^20.0.0
+  android_alarm_manager_plus: ^5.0.0
 
 
 dev_dependencies:

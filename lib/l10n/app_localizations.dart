@@ -260,16 +260,16 @@ abstract class AppLocalizations {
   /// **'Analysis'**
   String get analysis;
 
-  /// No description provided for @budgetPlanner.
+  /// No description provided for @loan.
   ///
   /// In en, this message translates to:
-  /// **'Budget Planner'**
-  String get budgetPlanner;
+  /// **'Dues Summary'**
+  String get loan;
 
   /// No description provided for @setting.
   ///
   /// In en, this message translates to:
-  /// **'Setting'**
+  /// **'Settings'**
   String get setting;
 
   /// No description provided for @aboutApp.
@@ -281,7 +281,7 @@ abstract class AppLocalizations {
   /// No description provided for @help.
   ///
   /// In en, this message translates to:
-  /// **'Hele / FAQ'**
+  /// **'Help / FAQ'**
   String get help;
 
   /// No description provided for @privacyPolicy.
@@ -353,13 +353,13 @@ abstract class AppLocalizations {
   /// No description provided for @budgetUpdate.
   ///
   /// In en, this message translates to:
-  /// **'Budget Update'**
+  /// **'Balance Update'**
   String get budgetUpdate;
 
   /// No description provided for @monthlyBudget.
   ///
   /// In en, this message translates to:
-  /// **'Monthly Budget'**
+  /// **'Monthly Balance'**
   String get monthlyBudget;
 
   /// No description provided for @totalAmount.
@@ -473,7 +473,7 @@ abstract class AppLocalizations {
   /// No description provided for @noTransactions.
   ///
   /// In en, this message translates to:
-  /// **'No Transaction'**
+  /// **'No Transactions'**
   String get noTransactions;
 
   /// No description provided for @monthlyAnalysis.
@@ -481,6 +481,792 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Monthly Analysis'**
   String get monthlyAnalysis;
+
+  /// No description provided for @wantToDeleteMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to delete this month?'**
+  String get wantToDeleteMonth;
+
+  /// No description provided for @monthReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly report'**
+  String get monthReport;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get changePassword;
+
+  /// No description provided for @backUpData.
+  ///
+  /// In en, this message translates to:
+  /// **'Back Up Data'**
+  String get backUpData;
+
+  /// No description provided for @restoreData.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore Data'**
+  String get restoreData;
+
+  /// No description provided for @clearAllData.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All Data'**
+  String get clearAllData;
+
+  /// No description provided for @defaultCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Currency'**
+  String get defaultCurrency;
+
+  /// No description provided for @enableNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Notification'**
+  String get enableNotification;
+
+  /// No description provided for @enableAppLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable App Lock'**
+  String get enableAppLock;
+
+  /// No description provided for @sendFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Feedback'**
+  String get sendFeedback;
+
+  /// No description provided for @appVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'App Version'**
+  String get appVersion;
+
+  /// No description provided for @support.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get support;
+
+  /// No description provided for @security.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get security;
+
+  /// No description provided for @currencyAndBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency & Budget'**
+  String get currencyAndBudget;
+
+  /// No description provided for @dataAndBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Data & Backup'**
+  String get dataAndBackup;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @pleaseLogInFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in first!'**
+  String get pleaseLogInFirst;
+
+  /// No description provided for @appLock.
+  ///
+  /// In en, this message translates to:
+  /// **'App Lock'**
+  String get appLock;
+
+  /// No description provided for @appLockIsEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'App Lock is enabled'**
+  String get appLockIsEnabled;
+
+  /// No description provided for @appLockIsDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'App Lock is disabled'**
+  String get appLockIsDisabled;
+
+  /// No description provided for @selectMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Month'**
+  String get selectMonth;
+
+  /// No description provided for @noTransactionThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions this month'**
+  String get noTransactionThisMonth;
+
+  /// No description provided for @categoryWiseAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Category-wise Analysis'**
+  String get categoryWiseAnalysis;
+
+  /// No description provided for @ayBayApp.
+  ///
+  /// In en, this message translates to:
+  /// **'AyBay App'**
+  String get ayBayApp;
+
+  /// No description provided for @ayBayAppPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'AyBay App Privacy Policy'**
+  String get ayBayAppPrivacyPolicy;
+
+  /// No description provided for @effectiveDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Effective Date: January 2026'**
+  String get effectiveDate;
+
+  /// No description provided for @informationWeCollect.
+  ///
+  /// In en, this message translates to:
+  /// **'Information We Collect'**
+  String get informationWeCollect;
+
+  /// No description provided for @readFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'• Full Name\n'**
+  String get readFullName;
+
+  /// No description provided for @readPhoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'• Phone Number\n'**
+  String get readPhoneNumber;
+
+  /// No description provided for @readProfilePicture.
+  ///
+  /// In en, this message translates to:
+  /// **'• Profile Picture (Avatar)\n'**
+  String get readProfilePicture;
+
+  /// No description provided for @readEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'• Email (for password reset via Firebase)\n'**
+  String get readEmail;
+
+  /// No description provided for @readTransactionsCategoriesMonthlyRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'• Transactions, categories, monthly records'**
+  String get readTransactionsCategoriesMonthlyRecords;
+
+  /// No description provided for @howWeUseYourInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'How We Use Your Information'**
+  String get howWeUseYourInformation;
+
+  /// No description provided for @readAccountCreationAndLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'• Account creation and login\n'**
+  String get readAccountCreationAndLogin;
+
+  /// No description provided for @readSavingAndRetrievingTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'• Saving and retrieving transactions\n'**
+  String get readSavingAndRetrievingTransactions;
+
+  /// No description provided for @incomeAndExpenseAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'• Income & expense analysis\n'**
+  String get incomeAndExpenseAnalysis;
+
+  /// No description provided for @monthlyReportsAndSummaries.
+  ///
+  /// In en, this message translates to:
+  /// **'• Monthly reports and summaries\n'**
+  String get monthlyReportsAndSummaries;
+
+  /// No description provided for @displayingYourProfileInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'• Displaying your profile information'**
+  String get displayingYourProfileInformation;
+
+  /// No description provided for @dataSharingAndSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Sharing & Security'**
+  String get dataSharingAndSecurity;
+
+  /// No description provided for @weNeverShareYourDataWithThirdParties.
+  ///
+  /// In en, this message translates to:
+  /// **'• We never share your data with third parties\n'**
+  String get weNeverShareYourDataWithThirdParties;
+
+  /// No description provided for @securelyStoredInFirebaseFirestore.
+  ///
+  /// In en, this message translates to:
+  /// **'• Securely stored in Firebase Firestore\n'**
+  String get securelyStoredInFirebaseFirestore;
+
+  /// No description provided for @accessibleOnlyByYouViaAuthentication.
+  ///
+  /// In en, this message translates to:
+  /// **'• Accessible only by you via authentication\n'**
+  String get accessibleOnlyByYouViaAuthentication;
+
+  /// No description provided for @encryptedUsingAndAtRest.
+  ///
+  /// In en, this message translates to:
+  /// **'• Encrypted using TLS/HTTPS and at rest'**
+  String get encryptedUsingAndAtRest;
+
+  /// No description provided for @thirdPartyServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Third-Party Services'**
+  String get thirdPartyServices;
+
+  /// No description provided for @flutterPackagesForUIAndCharts.
+  ///
+  /// In en, this message translates to:
+  /// **'• Flutter packages for UI & charts\n'**
+  String get flutterPackagesForUIAndCharts;
+
+  /// No description provided for @firebaseAuthenticationFirestore.
+  ///
+  /// In en, this message translates to:
+  /// **'• Firebase Authentication & Firestore\n'**
+  String get firebaseAuthenticationFirestore;
+
+  /// No description provided for @noThirdPartyDataCollectionWithoutConsent.
+  ///
+  /// In en, this message translates to:
+  /// **'• No third-party data collection without consent'**
+  String get noThirdPartyDataCollectionWithoutConsent;
+
+  /// No description provided for @userControl.
+  ///
+  /// In en, this message translates to:
+  /// **'User Control'**
+  String get userControl;
+
+  /// No description provided for @editProfileAnytime.
+  ///
+  /// In en, this message translates to:
+  /// **'• Edit profile anytime\n'**
+  String get editProfileAnytime;
+
+  /// No description provided for @addUpdateOrDeleteTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'• Add, update, or delete transactions\n'**
+  String get addUpdateOrDeleteTransactions;
+
+  /// No description provided for @yourDataAlwaysRemainsPrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'• Your data always remains private'**
+  String get yourDataAlwaysRemainsPrivate;
+
+  /// No description provided for @downloads.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloads'**
+  String get downloads;
+
+  /// No description provided for @monthlyReportsCanBeDownloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'• Monthly reports can be downloaded\n'**
+  String get monthlyReportsCanBeDownloaded;
+
+  /// No description provided for @reportsIncludeOnlyYourPersonalData.
+  ///
+  /// In en, this message translates to:
+  /// **'• Reports include only your personal data'**
+  String get reportsIncludeOnlyYourPersonalData;
+
+  /// No description provided for @consent.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent'**
+  String get consent;
+
+  /// No description provided for @byUsingAyBayAppYouAgreeToThisPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'By using AyBay App, you agree to this Privacy Policy.\n'**
+  String get byUsingAyBayAppYouAgreeToThisPrivacyPolicy;
+
+  /// No description provided for @minimumUserAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum user age: 13+'**
+  String get minimumUserAge;
+
+  /// No description provided for @latestVersionAvailableAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest version available at:\n'**
+  String get latestVersionAvailableAt;
+
+  /// No description provided for @copyright.
+  ///
+  /// In en, this message translates to:
+  /// **'© 2026 AyBay App'**
+  String get copyright;
+
+  /// No description provided for @contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact:'**
+  String get contact;
+
+  /// No description provided for @aboutAppTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AyBay App'**
+  String get aboutAppTitle;
+
+  /// No description provided for @aboutAppDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'AyBay App helps you track your income and expenses, manage monthly budgets, and analyze your financial activities with clarity and confidence.'**
+  String get aboutAppDescription;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get version;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @readCopyright.
+  ///
+  /// In en, this message translates to:
+  /// **'© 2026 AyBay App\nAll rights reserved.'**
+  String get readCopyright;
+
+  /// No description provided for @helpFaqTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & FAQ'**
+  String get helpFaqTitle;
+
+  /// No description provided for @faqAddBudgetQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I add a budget?'**
+  String get faqAddBudgetQ;
+
+  /// No description provided for @faqAddBudgetA.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to the Home screen and tap the + button.\nAfter first sign up, start a new month and add a budget.'**
+  String get faqAddBudgetA;
+
+  /// No description provided for @faqAddTransactionQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I add a new transaction?'**
+  String get faqAddTransactionQ;
+
+  /// No description provided for @faqAddTransactionA.
+  ///
+  /// In en, this message translates to:
+  /// **'From the Home screen, tap the + button to add income or expense.'**
+  String get faqAddTransactionA;
+
+  /// No description provided for @faqMonthlyReportQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I view monthly reports?'**
+  String get faqMonthlyReportQ;
+
+  /// No description provided for @faqMonthlyReportA.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a month from the month list to view monthly summaries.'**
+  String get faqMonthlyReportA;
+
+  /// No description provided for @faqEditProfileQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I edit my profile?'**
+  String get faqEditProfileQ;
+
+  /// No description provided for @faqEditProfileA.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to the Profile screen and tap the Edit button.'**
+  String get faqEditProfileA;
+
+  /// No description provided for @faqDataSafeQ.
+  ///
+  /// In en, this message translates to:
+  /// **'Is my financial data safe?'**
+  String get faqDataSafeQ;
+
+  /// No description provided for @faqDataSafeA.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes. Your data is securely stored in Firebase and only accessible by you.'**
+  String get faqDataSafeA;
+
+  /// No description provided for @faqContactQ.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I contact support?'**
+  String get faqContactQ;
+
+  /// No description provided for @faqContactA.
+  ///
+  /// In en, this message translates to:
+  /// **'Email us at:\nfarhanaakter10506264robi@gmail.com'**
+  String get faqContactA;
+
+  /// No description provided for @category_salary.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary'**
+  String get category_salary;
+
+  /// No description provided for @category_gift.
+  ///
+  /// In en, this message translates to:
+  /// **'Gift'**
+  String get category_gift;
+
+  /// No description provided for @category_tuition.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuition'**
+  String get category_tuition;
+
+  /// No description provided for @category_bonus.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonuses'**
+  String get category_bonus;
+
+  /// No description provided for @category_business.
+  ///
+  /// In en, this message translates to:
+  /// **'Business Income'**
+  String get category_business;
+
+  /// No description provided for @category_food.
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get category_food;
+
+  /// No description provided for @category_transport.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport'**
+  String get category_transport;
+
+  /// No description provided for @category_shopping.
+  ///
+  /// In en, this message translates to:
+  /// **'Shopping'**
+  String get category_shopping;
+
+  /// No description provided for @category_electric_bill.
+  ///
+  /// In en, this message translates to:
+  /// **'Electric Bill'**
+  String get category_electric_bill;
+
+  /// No description provided for @category_net_bill.
+  ///
+  /// In en, this message translates to:
+  /// **'Net Bill'**
+  String get category_net_bill;
+
+  /// No description provided for @category_gas_bill.
+  ///
+  /// In en, this message translates to:
+  /// **'Gas Bill'**
+  String get category_gas_bill;
+
+  /// No description provided for @category_bazaar.
+  ///
+  /// In en, this message translates to:
+  /// **'Bazaar'**
+  String get category_bazaar;
+
+  /// No description provided for @category_hospital.
+  ///
+  /// In en, this message translates to:
+  /// **'Hospital'**
+  String get category_hospital;
+
+  /// No description provided for @category_school.
+  ///
+  /// In en, this message translates to:
+  /// **'School'**
+  String get category_school;
+
+  /// No description provided for @category_other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get category_other;
+
+  /// No description provided for @category_describe_other.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a description of the expense.'**
+  String get category_describe_other;
+
+  /// No description provided for @confirmDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Delete'**
+  String get confirmDelete;
+
+  /// No description provided for @versionNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'1.0.0'**
+  String get versionNumber;
+
+  /// No description provided for @personName.
+  ///
+  /// In en, this message translates to:
+  /// **'Person Name'**
+  String get personName;
+
+  /// No description provided for @debt.
+  ///
+  /// In en, this message translates to:
+  /// **'Payable'**
+  String get debt;
+
+  /// No description provided for @due.
+  ///
+  /// In en, this message translates to:
+  /// **'Receivable'**
+  String get due;
+
+  /// No description provided for @totalDebt.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Debt'**
+  String get totalDebt;
+
+  /// No description provided for @totalDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Due'**
+  String get totalDue;
+
+  /// No description provided for @editDebtDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Debt/Due'**
+  String get editDebtDue;
+
+  /// No description provided for @newDebtDue.
+  ///
+  /// In en, this message translates to:
+  /// **'New Debt/Due'**
+  String get newDebtDue;
+
+  /// No description provided for @noData.
+  ///
+  /// In en, this message translates to:
+  /// **'No Data'**
+  String get noData;
+
+  /// No description provided for @confirmToDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Delete'**
+  String get confirmToDelete;
+
+  /// No description provided for @wantToDeleteThisDebtDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Want to Delete Debt/Due?'**
+  String get wantToDeleteThisDebtDue;
+
+  /// No description provided for @saveMoney.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Money'**
+  String get saveMoney;
+
+  /// No description provided for @logout_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully logged out'**
+  String get logout_success;
+
+  /// No description provided for @success.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get success;
+
+  /// No description provided for @deleteTheTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete The Transaction'**
+  String get deleteTheTransaction;
+
+  /// No description provided for @thisIsLastMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This Is Last Month'**
+  String get thisIsLastMonth;
+
+  /// No description provided for @info.
+  ///
+  /// In en, this message translates to:
+  /// **''**
+  String get info;
+
+  /// No description provided for @noMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'No data for previous months'**
+  String get noMonth;
+
+  /// No description provided for @monthDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Month Deleted'**
+  String get monthDeleted;
+
+  /// No description provided for @updateTotalBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Total Balance'**
+  String get updateTotalBalance;
+
+  /// No description provided for @addANewMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Add A New Month'**
+  String get addANewMonth;
+
+  /// No description provided for @thisMonthAccountIsAlreadyOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'This month\'s account is already open'**
+  String get thisMonthAccountIsAlreadyOpen;
+
+  /// No description provided for @alreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Already Exists'**
+  String get alreadyExists;
+
+  /// No description provided for @categorySelect.
+  ///
+  /// In en, this message translates to:
+  /// **'CATEGORY SELECT'**
+  String get categorySelect;
+
+  /// No description provided for @enterTheCorrectAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the correct amount'**
+  String get enterTheCorrectAmount;
+
+  /// No description provided for @selectACategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select A Category'**
+  String get selectACategory;
+
+  /// No description provided for @writeACategoryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Write A Category Name'**
+  String get writeACategoryName;
+
+  /// No description provided for @successfullyAddYourTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction added successfully'**
+  String get successfullyAddYourTransaction;
+
+  /// No description provided for @onlyBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'@balance'**
+  String get onlyBalance;
+
+  /// No description provided for @onlySettingDefaultCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'@defaultCurrency'**
+  String get onlySettingDefaultCurrency;
+
+  /// No description provided for @balanceAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'@balance @defaultCurrency'**
+  String get balanceAmount;
+
+  /// No description provided for @incomeAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'@income @defaultCurrency'**
+  String get incomeAmount;
+
+  /// No description provided for @expenseAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'@expense @defaultCurrency'**
+  String get expenseAmount;
+
+  /// No description provided for @confirmLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Logout'**
+  String get confirmLogout;
+
+  /// No description provided for @wantToConfirmLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get wantToConfirmLogout;
+
+  /// No description provided for @transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get transactions;
 }
 
 class _AppLocalizationsDelegate

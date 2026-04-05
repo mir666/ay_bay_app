@@ -10,6 +10,10 @@ class UserController extends GetxController {
   var phoneNumber = ''.obs;
   var avatarUrl = ''.obs;
 
+  // নতুন ফিল্ড
+  var createdAt = Rxn<DateTime>(); // Nullable DateTime
+  var isPremium = false.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -30,16 +34,33 @@ class UserController extends GetxController {
       fullName.value = data?['name'] ?? '';
       phoneNumber.value = data?['phone'] ?? '';
       avatarUrl.value = data?['avatarUrl'] ?? '';
+
+      // Account creation date
+      if (data?['createdAt'] != null) {
+        createdAt.value = (data?['createdAt'] as Timestamp).toDate();
+      }
+
+      // Premium status
+      isPremium.value = data?['isPremium'] ?? false;
+
     } catch (e) {
       Get.snackbar('Error', 'Failed to load user data');
     }
   }
 
   /// Local state update
-  void setUser({required String name, required String phone, String? avatar}) {
+  void setUser({
+    required String name,
+    required String phone,
+    String? avatar,
+    DateTime? created,
+    bool? premium,
+  }) {
     fullName.value = name;
     phoneNumber.value = phone;
     if (avatar != null) avatarUrl.value = avatar;
+    if (created != null) createdAt.value = created;
+    if (premium != null) isPremium.value = premium;
   }
 
   /// Update profile in Firebase + local state
@@ -61,15 +82,10 @@ class UserController extends GetxController {
       // Update local state
       setUser(name: name, phone: phone, avatar: avatar);
 
-      // ✅ Success
       return true;
     } catch (e) {
       Get.snackbar('Error', e.toString());
       return false;
     }
   }
-
 }
-
-
-

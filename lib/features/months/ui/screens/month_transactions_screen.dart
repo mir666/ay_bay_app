@@ -1,7 +1,10 @@
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
+import 'package:ay_bay_app/core/extension/localization_extension.dart';
+import 'package:ay_bay_app/core/utils/number_util.dart';
 import 'package:ay_bay_app/features/common/models/category_icon.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
+import 'package:ay_bay_app/core/extension/transaction_category_localization.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -33,7 +36,7 @@ class MonthTransactionsScreen extends StatelessWidget {
         foregroundColor: Colors.black,
         centerTitle: true,
         title: Text(
-          '$monthName মাসের লেনদেন',
+          '$monthName ${context.localization.totalBudget}',
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -90,8 +93,9 @@ class MonthTransactionsScreen extends StatelessWidget {
         return Column(
           children: [
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 18),
+              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 18),
+              width: MediaQuery.sizeOf(context).width * 0.9,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -110,9 +114,9 @@ class MonthTransactionsScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+              child: Center(
                 child: _buildSummarySection(
+                  context,
                   controller,
                   totalIncome,
                   totalExpense,
@@ -142,48 +146,38 @@ class MonthTransactionsScreen extends StatelessWidget {
   }
 
   Widget _buildSummarySection(
-    HomeController controller,
-    double totalIncome,
-    double totalExpense,
-    double balance,
-  ) {
+      BuildContext context,
+      HomeController controller,
+      double totalIncome,
+      double totalExpense,
+      double balance,
+      ) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly, // <-- এটাই মূল
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _summaryTile('মোট বাজেট', controller.totalBalance.value, Colors.white),
-
-        Container(
-          width: 1,
-          height: 60, // responsive height
-          color: Colors.white,
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-        ),
-
-        _summaryTile('আয়', totalIncome, Colors.green),
-
-        Container(
-          width: 1,
-          height: 60,
-          color: Colors.white,
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-        ),
-
-        _summaryTile('ব্যয়', totalExpense, Colors.red),
-
-        Container(
-          width: 1,
-          height: 60,
-          color: Colors.white,
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-        ),
-
-        _summaryTile('সঞ্চয় টাকা', balance, Colors.white),
+        _summaryTile(context.localization.income, localizedNumber(totalIncome), Colors.green),
+        _verticalDivider(),
+        _summaryTile(context.localization.expense, localizedNumber(totalExpense), Colors.red),
+        _verticalDivider(),
+        _summaryTile(context.localization.saveMoney, localizedNumber(balance), Colors.white),
       ],
     );
   }
 
+  Widget _verticalDivider() {
+    return Container(
+      width: 1,
+      height: 60,
+      color: Colors.white.withOpacity(0.6),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+    );
+  }
+
+
   Widget _buildCard(TransactionModel trx, bool isIncome) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -212,16 +206,17 @@ class MonthTransactionsScreen extends StatelessWidget {
           ),
         ),
         title: Text(
-          trx.category,
+          trx.category.localizedName(), // এখন কাজ করবে
           style: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 15,
           ),
         ),
+
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4),
           child: Text(
-            DateFormat('dd MMM yyyy').format(trx.date),
+            DateFormat('dd MMM yyyy',Get.locale?.languageCode ?? 'en').format(trx.date),
             style: const TextStyle(
               fontSize: 12,
               color: Colors.black54,
@@ -229,11 +224,11 @@ class MonthTransactionsScreen extends StatelessWidget {
           ),
         ),
         trailing: Text(
-          '${isIncome ? '+' : '-'} ${trx.amount.toInt()} ৳',
+          '${isIncome ? '+' : '-'} ${localizedNumber(trx.amount)} ৳',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 15,
             color: isIncome ? Colors.green : Colors.red,
+            fontSize: 18,
           ),
         ),
       ),
@@ -241,7 +236,7 @@ class MonthTransactionsScreen extends StatelessWidget {
   }
 
 
-  Widget _summaryTile(String title, double amount, Color color) {
+  Widget _summaryTile(String title, String amount, Color color) {
     return Column(
       children: [
         Text(
@@ -254,7 +249,7 @@ class MonthTransactionsScreen extends StatelessWidget {
         ),
         SizedBox(height: 4),
         Text(
-          '${amount.toInt()} ৳',
+          '${amount} ৳',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,

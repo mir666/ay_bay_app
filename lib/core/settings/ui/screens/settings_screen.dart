@@ -1,5 +1,5 @@
 import 'package:ay_bay_app/app/app_colors.dart';
-import 'package:ay_bay_app/app/app_config.dart';
+import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/core/profile/ui/screens/profile_screen.dart';
 import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
 import 'package:ay_bay_app/core/profile/controllers/user_controller.dart';
@@ -30,7 +30,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings', style: TextStyle(color: Colors.white),),
+        title: Text(context.localization.setting, style: TextStyle(color: Colors.white),),
         iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         backgroundColor: AppColors.loginTextButtonColor,
@@ -69,30 +69,21 @@ class SettingsScreen extends StatelessWidget {
           _premiumCard(
             child: ListTile(
               leading: const Icon(Icons.lock, color: Colors.orangeAccent),
-              title: const Text('Change Password'),
+              title: Text(context.localization.changePassword),
               trailing: const Icon(Icons.arrow_forward_ios, size: 18),
               onTap: () => Get.to(() => ChangePasswordScreen()),
             ),
           ),
-          _premiumCard(
-            child: ListTile(
-              leading: const Icon(Icons.logout, color: Colors.redAccent),
-              title: const Text('Logout'),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 18),
-              onTap: () => homeController.logout(),
-            ),
-          ),
 
-          _buildSectionTitle('Data & Backup'),
+          _buildSectionTitle(context.localization.dataAndBackup),
           _premiumCard(
             child: ListTile(
               leading: const Icon(Icons.backup, color: Colors.blueAccent),
-              title: const Text('Backup Data'),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 18),
+              title: Text(context.localization.backUpData),
               onTap: () async {
                 final user = FirebaseAuth.instance.currentUser;
                 if (user == null) {
-                  Get.snackbar('Error', 'Please log in first!');
+                  Get.snackbar(context.localization.error, context.localization.pleaseLogInFirst);
                   return;
                 }
                 String userId = user.uid;
@@ -104,12 +95,11 @@ class SettingsScreen extends StatelessWidget {
           _premiumCard(
             child: ListTile(
               leading: const Icon(Icons.restore, color: Colors.greenAccent),
-              title: const Text('Restore Data'),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 18),
+              title: Text(context.localization.restoreData),
               onTap: () async {
                 final user = FirebaseAuth.instance.currentUser;
                 if (user == null) {
-                  Get.snackbar('Error', 'Please log in first!');
+                  Get.snackbar(context.localization.error, context.localization.pleaseLogInFirst);
                   return;
                 }
                 String userId = user.uid;
@@ -121,26 +111,25 @@ class SettingsScreen extends StatelessWidget {
           _premiumCard(
             child: ListTile(
               leading: const Icon(Icons.delete_forever, color: Colors.red),
-              title: const Text('Clear All Data'),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 18),
+              title: Text(context.localization.clearAllData),
               onTap: () async {
                 final user = FirebaseAuth.instance.currentUser;
                 if (user == null) {
-                  Get.snackbar('Error', 'Please log in first!');
+                  Get.snackbar(context.localization.error, context.localization.pleaseLogInFirst);
                   return;
                 }
-                String userId = user.uid;
+                String _ = user.uid;
                 await controller.clearLocalData();
               },
 
             ),
           ),
 
-          _buildSectionTitle('Currency & Budget'),
+          _buildSectionTitle(context.localization.currencyAndBudget),
           Obx(() => _premiumCard(
             child: ListTile(
               leading: const Icon(Icons.attach_money, color: Colors.green),
-              title: const Text('Default Currency'),
+              title: Text(context.localization.defaultCurrency),
               trailing: DropdownButton<String>(
                 value: controller.defaultCurrency.value,
                 items: ['৳', '\$', '€', '₹']
@@ -158,11 +147,11 @@ class SettingsScreen extends StatelessWidget {
 
 
 
-          _buildSectionTitle('Notifications'),
+          _buildSectionTitle(context.localization.notifications),
           Obx(
                 () => _premiumCard(
               child: SwitchListTile(
-                title: const Text('Enable Notifications'),
+                title: Text(context.localization.enableNotification),
                 value: controller.notificationsEnabled.value,
                 onChanged: (val) {
                   controller.notificationsEnabled.value = val;
@@ -173,11 +162,11 @@ class SettingsScreen extends StatelessWidget {
           ),
 
 
-          _buildSectionTitle('Security'),
+          _buildSectionTitle(context.localization.security),
           Obx(
                 () => _premiumCard(
               child: SwitchListTile(
-                title: const Text('Enable App Lock'),
+                title: Text(context.localization.enableAppLock),
                 value: controller.isAppLockEnabled.value,
                 onChanged: (val) {
                   controller.isAppLockEnabled.value = val;
@@ -191,11 +180,11 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
 
-          _buildSectionTitle('Support'),
+          _buildSectionTitle(context.localization.support),
           _premiumCard(
             child: ListTile(
               leading: const Icon(Icons.feedback, color: Colors.deepPurple),
-              title: const Text('Send Feedback'),
+              title: Text(context.localization.sendFeedback),
               trailing: const Icon(Icons.arrow_forward_ios, size: 18),
               onTap: () {},
             ),
@@ -203,8 +192,8 @@ class SettingsScreen extends StatelessWidget {
           _premiumCard(
             child: ListTile(
               leading: const Icon(Icons.info, color: Colors.blueAccent),
-              title: const Text('App Version'),
-              trailing: Text(AppConfig.currentAppVersion,
+              title: Text(context.localization.appVersion),
+              trailing: Text(context.localization.versionNumber,
                   style: const TextStyle(fontSize: 16)),
               onTap: () {},
             ),
