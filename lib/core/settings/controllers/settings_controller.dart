@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsController extends GetxController {
   RxBool notificationsEnabled = true.obs;
   RxString defaultCurrency = '৳'.obs;
   RxBool isAppLockEnabled = false.obs;
+  RxString appLockPassword = ''.obs;
+
 
   RxString fullName = ''.obs;
   RxString phoneNumber = ''.obs;
@@ -14,6 +17,8 @@ class SettingsController extends GetxController {
   Rx<DateTime> monthStartDate = DateTime.now().obs;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  final storage = GetStorage();
 
   @override
   void onInit() {
@@ -27,6 +32,7 @@ class SettingsController extends GetxController {
     notificationsEnabled.value = prefs.getBool('notificationsEnabled') ?? true;
     defaultCurrency.value = prefs.getString('defaultCurrency') ?? '৳';
     isAppLockEnabled.value = prefs.getBool('isAppLockEnabled') ?? false;
+    appLockPassword.value = storage.read('appLockPassword') ?? '';
 
     fullName.value = prefs.getString('fullName') ?? '';
     phoneNumber.value = prefs.getString('phoneNumber') ?? '';
@@ -42,6 +48,10 @@ class SettingsController extends GetxController {
     await prefs.setBool('notificationsEnabled', notificationsEnabled.value);
     await prefs.setString('defaultCurrency', defaultCurrency.value);
     await prefs.setBool('isAppLockEnabled', isAppLockEnabled.value);
+    storage.write('isAppLockEnabled', isAppLockEnabled.value);
+    storage.write('appLockPassword', appLockPassword.value);
+    storage.write('defaultCurrency', defaultCurrency.value);
+    storage.write('notificationsEnabled', notificationsEnabled.value);
 
     await prefs.setString('fullName', fullName.value);
     await prefs.setString('phoneNumber', phoneNumber.value);

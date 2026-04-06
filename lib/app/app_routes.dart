@@ -2,6 +2,8 @@ import 'package:ay_bay_app/core/analysis/ui/screens/analysis_screen.dart';
 import 'package:ay_bay_app/core/loan/ul/screens/debt_screen.dart';
 import 'package:ay_bay_app/core/privacy/ui/screens/privacy_policy.dart';
 import 'package:ay_bay_app/core/profile/ui/screens/profile_screen.dart';
+import 'package:ay_bay_app/core/settings/ui/screens/app_lock_middle_ware.dart';
+import 'package:ay_bay_app/core/settings/ui/screens/app_lock_screen.dart';
 import 'package:ay_bay_app/core/settings/ui/screens/settings_screen.dart';
 import 'package:ay_bay_app/features/auth/ui/screens/forget_password_screen.dart';
 import 'package:ay_bay_app/features/auth/ui/screens/log_in_screen.dart';
@@ -29,13 +31,14 @@ class AppRoutes {
   static const appBudget = '/app-budget';
   static const appPrivacy = '/app-privacy';
   static const appLoan = '/app-loan';
+  static const appLock = '/app-lock';
 
   static final pages = [
     GetPage(name: splash, page: () => SplashScreen()),
     GetPage(name: login, page: () => LogInScreen()),
     GetPage(name: signup, page: () => SignUpScreen()),
     GetPage(name: forget, page: () => ForgetPasswordScreen()),
-    GetPage(name: home, page: () => HomeScreen()),
+    GetPage(name: home, page: () => HomeScreen(),middlewares: [AppLockMiddleware()]),
     GetPage(name: addTransaction, page: () => AddTransactionScreen()),
     GetPage(name: addMonth, page: () => AddMonthScreen()),
     GetPage(name: monthTransactionSave, page: () => MonthTransactionsScreen(monthId: '', monthName: '',)),
@@ -44,5 +47,6 @@ class AppRoutes {
     GetPage(name: appAnalysis, page: () => AnalysisScreen()),
     GetPage(name: appPrivacy, page: () => PrivacyPolicyScreen()),
     GetPage(name: appLoan, page: () => DebtDueScreen()),
+    GetPage(name: appLock, page: () => AppLockScreen()),
   ];
 }

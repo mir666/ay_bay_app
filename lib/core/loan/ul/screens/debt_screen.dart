@@ -357,9 +357,8 @@ class _DebtDueScreenState extends State<DebtDueScreen> {
     final amountController = TextEditingController();
     final RxBool isOwe = true.obs;
 
-    // ডিফল্ট: আগামীদিন + 21:00
-    final Rx<DateTime> selectedDate = DateTime.now().add(Duration(days: 1)).obs;
-    final Rx<TimeOfDay> selectedTime = TimeOfDay(hour: 21, minute: 0).obs;
+    final Rx<DateTime> selectedDate = DateTime.now().add(const Duration(days: 1)).obs;
+    final Rx<TimeOfDay> selectedTime = const TimeOfDay(hour: 21, minute: 0).obs;
 
     showDialog(
       context: context,
@@ -372,157 +371,83 @@ class _DebtDueScreenState extends State<DebtDueScreen> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: .2),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 10))],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-
-              /// 🔹 Header
+              /// Header
               Row(
                 children: [
-                  Icon(Icons.account_balance_wallet, color: Colors.indigo),
-                  SizedBox(width: 8),
-                  Text(
-                    context.localization.newDebtDue,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  const Icon(Icons.account_balance_wallet, color: Colors.indigo),
+                  const SizedBox(width: 8),
+                  Text(context.localization.newDebtDue, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 ],
               ),
-
               const SizedBox(height: 20),
 
-              /// 🔹 Name
+              /// Name
               TextField(
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: context.localization.personName,
-                  prefixIcon: Icon(Icons.person_2_outlined, color: Colors.grey.withValues(alpha: 0.5)),
+                  prefixIcon: Icon(Icons.person_2_outlined, color: Colors.grey.withOpacity(0.5)),
                   filled: true,
                   fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide.none,
-                  ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
                 ),
               ),
-
               const SizedBox(height: 14),
 
-              /// 🔹 Amount
+              /// Amount
               TextField(
                 controller: amountController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: context.localization.money,
-                  prefixIcon: Icon(Icons.currency_exchange, color: Colors.grey.withValues(alpha: 0.5)),
+                  prefixIcon: Icon(Icons.currency_exchange, color: Colors.grey.withOpacity(0.5)),
                   filled: true,
                   fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide.none,
-                  ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
                 ),
               ),
-
               const SizedBox(height: 14),
 
-              /// 🔹 Date Picker
-              Obx(() => GestureDetector(
-                onTap: () async {
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: selectedDate.value,
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(Duration(days: 365)),
-                  );
-                  if (picked != null) selectedDate.value = picked;
-                },
-                child: _datePickerField(context, selectedDate.value, (_) {}),
-              )),
-
+              /// Date Picker
+              Obx(() => _datePickerField(context, selectedDate.value, (picked) { selectedDate.value = picked; })),
               const SizedBox(height: 14),
 
-              /// 🔹 Time Picker
+              /// Time Picker
               Obx(() => GestureDetector(
                 onTap: () async {
-                  final picked = await showTimePicker(
-                    context: context,
-                    initialTime: selectedTime.value,
-                  );
+                  final picked = await showTimePicker(context: context, initialTime: selectedTime.value);
                   if (picked != null) selectedTime.value = picked;
                 },
                 child: _timePickerField(context, selectedTime.value),
               )),
-
               const SizedBox(height: 14),
 
-              /// 🔹 Owe / Receive Toggle
-              Obx(() => Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Row(
-                  children: [
-                    _typeButton(
-                      title: context.localization.debt,
-                      selected: isOwe.value,
-                      color: Colors.redAccent,
-                      onTap: () => isOwe.value = true,
-                    ),
-                    _typeButton(
-                      title: context.localization.due,
-                      selected: !isOwe.value,
-                      color: Colors.green,
-                      onTap: () => isOwe.value = false,
-                    ),
-                  ],
-                ),
+              /// Owe / Receive Toggle
+              Obx(() => Row(
+                children: [
+                  _typeButton(title: context.localization.debt, selected: isOwe.value, color: Colors.redAccent, onTap: () => isOwe.value = true),
+                  _typeButton(title: context.localization.due, selected: !isOwe.value, color: Colors.green, onTap: () => isOwe.value = false),
+                ],
               )),
-
               const SizedBox(height: 26),
 
-              /// 🔹 Actions
+              /// Actions
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Get.back(),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      child: Text(context.localization.cancel, style: TextStyle(color: Colors.red)),
-                    ),
+                    child: OutlinedButton(onPressed: () => Get.back(), style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))), child: Text(context.localization.cancel, style: const TextStyle(color: Colors.red))),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.loginTextButtonColor,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        elevation: 8,
-                      ),
                       onPressed: () {
                         if (nameController.text.isEmpty || amountController.text.isEmpty) return;
 
-                        // 🔹 Combine date & time
                         final dueDateTime = DateTime(
                           selectedDate.value.year,
                           selectedDate.value.month,
@@ -531,23 +456,24 @@ class _DebtDueScreenState extends State<DebtDueScreen> {
                           selectedTime.value.minute,
                         );
 
-                        controller.addDebt(
-                          DebtModel(
-                            id: DateTime.now().millisecondsSinceEpoch.toString(),
-                            name: nameController.text.trim(),
-                            amount: double.tryParse(amountController.text) ?? 0,
-                            isOwe: isOwe.value,
-                            date: dueDateTime,
-                            dueDate: dueDateTime,
-                          ),
-                        );
+                        controller.addDebt(DebtModel(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          name: nameController.text.trim(),
+                          amount: double.tryParse(amountController.text) ?? 0,
+                          isOwe: isOwe.value,
+                          date: dueDateTime,
+                          dueDate: dueDateTime,
+                        ));
 
                         Get.back();
                       },
-                      child: Text(
-                        context.localization.save,
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.loginTextButtonColor,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        elevation: 8,
                       ),
+                      child: Text(context.localization.save, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                     ),
                   ),
                 ],
@@ -626,13 +552,11 @@ class _DebtDueScreenState extends State<DebtDueScreen> {
     final amountController = TextEditingController(text: debt.amount.toString());
     final RxBool isOwe = debt.isOwe.obs;
 
-    // ডিফল্ট তারিখ + সময়
     final Rx<DateTime> selectedDate = debt.dueDate.obs;
-    final Rx<TimeOfDay> selectedTime =
-        TimeOfDay.fromDateTime(debt.dueDate).obs;
+    final Rx<TimeOfDay> selectedTime = TimeOfDay.fromDateTime(debt.dueDate).obs;
 
     showDialog(
-      context: Get.context!,
+      context: context,
       barrierDismissible: true,
       builder: (_) => Dialog(
         backgroundColor: Colors.transparent,
@@ -642,145 +566,83 @@ class _DebtDueScreenState extends State<DebtDueScreen> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: .2),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 10))],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-
-              /// 🔹 Header
+              /// Header
               Row(
                 children: [
-                  Icon(Icons.edit, color: Colors.blueAccent),
-                  SizedBox(width: 8),
-                  Text(
-                    context.localization.editDebtDue,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
+                  const Icon(Icons.edit, color: Colors.blueAccent),
+                  const SizedBox(width: 8),
+                  Text(context.localization.editDebtDue, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 ],
               ),
-
               const SizedBox(height: 20),
 
-              /// 🔹 Name
+              /// Name
               TextField(
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: context.localization.personName,
-                  prefixIcon: Icon(Icons.person_2_outlined, color: Colors.grey.withValues(alpha: 0.5)),
+                  prefixIcon: Icon(Icons.person_2_outlined, color: Colors.grey.withOpacity(0.5)),
                   filled: true,
                   fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide.none,
-                  ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
                 ),
               ),
-
               const SizedBox(height: 14),
 
-              /// 🔹 Amount
+              /// Amount
               TextField(
                 controller: amountController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: context.localization.money,
-                  prefixIcon: Icon(Icons.currency_exchange, color: Colors.grey.withValues(alpha: 0.5)),
+                  prefixIcon: Icon(Icons.currency_exchange, color: Colors.grey.withOpacity(0.5)),
                   filled: true,
                   fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide.none,
-                  ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
                 ),
               ),
-
               const SizedBox(height: 14),
 
-              /// 🔹 Date Picker
-              Obx(() => _datePickerField(context, selectedDate.value, (picked) {
-                selectedDate.value = picked;
-              })),
-
+              /// Date Picker
+              Obx(() => _datePickerField(context, selectedDate.value, (picked) { selectedDate.value = picked; })),
               const SizedBox(height: 14),
 
-              /// 🔹 Time Picker
+              /// Time Picker
               Obx(() => GestureDetector(
                 onTap: () async {
-                  final picked = await showTimePicker(
-                    context: context,
-                    initialTime: selectedTime.value,
-                  );
+                  final picked = await showTimePicker(context: context, initialTime: selectedTime.value);
                   if (picked != null) selectedTime.value = picked;
                 },
                 child: _timePickerField(context, selectedTime.value),
               )),
-
               const SizedBox(height: 14),
 
-              /// 🔹 Owe / Receive Toggle
-              Obx(() => Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Row(
-                  children: [
-                    _typeButton(
-                      title: context.localization.debt,
-                      selected: isOwe.value,
-                      color: Colors.redAccent,
-                      onTap: () => isOwe.value = true,
-                    ),
-                    _typeButton(
-                      title: context.localization.due,
-                      selected: !isOwe.value,
-                      color: Colors.green,
-                      onTap: () => isOwe.value = false,
-                    ),
-                  ],
-                ),
+              /// Owe / Receive Toggle
+              Obx(() => Row(
+                children: [
+                  _typeButton(title: context.localization.debt, selected: isOwe.value, color: Colors.redAccent, onTap: () => isOwe.value = true),
+                  _typeButton(title: context.localization.due, selected: !isOwe.value, color: Colors.green, onTap: () => isOwe.value = false),
+                ],
               )),
-
               const SizedBox(height: 26),
 
-              /// 🔹 Actions
+              /// Actions
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Get.back(),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      child: Text(context.localization.cancel, style: TextStyle(color: Colors.red)),
-                    ),
+                    child: OutlinedButton(onPressed: () => Get.back(), style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))), child: Text(context.localization.cancel, style: const TextStyle(color: Colors.red))),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.loginTextButtonColor,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        elevation: 8,
-                      ),
                       onPressed: () {
                         if (nameController.text.isEmpty || amountController.text.isEmpty) return;
 
-                        // 🔹 Combine date + time
                         final updatedDateTime = DateTime(
                           selectedDate.value.year,
                           selectedDate.value.month,
@@ -799,13 +661,11 @@ class _DebtDueScreenState extends State<DebtDueScreen> {
                           dueDate: updatedDateTime,
                         );
 
-                        controller.updateDebt(updatedDebt); // 🔹 এখানে নোটিফিকেশন reschedule হবে
+                        controller.updateDebt(updatedDebt); // 🔹 এখানে notification reschedule হবে
                         Get.back();
                       },
-                      child: Text(
-                        context.localization.save,
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-                      ),
+                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.loginTextButtonColor, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 8),
+                      child: Text(context.localization.save, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                     ),
                   ),
                 ],
