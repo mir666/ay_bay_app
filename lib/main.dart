@@ -9,12 +9,26 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'core/localization/controllers/localization_controller.dart';
 
-// 🔹 Background FCM handler
+// =============================================================
+//  Background FCM Handler
+// =============================================================
+
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  final title = message.notification?.title ?? 'নতুন নোটিফিকেশন';
-  final body = message.notification?.body ?? '';
+
+  String title = 'নতুন নোটিফিকেশন';
+  String body = '';
+
+  if (message.notification != null) {
+    title = message.notification!.title ?? title;
+    body = message.notification!.body ?? body;
+  }
+
+  if (message.data.isNotEmpty) {
+    title = message.data['title'] ?? title;
+    body = message.data['body'] ?? body;
+  }
 
   await NotificationService.showNotification(
     id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
@@ -23,62 +37,118 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   );
 }
 
+// =============================================================
+//  Main Entry Point
+// =============================================================
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
   await Firebase.initializeApp();
+
+  // Initialize local storage
   await GetStorage.init();
+
+  // Localization controller
   Get.put(LocaleController());
 
   // Initialize notification service
   await NotificationService.init();
 
-  // Request iOS permissions
+  // Request notification permissions (Android 13+ & iOS)
   await FirebaseMessaging.instance.requestPermission(
     alert: true,
     badge: true,
     sound: true,
   );
 
-  // Device FCM token
+  // Register background handler (must be before runApp)
+  FirebaseMessaging.onBackgroundMessage(
+    _firebaseMessagingBackgroundHandler,
+  );
+
+  // Get FCM token (for testing / backend registration)
   String? token = await FirebaseMessaging.instance.getToken();
-  if (kDebugMode) print('Device FCM Token: $token');
+  if (kDebugMode) {
+    print('Device FCM Token: $token');
+  }
 
-  // Initialize GetX notification controller
-  final notificationController = Get.put(NotificationController());
+  // Initialize notification controller
+  final notificationController = Get.put(
+    NotificationController(),
+  );
 
-  // Foreground messages
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-    final title = message.notification?.title ?? 'নতুন নোটিফিকেশন';
-    final body = message.notification?.body ?? '';
+  // =============================================================
+  //  Foreground Message Listener
+  // =============================================================
 
-    notificationController.addNotification(title, body);
+  FirebaseMessaging.onMessage.listen(
+        (RemoteMessage message) async {
+      String title = 'নতুন নোটিফিকেশন';
+      String body = '';
 
-    await NotificationService.showNotification(
-      id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
-      title: title,
-      body: body,
-    );
-  });
+      // Notification payload
+      if (message.notification != null) {
+        title = message.notification!.title ?? title;
+        body = message.notification!.body ?? body;
+      }
 
-  // When notification opens the app from background/terminated
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-    final title = message.notification?.title ?? 'নতুন নোটিফিকেশন';
-    final body = message.notification?.body ?? '';
+      // Data payload
+      if (message.data.isNotEmpty) {
+        title = message.data['title'] ?? title;
+        body = message.data['body'] ?? body;
+      }
 
-    notificationController.addNotification(title, body);
+      // Save notification locally
+      notificationController.addNotification(
+        title,
+        body,
+      );
 
-    await NotificationService.showNotification(
-      id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
-      title: title,
-      body: body,
-    );
-  });
+      // Show local notification
+      await NotificationService.showNotification(
+        id: DateTime.now()
+            .millisecondsSinceEpoch
+            .remainder(100000),
+        title: title,
+        body: body,
+      );
+    },
+  );
 
-  // Background handler
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // =============================================================
+  //  When Notification Opens the App
+  // =============================================================
 
-  // Schedule daily expense reminder
+  FirebaseMessaging.onMessageOpenedApp.listen(
+        (RemoteMessage message) async {
+      String title = 'নতুন নোটিফিকেশন';
+      String body = '';
+
+      if (message.notification != null) {
+        title = message.notification!.title ?? title;
+        body = message.notification!.body ?? body;
+      }
+
+      if (message.data.isNotEmpty) {
+        title = message.data['title'] ?? title;
+        body = message.data['body'] ?? body;
+      }
+
+      notificationController.addNotification(
+        title,
+        body,
+      );
+    },
+  );
+
+  // =============================================================
+  //  Schedule Daily Reminder
+  // =============================================================
+
   await NotificationService.scheduleDailyExpenseReminder();
 
+  // Start App
   runApp(const AyBayApp());
 }

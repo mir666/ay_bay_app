@@ -17,7 +17,7 @@ class ControllerBinding extends Bindings {
     Get.put(AddTransactionController());
     Get.put(UserController());
     Get.put(ChangePasswordController());
-    Get.put(SettingsController());
+    Get.put(SettingsController(), permanent: true);
     Get.put(LocaleController());
     Get.put(DebtController(), permanent: true);
     Get.put(NotificationController());

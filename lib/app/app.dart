@@ -25,7 +25,6 @@ class _AyBayAppState extends State<AyBayApp> {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
-      //onGenerateRoute: AppRoutes.onGenerateRoute,
       getPages: AppRoutes.pages,
       theme: ThemeData(
         textTheme: TextTheme(

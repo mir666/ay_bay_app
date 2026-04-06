@@ -62,24 +62,39 @@ class DebtController extends GetxController {
     _scheduleDebtNotification(debt);
   }
 
-  void updateDebt(DebtModel updatedDebt) {
+  void updateDebt(DebtModel updatedDebt) async {
     int index = debts.indexWhere((d) => d.id == updatedDebt.id);
+
     if (index != -1) {
+      await NotificationService.cancelNotification(updatedDebt.id.hashCode);
+      await NotificationService.cancelNotification(updatedDebt.id.hashCode + 1);
+
       debts[index] = updatedDebt;
       debts.refresh();
       saveDebts();
+
       _scheduleDebtNotification(updatedDebt);
     }
   }
 
-  void toggleClear(DebtModel debt) {
+  void toggleClear(DebtModel debt) async {
     debt.isCleared = !debt.isCleared;
+
     debts.refresh();
     saveDebts();
-    if (!debt.isCleared) _scheduleDebtNotification(debt);
+
+    if (debt.isCleared) {
+      await NotificationService.cancelNotification(debt.id.hashCode);
+      await NotificationService.cancelNotification(debt.id.hashCode + 1);
+    } else {
+      _scheduleDebtNotification(debt);
+    }
   }
 
-  void deleteDebt(DebtModel debt) {
+  void deleteDebt(DebtModel debt) async {
+    await NotificationService.cancelNotification(debt.id.hashCode);
+    await NotificationService.cancelNotification(debt.id.hashCode + 1);
+
     debts.removeWhere((d) => d.id == debt.id);
     saveDebts();
   }
@@ -87,46 +102,53 @@ class DebtController extends GetxController {
   void _scheduleDebtNotification(DebtModel debt) {
     if (debt.isCleared) return;
 
-    final DateTime notifyBase = box.read(notificationDateTimeKey) != null
-        ? DateTime.parse(box.read(notificationDateTimeKey))
-        : DateTime(debt.dueDate.year, debt.dueDate.month, debt.dueDate.day, 21, 0);
-
-    final beforeNotify = DateTime(
-      debt.dueDate.year,
-      debt.dueDate.month,
-      debt.dueDate.day - 2,
-      notifyBase.hour,
-      notifyBase.minute,
-    );
-
-    final dueNotify = DateTime(
+    final now = DateTime.now();
+    final notifyBase = DateTime(
       debt.dueDate.year,
       debt.dueDate.month,
       debt.dueDate.day,
-      notifyBase.hour,
-      notifyBase.minute,
+      debt.dueDate.hour,
+      debt.dueDate.minute,
     );
 
-    final title = debt.isOwe ? 'টাকা পাওয়ার সময় আসছে' : 'টাকা ফেরত দেওয়ার সময় আসছে';
-    final body = debt.isOwe
-        ? 'আপনি ${debt.name} থেকে ${debt.amount.toStringAsFixed(0)} ৳ পাবেন।'
-        : 'আপনি ${debt.name} কে ${debt.amount.toStringAsFixed(0)} ৳ দিতে হবে।';
+    final daysDifference = debt.dueDate
+        .difference(DateTime(now.year, now.month, now.day))
+        .inDays;
 
-    if (beforeNotify.isAfter(DateTime.now())) {
+    DateTime beforeNotify;
+
+    if (daysDifference <= 0) {
+      // আজকের debt → 1 hour আগে
+      beforeNotify = notifyBase.subtract(Duration(hours: 1));
+    } else if (daysDifference == 2) {
+      // 2 দিন পর → 1 day আগে
+      beforeNotify = notifyBase.subtract(Duration(days: 1));
+    } else {
+      // 2 দিনের বেশি → 2 দিন আগে
+      beforeNotify = notifyBase.subtract(Duration(days: 2));
+    }
+
+    // 🔹 Ensure notification is in future
+    if (beforeNotify.isAfter(now)) {
       NotificationService.showScheduledNotification(
         id: debt.id.hashCode,
-        title: title,
-        body: body,
+        title: debt.isOwe ? 'টাকা পাওয়ার সময় আসছে' : 'টাকা ফেরত দেওয়ার সময় আসছে',
+        body: debt.isOwe
+            ? 'আপনি ${debt.name} থেকে ${debt.amount.toStringAsFixed(0)} ৳ পাবেন।'
+            : 'আপনি ${debt.name} কে ${debt.amount.toStringAsFixed(0)} ৳ দিতে হবে।',
         scheduledDate: beforeNotify,
       );
     }
 
-    if (dueNotify.isAfter(DateTime.now())) {
+    // 🔹 Due date notification at exact time
+    if (notifyBase.isAfter(now)) {
       NotificationService.showScheduledNotification(
-        id: debt.id.hashCode + 1,
-        title: title,
-        body: body,
-        scheduledDate: dueNotify,
+        id: debt.id.hashCode + 100000,
+        title: debt.isOwe ? 'টাকা পাওয়ার সময় আসছে' : 'টাকা ফেরত দেওয়ার সময় আসছে',
+        body: debt.isOwe
+            ? 'আপনি ${debt.name} থেকে ${debt.amount.toStringAsFixed(0)} ৳ পাবেন।'
+            : 'আপনি ${debt.name} কে ${debt.amount.toStringAsFixed(0)} ৳ দিতে হবে।',
+        scheduledDate: notifyBase,
       );
     }
   }

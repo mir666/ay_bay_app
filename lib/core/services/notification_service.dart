@@ -34,6 +34,16 @@ class NotificationService {
     await _notifications
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(androidChannel);
+
+    await _notifications
+        .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+
+    await _notifications
+        .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestExactAlarmsPermission();
   }
 
   static Future<void> showNotification({
@@ -85,6 +95,10 @@ class NotificationService {
 
     final tzDate = tz.TZDateTime.from(scheduledDate, tz.local);
 
+    if (tzDate.isBefore(tz.TZDateTime.now(tz.local))) {
+      return;
+    }
+
     await _notifications.zonedSchedule(
       id: safeId,
       title: title,
@@ -97,9 +111,30 @@ class NotificationService {
     );
   }
 
+  static Future<void> printPendingNotifications() async {
+    final pending = await _notifications.pendingNotificationRequests();
+
+    for (var n in pending) {
+      print("Pending ID: ${n.id} Title: ${n.title}");
+    }
+  }
+
   static Future<void> scheduleDailyExpenseReminder() async {
     final now = DateTime.now();
-    final scheduledTime = DateTime(now.year, now.month, now.day, 20, 0);
+
+    var scheduledTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      20,
+      0,
+    );
+
+    if (scheduledTime.isBefore(now)) {
+      scheduledTime = scheduledTime.add(
+        const Duration(days: 1),
+      );
+    }
 
     await showScheduledNotification(
       id: 5000,
@@ -108,6 +143,14 @@ class NotificationService {
       scheduledDate: scheduledTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
+  }
+
+  static Future<void> cancelNotification(int id) async {
+    await _notifications.cancel(id: id);
+  }
+
+  static Future<void> cancelAllNotifications() async {
+    await _notifications.cancelAll();
   }
 }
 
