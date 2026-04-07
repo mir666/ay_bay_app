@@ -1,7 +1,6 @@
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
-import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
 import 'package:ay_bay_app/core/utils/number_util.dart';
 import 'package:ay_bay_app/features/common/models/category_icon.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
@@ -21,7 +20,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController controller = Get.find<HomeController>();
-    final SettingsController settingsController = Get.find<SettingsController>();
     controller.saveLastScreen(AppRoutes.home);
 
     final size = MediaQuery.sizeOf(context);
@@ -45,8 +43,8 @@ class HomeScreen extends StatelessWidget {
             pinned: true, // 🔹 fixed on top
             delegate: _BalanceCardHeaderDelegate(
               child: BalanceCard(),
-              minExtent: 360, // মিনিমাম হাইট
-              maxExtent: 360, // ম্যাক্সিমাম হাইট
+              minExtent: 336, // মিনিমাম হাইট
+              maxExtent: 336, // ম্যাক্সিমাম হাইট
             ),
           ),
 

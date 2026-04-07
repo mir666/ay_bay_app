@@ -1267,6 +1267,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Transactions'**
   String get transactions;
+
+  /// No description provided for @appLockPasswordSet.
+  ///
+  /// In en, this message translates to:
+  /// **'App Lock password set'**
+  String get appLockPasswordSet;
 }
 
 class _AppLocalizationsDelegate

@@ -193,5 +193,6 @@
   "expenseAmount": "@expense @defaultCurrency",
   "confirmLogout": "লগ আউট নিশ্চিত করুন",
   "wantToConfirmLogout": "আপনি কি নিশ্চিতভাবে লগ আউট করতে চান?",
-  "transactions": "লেনদেন"
+  "transactions": "লেনদেন",
+  "appLockPasswordSet": "অ্যাপ লকের পাসওয়ার্ড দেওয়া হয়েছে"
 }

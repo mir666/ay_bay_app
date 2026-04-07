@@ -2,6 +2,7 @@ import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/core/loan/controllers/debt_controller.dart';
 import 'package:ay_bay_app/core/loan/models/debt_model.dart';
+import 'package:ay_bay_app/core/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -456,14 +457,24 @@ class _DebtDueScreenState extends State<DebtDueScreen> {
                           selectedTime.value.minute,
                         );
 
-                        controller.addDebt(DebtModel(
+                        final newDebt = DebtModel(
                           id: DateTime.now().millisecondsSinceEpoch.toString(),
                           name: nameController.text.trim(),
                           amount: double.tryParse(amountController.text) ?? 0,
                           isOwe: isOwe.value,
                           date: dueDateTime,
                           dueDate: dueDateTime,
-                        ));
+                        );
+
+                        controller.addDebt(newDebt);
+
+                        // 🔹 Schedule Notification
+                        controller.scheduleDebtNotification(
+                          id: int.parse(newDebt.id) % 100000,
+                          title: newDebt.isOwe ? "Debt Reminder" : "Receive Reminder",
+                          body: "${newDebt.name} এর টাকা ${newDebt.amount.toStringAsFixed(0)}৳",
+                          scheduledDate: newDebt.dueDate,
+                        );
 
                         Get.back();
                       },
@@ -661,7 +672,18 @@ class _DebtDueScreenState extends State<DebtDueScreen> {
                           dueDate: updatedDateTime,
                         );
 
-                        controller.updateDebt(updatedDebt); // 🔹 এখানে notification reschedule হবে
+                        NotificationService.cancelNotification(int.parse(updatedDebt.id) % 100000);
+
+                        controller.updateDebt(updatedDebt);
+
+                        // 🔹 Reschedule Notification
+                        controller.scheduleDebtNotification(
+                          id: int.parse(updatedDebt.id) % 100000,
+                          title: updatedDebt.isOwe ? "Debt Reminder" : "Receive Reminder",
+                          body: "${updatedDebt.name} এর টাকা ${updatedDebt.amount.toStringAsFixed(0)}৳",
+                          scheduledDate: updatedDebt.dueDate,
+                        );
+
                         Get.back();
                       },
                       style: ElevatedButton.styleFrom(backgroundColor: AppColors.loginTextButtonColor, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation: 8),
@@ -740,7 +762,7 @@ class _DebtDueScreenState extends State<DebtDueScreen> {
             const SizedBox(width: 16),
             Expanded(
               child: Text(
-                DateFormat('dd MMM, yyyy').format(selected),
+                DateFormat('dd MMM, yyyy', Get.locale?.languageCode ?? 'en').format(selected),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,

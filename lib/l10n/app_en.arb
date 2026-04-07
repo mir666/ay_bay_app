@@ -193,5 +193,6 @@
   "expenseAmount": "@expense @defaultCurrency",
   "confirmLogout": "Confirm Logout",
   "wantToConfirmLogout": "Are you sure you want to log out?",
-  "transactions": "Transactions"
+  "transactions": "Transactions",
+  "appLockPasswordSet": "App Lock password set"
 }

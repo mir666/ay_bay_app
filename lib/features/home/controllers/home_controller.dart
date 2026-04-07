@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
+import 'package:ay_bay_app/core/services/notification_service.dart';
 import 'package:ay_bay_app/features/auth/ui/screens/log_in_screen.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
 import 'package:ay_bay_app/features/common/transaction/ui/screens/add_transaction_screen.dart';
@@ -47,16 +48,11 @@ class HomeController extends GetxController {
     _listenMonths();
     _loadState();
     fetchGlobalTransactions();
-    Timer.periodic(const Duration(minutes: 1), (_) {
-      todayDate.value = DateTime.now();
-      final now = DateTime.now();
-      final lastDay = DateTime(now.year, now.month + 1, 0);
+    NotificationService.scheduleDailyNotification();
 
-      if (now.day == lastDay.day && now.hour == 23 && now.minute == 59) {
-        _sendMonthlyExpenseNotification();
-      }
-    });
-    checkMonthlyExpenseNotification();
+    // মাসের শেষের নটিফিকেশন
+    NotificationService.scheduleMonthlyNotification();
+
   }
 
   // 🔍 Search & Suggestions

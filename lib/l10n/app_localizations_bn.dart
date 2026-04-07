@@ -614,4 +614,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get transactions => 'লেনদেন';
+
+  @override
+  String get appLockPasswordSet => 'অ্যাপ লকের পাসওয়ার্ড দেওয়া হয়েছে';
 }

@@ -617,4 +617,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transactions => 'Transactions';
+
+  @override
+  String get appLockPasswordSet => 'App Lock password set';
 }

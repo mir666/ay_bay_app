@@ -38,16 +38,20 @@ class _AppLockScreenState extends State<AppLockScreen> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black26.withOpacity(0.2),
+                  color: Colors.black26.withValues(alpha: 0.2),
                   blurRadius: 12,
                   offset: const Offset(0, 6),
-                ),
+                )
               ],
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.lock, size: 60, color: Color(0xFF2575FC)),
+                const Icon(
+                  Icons.lock,
+                  size: 60,
+                  color: Color(0xFF2575FC),
+                ),
                 const SizedBox(height: 16),
                 const Text(
                   'Enter App Lock Password',
@@ -64,10 +68,8 @@ class _AppLockScreenState extends State<AppLockScreen> {
                   obscureText: true,
                   decoration: InputDecoration(
                     hintText: 'Password',
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
+                    contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(color: Colors.grey),
@@ -87,12 +89,9 @@ class _AppLockScreenState extends State<AppLockScreen> {
                           settingsController.appLockPassword.value) {
                         Get.offAll(() => const HomeScreen());
                       } else {
-                        Get.snackbar(
-                          'Error',
-                          'Incorrect Password',
-                          backgroundColor: Colors.redAccent,
-                          colorText: Colors.white,
-                        );
+                        Get.snackbar('Error', 'Incorrect Password',
+                            backgroundColor: Colors.redAccent,
+                            colorText: Colors.white);
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -114,100 +113,8 @@ class _AppLockScreenState extends State<AppLockScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
-                TextButton(
-                  onPressed: () {
-                    _showResetPasswordDialog();
-                  },
-                  child: const Text(
-                    'Forgot Password?',
-                    style: TextStyle(
-                      color: Color(0xFF2575FC),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showResetPasswordDialog() {
-    final newPasswordController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.lock_reset, size: 50, color: Color(0xFF2575FC)),
-
-              const SizedBox(height: 12),
-
-              const Text(
-                'Reset App Lock Password',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-
-              const SizedBox(height: 20),
-
-              TextField(
-                controller: newPasswordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: 'Enter new password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    final newPassword = newPasswordController.text.trim();
-
-                    if (newPassword.isEmpty) {
-                      Get.snackbar(
-                        'Error',
-                        'Password cannot be empty',
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
-                      );
-                      return;
-                    }
-
-                    /// Save new password
-                    settingsController.appLockPassword.value = newPassword;
-
-                    settingsController.saveSettings();
-
-                    Get.back();
-
-                    Get.snackbar(
-                      'Success',
-                      'Password reset successful',
-                      backgroundColor: Colors.green,
-                      colorText: Colors.white,
-                    );
-                  },
-                  child: Text(
-                    'Save New Password',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ],
           ),
         ),
       ),

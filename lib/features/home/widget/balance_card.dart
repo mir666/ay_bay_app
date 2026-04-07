@@ -235,8 +235,8 @@ class _BalanceCardState extends State<BalanceCard> {
         children: [
           Container(
             width: double.infinity,
-            margin: const EdgeInsets.symmetric(horizontal: 12),
-            padding: const EdgeInsets.symmetric(vertical: 6),
+            margin: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(vertical: 2),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
@@ -257,7 +257,7 @@ class _BalanceCardState extends State<BalanceCard> {
                             Text(
                               context.localization.balance,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 14,
                                 color: Colors.white,
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'HindSiliguri',
@@ -265,7 +265,7 @@ class _BalanceCardState extends State<BalanceCard> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 2),
                         Text(
                           context.localization.balanceAmount.trParams({
                             'balance': localizedNumber(
@@ -275,7 +275,7 @@ class _BalanceCardState extends State<BalanceCard> {
                                 settingsController.defaultCurrency.value,
                           }),
                           style: const TextStyle(
-                            fontSize: 22,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -287,7 +287,7 @@ class _BalanceCardState extends State<BalanceCard> {
               ),
             ),
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 6),
           Obx(() {
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -356,7 +356,7 @@ class _BalanceCardState extends State<BalanceCard> {
               title,
               style: TextStyle(
                 color: color,
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'HindSiliguri',
               ),
@@ -425,7 +425,7 @@ class _BalanceCardState extends State<BalanceCard> {
     return Expanded(
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
         decoration: BoxDecoration(
           color: AppColors.categoryTitleBgColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(30),
@@ -588,6 +588,7 @@ class _BalanceCardState extends State<BalanceCard> {
                       icon: Icon(
                         Icons.notifications_outlined,
                         color: Colors.white,
+                        size: 18,
                       ),
                       style: IconButton.styleFrom(
                         backgroundColor: AppColors.categoryTitleBgColor
@@ -639,7 +640,7 @@ class _BalanceCardState extends State<BalanceCard> {
 
                                       return ListView.separated(
                                         itemCount: list.length,
-                                        separatorBuilder: (_, __) =>
+                                        separatorBuilder: (_, _) =>
                                             const Divider(height: 1),
                                         itemBuilder: (_, index) {
                                           final notification = list[index];
@@ -765,42 +766,5 @@ class _BalanceCardState extends State<BalanceCard> {
     } catch (_) {
       return monthName; // fallback
     }
-  }
-
-  /// Convert month name (বাংলা/ইংরেজি) to 1-12 index
-  int _monthNameToIndex(String monthName) {
-    const monthsEn = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    const monthsBn = [
-      'জানুয়ারি',
-      'ফেব্রুয়ারি',
-      'মার্চ',
-      'এপ্রিল',
-      'মে',
-      'জুন',
-      'জুলাই',
-      'অগাস্ট',
-      'সেপ্টেম্বর',
-      'অক্টোবর',
-      'নভেম্বর',
-      'ডিসেম্বর',
-    ];
-
-    int index = monthsEn.indexOf(monthName);
-    if (index == -1) index = monthsBn.indexOf(monthName);
-    if (index == -1) throw 'Invalid month name: $monthName';
-    return index + 1; // 1-12
   }
 }
