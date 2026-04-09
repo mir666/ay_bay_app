@@ -1,6 +1,7 @@
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
+import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
 import 'package:ay_bay_app/core/utils/number_util.dart';
 import 'package:ay_bay_app/features/common/models/category_icon.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
@@ -169,13 +170,15 @@ class MonthTransactionsScreen extends StatelessWidget {
     return Container(
       width: 1,
       height: 60,
-      color: Colors.white.withOpacity(0.6),
+      color: Colors.white.withValues(alpha: 0.6),
       margin: const EdgeInsets.symmetric(horizontal: 8),
     );
   }
 
 
   Widget _buildCard(TransactionModel trx, bool isIncome) {
+    final SettingsController settingsController = Get.find<SettingsController>();
+    final currency = settingsController.defaultCurrency.value;
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
@@ -224,7 +227,7 @@ class MonthTransactionsScreen extends StatelessWidget {
           ),
         ),
         trailing: Text(
-          '${isIncome ? '+' : '-'} ${localizedNumber(trx.amount)} ৳',
+          '${isIncome ? '+ $currency' : '- $currency'} ${localizedNumber(trx.amount)}',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: isIncome ? Colors.green : Colors.red,
@@ -237,6 +240,7 @@ class MonthTransactionsScreen extends StatelessWidget {
 
 
   Widget _summaryTile(String title, String amount, Color color) {
+    final SettingsController settingsController = Get.find<SettingsController>();
     return Column(
       children: [
         Text(
@@ -249,7 +253,7 @@ class MonthTransactionsScreen extends StatelessWidget {
         ),
         SizedBox(height: 4),
         Text(
-          '${amount} ৳',
+          '${settingsController.defaultCurrency.value} $amount',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
@@ -261,6 +265,7 @@ class MonthTransactionsScreen extends StatelessWidget {
   }
 
   Future<void> _generatePdf(HomeController controller) async {
+    final SettingsController settingsController = Get.find<SettingsController>();
     final list = controller.transactions;
 
     double totalIncome = list
@@ -315,7 +320,7 @@ class MonthTransactionsScreen extends StatelessWidget {
                 DateFormat('dd MMM yyyy').format(trx.date),
                 trx.type == TransactionType.income ? 'আয়' : 'ব্যয়',
                 trx.category,
-                '${trx.amount.toInt()} ৳',
+                '${settingsController.defaultCurrency.value} ${trx.amount.toInt()}',
               ];
             }).toList(),
             headerStyle: pw.TextStyle(
@@ -351,6 +356,7 @@ class MonthTransactionsScreen extends StatelessWidget {
   }
 
   pw.Widget _pdfSummary(String title, double amount, PdfColor color) {
+    final SettingsController settingsController = Get.find<SettingsController>();
     return pw.Column(
       mainAxisSize: pw.MainAxisSize.min,
       children: [
@@ -366,7 +372,7 @@ class MonthTransactionsScreen extends StatelessWidget {
             borderRadius: const pw.BorderRadius.all(pw.Radius.circular(6)),
           ),
           child: pw.Text(
-            '${amount.toInt()} ৳',
+            '${amount.toInt()} ${settingsController.defaultCurrency.value}',
             style: pw.TextStyle(
               fontWeight: pw.FontWeight.bold,
               color: color,

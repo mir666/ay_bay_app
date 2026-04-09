@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:ay_bay_app/app/app_colors.dart';
-import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/core/localization/ui/widget/language_toggle_button.dart';
 import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
@@ -365,7 +364,7 @@ class _BalanceCardState extends State<BalanceCard> {
         ),
         const SizedBox(height: 4),
         Text(
-          '${localizedNumber(value)} ${settingsController.defaultCurrency.value}',
+          '${settingsController.defaultCurrency.value} ${localizedNumber(value)}',
           style: const TextStyle(
             color: Colors.white70,
             fontSize: 16,
@@ -490,27 +489,6 @@ class _BalanceCardState extends State<BalanceCard> {
                     ),
                   );
                 }),
-                const DropdownMenuItem<String>(
-                  enabled: false,
-                  child: Divider(color: Colors.white),
-                ),
-                DropdownMenuItem<String>(
-                  enabled: false,
-                  child: TextButton.icon(
-                    onPressed: () async {
-                      final result = await Get.toNamed(AppRoutes.addMonth);
-                      if (result != null && result is Map<String, dynamic>) {
-                        controller.selectMonth(result);
-                        controller.isMonthDropdownOpen.value = false;
-                      }
-                    },
-                    icon: const Icon(Icons.add, color: Colors.white),
-                    label: Text(
-                      context.localization.openNewMonth,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
               ],
               onChanged: (monthName) {
                 if (monthName == null) return;

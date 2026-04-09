@@ -1,5 +1,6 @@
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
+import 'package:ay_bay_app/core/extension/transaction_category_localization.dart';
 import 'package:ay_bay_app/core/utils/number_util.dart';
 import 'package:ay_bay_app/features/common/data/category_data.dart';
 import 'package:ay_bay_app/features/common/models/category_model.dart';
@@ -9,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:ay_bay_app/features/home/controllers/home_controller.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:ay_bay_app/core/profile/controllers/user_controller.dart';
+import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({super.key});
@@ -16,11 +18,32 @@ class ProfileScreen extends StatelessWidget {
   final HomeController homeController = Get.find<HomeController>();
   final UserController userController = Get.find<UserController>();
 
+  String localizedMonthName(String? monthName) {
+    if (monthName == null || monthName.isEmpty) return '';
+
+    try {
+      // English month → month number
+      final monthNumber =
+          DateFormat('MMMM', 'en').parse(monthName).month;
+
+      // Create date using current year
+      final date = DateTime(DateTime.now().year, monthNumber);
+
+      // Return localized month name
+      return DateFormat.MMMM(
+        Get.locale?.languageCode ?? 'en',
+      ).format(date);
+    } catch (e) {
+      return monthName; // fallback
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final _ =
         MediaQuery.of(context).orientation == Orientation.landscape;
+
 
     return Scaffold(
       appBar: AppBar(
@@ -34,7 +57,7 @@ class ProfileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildProfileHeader(size),
+              _buildProfileHeader(context,size),
 
               SizedBox(height: size.height * 0.02),
 
@@ -79,7 +102,7 @@ class ProfileScreen extends StatelessWidget {
 
               SizedBox(height: size.height * 0.08),
 
-              _buildIncomeBarChart(size),
+              _buildIncomeBarChart(context,size),
             ],
           ),
         );
@@ -87,7 +110,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader(Size size) {
+  Widget _buildProfileHeader(BuildContext context,Size size) {
     DateTime? firstTransactionDate;
     if (homeController.allTransactions.isNotEmpty) {
       firstTransactionDate = homeController.allTransactions
@@ -177,7 +200,7 @@ class ProfileScreen extends StatelessWidget {
                 // Member Since (সব ইউজারের জন্য)
                 if (userController.createdAt.value != null)
                   Text(
-                    'Member since: ${userController.createdAt.value!.day}/${userController.createdAt.value!.month}/${userController.createdAt.value!.year}',
+                    '${context.localization.accountOpen} ${localizedNumber(userController.createdAt.value!.day)}/${localizedNumber(userController.createdAt.value!.month)}/${localizedNumber(userController.createdAt.value!.year)}',
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: size.width * 0.035,
@@ -498,7 +521,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    month['month'] ?? '',
+                    localizedMonthName(month['month']),
                     style: TextStyle(
                       color: isSelected ? Colors.white : Colors.black87,
                       fontWeight: isSelected
@@ -517,13 +540,13 @@ class ProfileScreen extends StatelessWidget {
   }
 
   /// 🔹 আয় (Income) বার চার্ট
-  Widget _buildIncomeBarChart(Size size) {
+  Widget _buildIncomeBarChart(BuildContext context, Size size) {
     if (homeController.allTransactions.isEmpty) {
       return SizedBox(
         height: size.height * 0.4,
-        child: const Center(
+        child: Center(
           child: Text(
-            'এই মাসের কোনো লেনদেন নেই',
+            context.localization.noTransactionThisMonth,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
         ),
@@ -722,7 +745,7 @@ class ProfileScreen extends StatelessWidget {
 
                 // 📝 Category Name
                 Text(
-                  category.name,
+                  category.name.localizedName(),
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,

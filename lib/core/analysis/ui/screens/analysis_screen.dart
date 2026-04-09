@@ -1,6 +1,7 @@
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/core/analysis/controllers/analysis_controller.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
+import 'package:ay_bay_app/core/extension/transaction_category_localization.dart';
 import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
 import 'package:ay_bay_app/core/utils/number_util.dart';
 import 'package:ay_bay_app/features/common/data/category_data.dart';
@@ -8,6 +9,7 @@ import 'package:ay_bay_app/features/common/models/category_model.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class AnalysisScreen extends StatelessWidget {
   AnalysisScreen({super.key});
@@ -20,6 +22,16 @@ class AnalysisScreen extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
+
+    String localizedMonthYear(String monthName, DateTime date) {
+      try {
+        final monthNumber = DateFormat('MMMM', 'en').parse(monthName).month;
+        final localizedDate = DateTime(date.year, monthNumber);
+        return DateFormat.MMMM(Get.locale?.languageCode ?? 'en').format(localizedDate);
+      } catch (_) {
+        return monthName;
+      }
+    }
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
@@ -89,7 +101,7 @@ class AnalysisScreen extends StatelessWidget {
                           ),
                           child: Center(
                             child: Text(
-                              month['month'],
+                              localizedMonthYear(month['month'], DateTime.now()),
                               style: TextStyle(
                                 color: isSelected
                                     ? Colors.white
@@ -122,7 +134,7 @@ class AnalysisScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      controller.selectedMonthName.value,
+                      localizedMonthYear(controller.selectedMonthName.value, DateTime.now()),
                       style: TextStyle(
                         fontSize: width * 0.05,
                         fontWeight: FontWeight.bold,
@@ -270,7 +282,7 @@ class AnalysisScreen extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            '${localizedNumber(value)} ${settingsController.defaultCurrency.value}',
+            '${settingsController.defaultCurrency.value} ${localizedNumber(value)}',
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -466,7 +478,7 @@ class AnalysisScreen extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  cat['name'],
+                  (cat['name'] as String).localizedName(),
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,

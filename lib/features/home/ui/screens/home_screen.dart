@@ -1,6 +1,7 @@
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
+import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
 import 'package:ay_bay_app/core/utils/number_util.dart';
 import 'package:ay_bay_app/features/common/models/category_icon.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
@@ -366,11 +367,13 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildTransactionAction(BuildContext context, bool isIncome, trx, bool isSmall, HomeController controller) {
+    final SettingsController settingsController = Get.find<SettingsController>();
+    final currency = settingsController.defaultCurrency.value;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          '${isIncome ? '+' : '-'} ${localizedNumber(trx.amount)} ৳',
+          '${isIncome ? '+ $currency' : '- $currency'} ${localizedNumber(trx.amount)}',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: isIncome ? Colors.green : Colors.red,
@@ -483,6 +486,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildMonthExpense(HomeController controller, Map m) {
+    final SettingsController settingsController = Get.find<SettingsController>();
     return FutureBuilder<QuerySnapshot>(
       future: FirebaseFirestore.instance
           .collection('users')
@@ -501,7 +505,7 @@ class HomeScreen extends StatelessWidget {
         );
 
         return Text(
-          '${total.toInt()}৳',
+          '${settingsController.defaultCurrency.value} ${localizedNumber(total)}',
           style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red, fontSize: 16),
         );
       },

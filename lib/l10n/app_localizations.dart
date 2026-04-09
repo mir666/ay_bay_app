@@ -1235,7 +1235,7 @@ abstract class AppLocalizations {
   /// No description provided for @balanceAmount.
   ///
   /// In en, this message translates to:
-  /// **'@balance @defaultCurrency'**
+  /// **'@defaultCurrency @balance'**
   String get balanceAmount;
 
   /// No description provided for @incomeAmount.
@@ -1273,6 +1273,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'App Lock password set'**
   String get appLockPasswordSet;
+
+  /// No description provided for @noTransactionsInThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions in this month'**
+  String get noTransactionsInThisMonth;
+
+  /// No description provided for @accountOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Open:'**
+  String get accountOpen;
 }
 
 class _AppLocalizationsDelegate

@@ -56,74 +56,100 @@ class DebtController extends GetxController {
   double get totalReceive =>
       debts.where((d) => !d.isOwe && !d.isCleared).fold(0.0, (sum, d) => sum + d.amount);
 
-  /// 🔹 Schedule Debt Notification
-  void scheduleDebtNotification({
-    required int id,
-    required String title,
-    required String body,
-    required DateTime scheduledDate,
-  }) {
-    // NotificationService ব্যবহার করে schedule করো
-    NotificationService.showScheduledNotification(
-      id: id,
-      title: title,
-      body: body,
-      scheduledDate: scheduledDate,
-    );
-  }
-
-  /// 🔹 Add Debt with Notification
-  Future<void> addDebt(DebtModel debt) async {
+  void addDebt(DebtModel debt) {
     debts.add(debt);
     saveDebts();
-
-    int debtId;
-    try {
-      debtId = int.parse(debt.id);
-    } catch (e) {
-      debtId = DateTime.now().millisecondsSinceEpoch.remainder(2147483647);
-    }
-
-    // 🔹 Schedule Debt Reminder Notification
-    await NotificationService.scheduleDebtReminder(debt.dueDate, debtId);
-
-    print("Debt added and notification scheduled for ${debt.dueDate}");
+    _scheduleDebtNotification(debt);
   }
 
-  /// 🔹 Update Debt with Notification Reschedule
   void updateDebt(DebtModel updatedDebt) async {
     int index = debts.indexWhere((d) => d.id == updatedDebt.id);
-    int debtId = int.tryParse(updatedDebt.id) ?? DateTime.now().millisecondsSinceEpoch.remainder(2147483647);
-
-    await NotificationService.cancelNotification(debtId);
 
     if (index != -1) {
+      await NotificationService.cancelNotification(updatedDebt.id.hashCode);
+      await NotificationService.cancelNotification(updatedDebt.id.hashCode + 1);
+
       debts[index] = updatedDebt;
       debts.refresh();
       saveDebts();
 
-      // Reschedule notification
-      await NotificationService.scheduleDebtReminder(updatedDebt.dueDate, debtId);
-
-      print("Debt updated and notification rescheduled for ${updatedDebt.dueDate}");
+      _scheduleDebtNotification(updatedDebt);
     }
   }
 
-  /// 🔹 Toggle Cleared Status
   void toggleClear(DebtModel debt) async {
     debt.isCleared = !debt.isCleared;
+
     debts.refresh();
     saveDebts();
+
+    if (debt.isCleared) {
+      await NotificationService.cancelNotification(debt.id.hashCode);
+      await NotificationService.cancelNotification(debt.id.hashCode + 1);
+    } else {
+      _scheduleDebtNotification(debt);
+    }
   }
 
-  /// 🔹 Delete Debt and Cancel Notification
   void deleteDebt(DebtModel debt) async {
-    int debtId = int.tryParse(debt.id) ?? DateTime.now().millisecondsSinceEpoch.remainder(2147483647);
-    await NotificationService.cancelNotification(debtId);
+    await NotificationService.cancelNotification(debt.id.hashCode);
+    await NotificationService.cancelNotification(debt.id.hashCode + 1);
 
     debts.removeWhere((d) => d.id == debt.id);
     saveDebts();
+  }
 
-    print("Debt deleted and notification canceled for ID $debtId");
+  void _scheduleDebtNotification(DebtModel debt) {
+    if (debt.isCleared) return;
+
+    final now = DateTime.now();
+    final notifyBase = DateTime(
+      debt.dueDate.year,
+      debt.dueDate.month,
+      debt.dueDate.day,
+      debt.dueDate.hour,
+      debt.dueDate.minute,
+    );
+
+    final daysDifference = debt.dueDate
+        .difference(DateTime(now.year, now.month, now.day))
+        .inDays;
+
+    DateTime beforeNotify;
+
+    if (daysDifference <= 0) {
+      // আজকের debt → 1 hour আগে
+      beforeNotify = notifyBase.subtract(Duration(hours: 1));
+    } else if (daysDifference == 2) {
+      // 2 দিন পর → 1 day আগে
+      beforeNotify = notifyBase.subtract(Duration(days: 1));
+    } else {
+      // 2 দিনের বেশি → 2 দিন আগে
+      beforeNotify = notifyBase.subtract(Duration(days: 2));
+    }
+
+    // 🔹 Ensure notification is in future
+    if (beforeNotify.isAfter(now)) {
+      NotificationService.showScheduledNotification(
+        id: debt.id.hashCode,
+        title: debt.isOwe ? 'টাকা পাওয়ার সময় আসছে' : 'টাকা ফেরত দেওয়ার সময় আসছে',
+        body: debt.isOwe
+            ? 'আপনি ${debt.name} থেকে ${debt.amount.toStringAsFixed(0)} ৳ পাবেন।'
+            : 'আপনি ${debt.name} কে ${debt.amount.toStringAsFixed(0)} ৳ দিতে হবে।',
+        scheduledDate: beforeNotify,
+      );
+    }
+
+    // 🔹 Due date notification at exact time
+    if (notifyBase.isAfter(now)) {
+      NotificationService.showScheduledNotification(
+        id: debt.id.hashCode + 100000,
+        title: debt.isOwe ? 'টাকা পাওয়ার সময় আসছে' : 'টাকা ফেরত দেওয়ার সময় আসছে',
+        body: debt.isOwe
+            ? 'আপনি ${debt.name} থেকে ${debt.amount.toStringAsFixed(0)} ৳ পাবেন।'
+            : 'আপনি ${debt.name} কে ${debt.amount.toStringAsFixed(0)} ৳ দিতে হবে।',
+        scheduledDate: notifyBase,
+      );
+    }
   }
 }
