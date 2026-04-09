@@ -598,7 +598,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get onlySettingDefaultCurrency => '@defaultCurrency';
 
   @override
-  String get balanceAmount => '@balance @defaultCurrency';
+  String get balanceAmount => '@defaultCurrency @balance';
 
   @override
   String get incomeAmount => '@income @defaultCurrency';
@@ -614,4 +614,13 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get transactions => 'লেনদেন';
+
+  @override
+  String get appLockPasswordSet => 'অ্যাপ লকের পাসওয়ার্ড দেওয়া হয়েছে';
+
+  @override
+  String get noTransactionsInThisMonth => 'এই মাসের কোনো লেনদেন নেই';
+
+  @override
+  String get accountOpen => 'হিসাব খুলা হয়েছেঃ';
 }

@@ -16,9 +16,9 @@ class LanguageToggleButton extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.35),
+              color: Colors.white.withValues(alpha: 0.25),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.4),
@@ -27,11 +27,11 @@ class LanguageToggleButton extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.language, size: 16),
-                const SizedBox(width: 6),
+                const Icon(Icons.language, size: 12),
+                const SizedBox(width: 4),
                 Text(
-                  controller.isBangla ? 'EN' : 'বাংলা',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  controller.isBangla ? 'EN' : 'BN',
+                  style: TextStyle(fontWeight: FontWeight.w600,fontSize: 12),
                 ),
               ],
             ),

@@ -71,7 +71,7 @@ class SettingsScreen extends StatelessWidget {
                       : 'Phone Number',
                 ),
               ),
-              onTap: () => Get.to(() => ProfileScreen()),
+              onTap: () => Get.to(() => ProfileScreen(radius: 60,)),
               trailing: const Icon(Icons.arrow_forward_ios, size: 18),
             ),
           ),
@@ -243,8 +243,27 @@ class SettingsScreen extends StatelessWidget {
                                     Get.snackbar(
                                       'Success',
                                       'App Lock password set',
-                                      backgroundColor: Colors.green,
-                                      colorText: Colors.white,
+                                      barBlur: 0,
+                                      backgroundColor: Colors.transparent,
+                                      snackPosition: SnackPosition.BOTTOM,
+                                      titleText: Text(
+                                        context.localization.success,
+                                        textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.green,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      messageText: Text(
+                                        context.localization.appLockPasswordSet,
+                                        textAlign: TextAlign.center, // হরিজেন্টালি সেন্টার
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600, // বোল্ড
+                                          color: Colors.green, // টেক্স কালার
+                                          fontSize: 16,
+                                        ),
+                                      ),
                                     );
                                   },
                                   style: ElevatedButton.styleFrom(

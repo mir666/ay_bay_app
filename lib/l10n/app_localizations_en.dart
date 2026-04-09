@@ -601,7 +601,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onlySettingDefaultCurrency => '@defaultCurrency';
 
   @override
-  String get balanceAmount => '@balance @defaultCurrency';
+  String get balanceAmount => '@defaultCurrency @balance';
 
   @override
   String get incomeAmount => '@income @defaultCurrency';
@@ -617,4 +617,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get transactions => 'Transactions';
+
+  @override
+  String get appLockPasswordSet => 'App Lock password set';
+
+  @override
+  String get noTransactionsInThisMonth => 'No transactions in this month';
+
+  @override
+  String get accountOpen => 'Account Open:';
 }

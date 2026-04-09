@@ -2,6 +2,8 @@ import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/core/loan/controllers/debt_controller.dart';
 import 'package:ay_bay_app/core/loan/models/debt_model.dart';
+import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
+import 'package:ay_bay_app/core/utils/number_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -57,6 +59,7 @@ class _DebtDueScreenState extends State<DebtDueScreen> {
   }
 
   Widget _summaryCard( String title, double amount, Color color) {
+    final SettingsController settingsController = Get.find<SettingsController>();
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -71,7 +74,7 @@ class _DebtDueScreenState extends State<DebtDueScreen> {
             Text(title, style: TextStyle(color: Colors.white70,fontSize: 16,fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Text(
-              '${amount.toStringAsFixed(0)} ৳',
+              '${settingsController.defaultCurrency.value} ${localizedNumber(amount)}',
               style: const TextStyle(
                   color: Colors.white,
                   fontSize: 20,
@@ -126,6 +129,7 @@ class _DebtDueScreenState extends State<DebtDueScreen> {
 
   Widget _list(BuildContext context) {
     final controller = Get.find<DebtController>();
+    final SettingsController settingsController = Get.find<SettingsController>();
 
     return Obx(() {
       final list = controller.debts
@@ -215,7 +219,7 @@ class _DebtDueScreenState extends State<DebtDueScreen> {
 
                 /// 🔹 Amount
                 Text(
-                  '${d.amount.toStringAsFixed(0)} ৳',
+                  '${settingsController.defaultCurrency.value} ${localizedNumber(d.amount)}',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -566,7 +570,7 @@ class _DebtDueScreenState extends State<DebtDueScreen> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 10))],
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 20, offset: const Offset(0, 10))],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -740,7 +744,7 @@ class _DebtDueScreenState extends State<DebtDueScreen> {
             const SizedBox(width: 16),
             Expanded(
               child: Text(
-                DateFormat('dd MMM, yyyy').format(selected),
+                DateFormat('dd MMM, yyyy',Get.locale?.languageCode ?? 'en').format(selected),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,

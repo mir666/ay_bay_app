@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_path.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
@@ -95,24 +97,28 @@ class AppDrawer extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              child: CircleAvatar(
-                                radius: 34,
-                                backgroundColor: Colors.blueGrey.withValues(
-                                  alpha: 0.9,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white30, // border color
+                                    width: 3,              // border width
+                                  ),
                                 ),
-                                backgroundImage:
-                                    userController.avatarUrl.value.isNotEmpty
-                                    ? NetworkImage(
-                                        userController.avatarUrl.value,
-                                      )
-                                    : null,
-                                child: userController.avatarUrl.value.isEmpty
-                                    ? const Icon(
-                                        Icons.person,
-                                        size: 32,
-                                        color: Colors.white,
-                                      )
-                                    : null,
+                                child: CircleAvatar(
+                                  radius: 34,
+                                  backgroundColor: Colors.blueGrey.withAlpha(230),
+                                  backgroundImage: userController.avatarBase64.value.isNotEmpty
+                                      ? MemoryImage(base64Decode(userController.avatarBase64.value))
+                                      : null,
+                                  child: userController.avatarBase64.value.isEmpty
+                                      ? const Icon(
+                                    Icons.person,
+                                    size: 32,
+                                    color: Colors.white,
+                                  )
+                                      : null,
+                                ),
                               ),
                             ),
 

@@ -21,7 +21,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController controller = Get.find<HomeController>();
-    final SettingsController settingsController = Get.find<SettingsController>();
     controller.saveLastScreen(AppRoutes.home);
 
     final size = MediaQuery.sizeOf(context);
@@ -45,8 +44,8 @@ class HomeScreen extends StatelessWidget {
             pinned: true, // 🔹 fixed on top
             delegate: _BalanceCardHeaderDelegate(
               child: BalanceCard(),
-              minExtent: 360, // মিনিমাম হাইট
-              maxExtent: 360, // ম্যাক্সিমাম হাইট
+              minExtent: 336, // মিনিমাম হাইট
+              maxExtent: 336, // ম্যাক্সিমাম হাইট
             ),
           ),
 
@@ -368,11 +367,13 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildTransactionAction(BuildContext context, bool isIncome, trx, bool isSmall, HomeController controller) {
+    final SettingsController settingsController = Get.find<SettingsController>();
+    final currency = settingsController.defaultCurrency.value;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          '${isIncome ? '+' : '-'} ${localizedNumber(trx.amount)} ৳',
+          '${isIncome ? '+ $currency' : '- $currency'} ${localizedNumber(trx.amount)}',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: isIncome ? Colors.green : Colors.red,
@@ -485,6 +486,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildMonthExpense(HomeController controller, Map m) {
+    final SettingsController settingsController = Get.find<SettingsController>();
     return FutureBuilder<QuerySnapshot>(
       future: FirebaseFirestore.instance
           .collection('users')
@@ -503,7 +505,7 @@ class HomeScreen extends StatelessWidget {
         );
 
         return Text(
-          '${total.toInt()}৳',
+          '${settingsController.defaultCurrency.value} ${localizedNumber(total)}',
           style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red, fontSize: 16),
         );
       },

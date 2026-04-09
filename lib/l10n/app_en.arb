@@ -188,10 +188,13 @@
   "successfullyAddYourTransaction": "Transaction added successfully",
   "onlyBalance": "@balance",
   "onlySettingDefaultCurrency": "@defaultCurrency",
-  "balanceAmount": "@balance @defaultCurrency",
+  "balanceAmount": "@defaultCurrency @balance",
   "incomeAmount": "@income @defaultCurrency",
   "expenseAmount": "@expense @defaultCurrency",
   "confirmLogout": "Confirm Logout",
   "wantToConfirmLogout": "Are you sure you want to log out?",
-  "transactions": "Transactions"
+  "transactions": "Transactions",
+  "appLockPasswordSet": "App Lock password set",
+  "noTransactionsInThisMonth": "No transactions in this month",
+  "accountOpen": "Account Open:"
 }
