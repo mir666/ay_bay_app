@@ -623,4 +623,10 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get accountOpen => 'হিসাব খুলা হয়েছেঃ';
+
+  @override
+  String get downloadPDF => 'ডাউনলোড PDF';
+
+  @override
+  String get incomeSummary => 'আয়ের সারাংশ';
 }

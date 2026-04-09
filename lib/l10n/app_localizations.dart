@@ -1285,6 +1285,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account Open:'**
   String get accountOpen;
+
+  /// No description provided for @downloadPDF.
+  ///
+  /// In en, this message translates to:
+  /// **'Download PDF'**
+  String get downloadPDF;
+
+  /// No description provided for @incomeSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Income Summary'**
+  String get incomeSummary;
 }
 
 class _AppLocalizationsDelegate

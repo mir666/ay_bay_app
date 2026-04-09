@@ -626,4 +626,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountOpen => 'Account Open:';
+
+  @override
+  String get downloadPDF => 'Download PDF';
+
+  @override
+  String get incomeSummary => 'Income Summary';
 }

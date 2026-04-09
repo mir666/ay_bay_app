@@ -196,5 +196,7 @@
   "transactions": "লেনদেন",
   "appLockPasswordSet": "অ্যাপ লকের পাসওয়ার্ড দেওয়া হয়েছে",
   "noTransactionsInThisMonth": "এই মাসের কোনো লেনদেন নেই",
-  "accountOpen": "হিসাব খুলা হয়েছেঃ"
+  "accountOpen": "হিসাব খুলা হয়েছেঃ",
+  "downloadPDF": "ডাউনলোড PDF",
+  "incomeSummary": "আয়ের সারাংশ"
 }
