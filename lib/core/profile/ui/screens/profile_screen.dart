@@ -149,8 +149,8 @@ class ProfileScreen extends StatelessWidget {
       Stack(
       children: [
         Container(
-          width: radius * 2,
-          height: radius * 2,
+          width: radius * 1.6,
+          height: radius * 1.6,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
