@@ -48,6 +48,8 @@ class _LogInScreenState extends State<LogInScreen> {
             child: LanguageToggleButton(),
           ),
 
+          SizedBox(height: 6),
+
           /// 🧊 Premium Glass Card
           Center(
             child: ClipRRect(
@@ -56,8 +58,7 @@ class _LogInScreenState extends State<LogInScreen> {
                 filter: ImageFilter.blur(sigmaX: 32, sigmaY: 32),
                 child: Container(
                   width: size.width * 0.9,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 26, vertical: 38),
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 28),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     gradient: LinearGradient(

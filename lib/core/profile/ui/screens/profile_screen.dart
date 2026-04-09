@@ -16,6 +16,7 @@ import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatelessWidget {
   final double radius;
+
   ProfileScreen({super.key, this.radius = 60});
 
   final HomeController homeController = Get.find<HomeController>();
@@ -26,33 +27,29 @@ class ProfileScreen extends StatelessWidget {
 
     try {
       // English month → month number
-      final monthNumber =
-          DateFormat('MMMM', 'en').parse(monthName).month;
+      final monthNumber = DateFormat('MMMM', 'en').parse(monthName).month;
 
       // Create date using current year
       final date = DateTime(DateTime.now().year, monthNumber);
 
       // Return localized month name
-      return DateFormat.MMMM(
-        Get.locale?.languageCode ?? 'en',
-      ).format(date);
+      return DateFormat.MMMM(Get.locale?.languageCode ?? 'en').format(date);
     } catch (e) {
       return monthName; // fallback
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final _ =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-
+    final _ = MediaQuery.of(context).orientation == Orientation.landscape;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.localization.profile, style: TextStyle(color: Colors.white)),
+        title: Text(
+          context.localization.profile,
+          style: TextStyle(color: Colors.white),
+        ),
         iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         backgroundColor: AppColors.loginTextButtonColor,
@@ -62,7 +59,7 @@ class ProfileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildProfileHeader(context,size),
+              _buildProfileHeader(context, size),
 
               SizedBox(height: size.height * 0.02),
 
@@ -73,7 +70,9 @@ class ProfileScreen extends StatelessWidget {
                     Expanded(
                       child: _buildStatCard(
                         title: context.localization.transactions,
-                        value: localizedNumber(homeController.allTransactions.length),
+                        value: localizedNumber(
+                          homeController.allTransactions.length,
+                        ),
                         icon: Icons.swap_horiz,
                       ),
                     ),
@@ -97,7 +96,6 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
 
-
               SizedBox(height: size.height * 0.035),
               _buildCategoryColorLegend(),
 
@@ -107,7 +105,7 @@ class ProfileScreen extends StatelessWidget {
 
               SizedBox(height: size.height * 0.08),
 
-              _buildIncomeBarChart(context,size),
+              _buildIncomeBarChart(context, size),
             ],
           ),
         );
@@ -115,7 +113,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context,Size size) {
+  Widget _buildProfileHeader(BuildContext context, Size size) {
     DateTime? firstTransactionDate;
     if (homeController.allTransactions.isNotEmpty) {
       firstTransactionDate = homeController.allTransactions
@@ -146,59 +144,61 @@ class ProfileScreen extends StatelessWidget {
       child: Row(
         children: [
           // Avatar
-      Stack(
-      children: [
-        Container(
-          width: radius * 1.6,
-          height: radius * 1.6,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: Colors.white30, // border color
-              width: 3,           // border width
-            ),
-          ),
-          child: CircleAvatar(
-            radius: radius,
-            backgroundColor: Colors.blueGrey.withAlpha(80),
-            backgroundImage: userController.avatarBase64.value.isNotEmpty
-                ? MemoryImage(base64Decode(userController.avatarBase64.value))
-                : null,
-            child: userController.avatarBase64.value.isEmpty
-                ? Text(
-              userController.fullName.value.isNotEmpty
-                  ? userController.fullName.value[0].toUpperCase()
-                  : '?',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: radius * 0.85,
-                fontWeight: FontWeight.bold,
+          Stack(
+            children: [
+              Container(
+                width: radius * 1.4,
+                height: radius * 1.4,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white30, // border color
+                    width: 3, // border width
+                  ),
+                ),
+                child: CircleAvatar(
+                  radius: radius,
+                  backgroundColor: Colors.blueGrey.withAlpha(80),
+                  backgroundImage: userController.avatarBase64.value.isNotEmpty
+                      ? MemoryImage(
+                          base64Decode(userController.avatarBase64.value),
+                        )
+                      : null,
+                  child: userController.avatarBase64.value.isEmpty
+                      ? Text(
+                          userController.fullName.value.isNotEmpty
+                              ? userController.fullName.value[0].toUpperCase()
+                              : '?',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: radius * 0.85,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      : null,
+                ),
               ),
-            )
-                : null,
-          ),
-        ),
 
-      // Edit icon overlay
-      Positioned(
-        right: 0,
-        child: GestureDetector(
-          onTap: () {
-            userController.updateProfileImage();
-          },
-          child: CircleAvatar(
-            radius: radius * 0.25,
-            backgroundColor: Colors.grey,
-            child: Icon(
-              Icons.camera_alt,
-              size: radius * 0.25,
-              color: Colors.white70,
-            ),
+              // Edit icon overlay
+              Positioned(
+                right: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    userController.updateProfileImage();
+                  },
+                  child: CircleAvatar(
+                    radius: radius * 0.22,
+                    backgroundColor: Colors.grey,
+                    child: Icon(
+                      Icons.camera_alt,
+                      size: radius * 0.25,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-      ),
-      ],
-    ),
 
           SizedBox(width: size.width * 0.04),
 
@@ -220,7 +220,7 @@ class ProfileScreen extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
 
-                SizedBox(height: size.height * 0.007),
+                SizedBox(height: size.height * 0.005),
 
                 // Phone
                 Text(
@@ -234,7 +234,7 @@ class ProfileScreen extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
 
-                SizedBox(height: size.height * 0.007),
+                SizedBox(height: size.height * 0.005),
 
                 // Member Since (সব ইউজারের জন্য)
                 if (userController.createdAt.value != null)
@@ -247,7 +247,8 @@ class ProfileScreen extends StatelessWidget {
                   ),
 
                 // Transactions Since (শুধু প্রিমিয়ামের জন্য)
-                if (userController.isPremium.value && firstTransactionDate != null)
+                if (userController.isPremium.value &&
+                    firstTransactionDate != null)
                   Text(
                     'Transactions since: ${firstTransactionDate.day}/${firstTransactionDate.month}/${firstTransactionDate.year}',
                     style: TextStyle(
@@ -275,7 +276,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-
   void _showEditProfileDialog() {
     final nameController = TextEditingController(
       text: userController.fullName.value,
@@ -290,12 +290,12 @@ class ProfileScreen extends StatelessWidget {
     nameController.addListener(() {
       hasChanged.value =
           nameController.text.trim() != userController.fullName.value ||
-              phoneController.text.trim() != userController.phoneNumber.value;
+          phoneController.text.trim() != userController.phoneNumber.value;
     });
     phoneController.addListener(() {
       hasChanged.value =
           nameController.text.trim() != userController.fullName.value ||
-              phoneController.text.trim() != userController.phoneNumber.value;
+          phoneController.text.trim() != userController.phoneNumber.value;
     });
 
     Get.dialog(
@@ -320,18 +320,59 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Title
-                  Text(
-                    'Edit Profile',
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
+                  // 🔹 Profile Avatar with Edit Icon
+                  Stack(
+                    children: [
+                      Obx(
+                        () => CircleAvatar(
+                          radius: 45,
+                          backgroundColor: Colors.blueGrey.withAlpha(80),
+                          backgroundImage:
+                              userController.avatarBase64.value.isNotEmpty
+                              ? MemoryImage(
+                                  base64Decode(
+                                    userController.avatarBase64.value,
+                                  ),
+                                )
+                              : null,
+                          child: userController.avatarBase64.value.isEmpty
+                              ? Text(
+                                  userController.fullName.value.isNotEmpty
+                                      ? userController.fullName.value[0]
+                                            .toUpperCase()
+                                      : '?',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 36,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              : null,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: () async {
+                            await userController.updateProfileImage();
+                          },
+                          child: CircleAvatar(
+                            radius: 15,
+                            backgroundColor: Colors.grey[700],
+                            child: const Icon(
+                              Icons.camera_alt,
+                              size: 16,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 20),
 
-                  // Name Field
+                  // 🔹 Name Field
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
@@ -369,7 +410,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // Phone Field
+                  // 🔹 Phone Field
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
@@ -408,9 +449,9 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 25),
 
-                  // Buttons
+                  // 🔹 Buttons
                   Obx(
-                        () => Row(
+                    () => Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         // Cancel
@@ -440,41 +481,40 @@ class ProfileScreen extends StatelessWidget {
                         const SizedBox(width: 16),
 
                         // Save
-                        // Save Button
                         Expanded(
                           child: ElevatedButton(
                             onPressed: hasChanged.value
                                 ? () async {
-                              final newName = nameController.text.trim();
-                              final newPhone = phoneController.text
-                                  .trim();
+                                    final newName = nameController.text.trim();
+                                    final newPhone = phoneController.text
+                                        .trim();
 
-                              if (newName.isEmpty || newPhone.isEmpty) {
-                                Get.snackbar(
-                                  'Error',
-                                  'Name & Phone cannot be empty',
-                                  snackPosition: SnackPosition.BOTTOM,
-                                );
-                                return;
-                              }
+                                    if (newName.isEmpty || newPhone.isEmpty) {
+                                      Get.snackbar(
+                                        'Error',
+                                        'Name & Phone cannot be empty',
+                                        snackPosition: SnackPosition.BOTTOM,
+                                      );
+                                      return;
+                                    }
 
-                              try {
-                                await userController.updateProfile(
-                                  name: newName,
-                                  phone: newPhone,
-                                );
-                                if (Get.isDialogOpen!) Get.back();
-                              } catch (e) {
-                                Get.snackbar(
-                                  'Error',
-                                  e.toString(),
-                                  snackPosition: SnackPosition.BOTTOM,
-                                );
-                              }
-                            }
+                                    try {
+                                      await userController.updateProfile(
+                                        name: newName,
+                                        phone: newPhone,
+                                      );
+                                      if (Get.isDialogOpen!) Get.back();
+                                    } catch (e) {
+                                      Get.snackbar(
+                                        'Error',
+                                        e.toString(),
+                                        snackPosition: SnackPosition.BOTTOM,
+                                      );
+                                    }
+                                  }
                                 : null,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green, // সবসময় সবুজ
+                              backgroundColor: Colors.green,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -532,31 +572,31 @@ class ProfileScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: isSelected
                       ? const LinearGradient(
-                    colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  )
+                          colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        )
                       : LinearGradient(
-                    colors: [Colors.grey.shade200, Colors.grey.shade300],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                          colors: [Colors.grey.shade200, Colors.grey.shade300],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: isSelected
                       ? [
-                    BoxShadow(
-                      color: Colors.blueAccent.withValues(alpha: 0.4),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
+                          BoxShadow(
+                            color: Colors.blueAccent.withValues(alpha: 0.4),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
                       : [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                 ),
                 child: Center(
                   child: Text(
@@ -644,10 +684,12 @@ class ProfileScreen extends StatelessWidget {
                     interval: maxY / 4,
                   ),
                 ),
-                rightTitles:
-                AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                topTitles:
-                AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                topTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
 
                 /// 🔻 Bottom: ONLY COLOR DOT
                 bottomTitles: AxisTitles(
@@ -679,11 +721,9 @@ class ProfileScreen extends StatelessWidget {
               ),
 
               /// 🔹 Bars
-              barGroups: categoryIncome.entries
-                  .toList()
-                  .asMap()
-                  .entries
-                  .map((entry) {
+              barGroups: categoryIncome.entries.toList().asMap().entries.map((
+                entry,
+              ) {
                 final index = entry.key;
                 final data = entry.value;
                 final barColor = getCategoryColor(data.key);
@@ -696,10 +736,7 @@ class ProfileScreen extends StatelessWidget {
                       width: 22,
                       borderRadius: BorderRadius.circular(12),
                       gradient: LinearGradient(
-                        colors: [
-                          barColor.withValues(alpha: 0.4),
-                          barColor,
-                        ],
+                        colors: [barColor.withValues(alpha: 0.4), barColor],
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
                       ),
@@ -739,9 +776,9 @@ class ProfileScreen extends StatelessWidget {
     return allCategories
         .firstWhere(
           (cat) => cat.name == name,
-      orElse: () =>
-          CategoryModel(name: name, iconId: 0, color: Colors.grey),
-    )
+          orElse: () =>
+              CategoryModel(name: name, iconId: 0, color: Colors.grey),
+        )
         .color;
   }
 
@@ -798,7 +835,6 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
-
 
   Widget _buildStatCard({
     required String title,
@@ -881,8 +917,4 @@ class ProfileScreen extends StatelessWidget {
       },
     );
   }
-
-
-
-
 }

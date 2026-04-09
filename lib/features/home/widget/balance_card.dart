@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:ay_bay_app/app/app_colors.dart';
+import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/core/localization/ui/widget/language_toggle_button.dart';
+import 'package:ay_bay_app/core/profile/controllers/user_controller.dart';
 import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
 import 'package:ay_bay_app/core/utils/number_util.dart';
 import 'package:ay_bay_app/features/common/models/transaction_type_model.dart';
@@ -24,6 +27,7 @@ class BalanceCard extends StatefulWidget {
 class _BalanceCardState extends State<BalanceCard> {
   final settingsController = Get.find<SettingsController>();
   final controller = Get.find<HomeController>();
+  final userController = Get.find<UserController>();
   late String locale;
 
   @override
@@ -580,118 +584,9 @@ class _BalanceCardState extends State<BalanceCard> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             backgroundColor: Colors.white,
-                            child: Container(
-                              constraints: const BoxConstraints(maxHeight: 400),
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // 🔹 Title
-                                  Text(
-                                    context.localization.notifications,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-
-                                  // 🔹 Notification List
-                                  Expanded(
-                                    child: Obx(() {
-                                      final list =
-                                          notificationController.notifications;
-
-                                      if (list.isEmpty) {
-                                        return Center(
-                                          child: Text(
-                                            context
-                                                .localization
-                                                .noNotifications,
-                                            style: TextStyle(
-                                              color: Colors.grey.shade500,
-                                            ),
-                                          ),
-                                        );
-                                      }
-
-                                      return ListView.separated(
-                                        itemCount: list.length,
-                                        separatorBuilder: (_, _) =>
-                                            const Divider(height: 1),
-                                        itemBuilder: (_, index) {
-                                          final notification = list[index];
-                                          return Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 12,
-                                              horizontal: 8,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey.shade50,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  notification.title,
-                                                  style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  notification.body,
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    }),
-                                  ),
-                                  const SizedBox(height: 16),
-
-                                  // 🔹 Action Button
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            AppColors.loginTextButtonColor,
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 14,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            14,
-                                          ),
-                                        ),
-                                        elevation: 4,
-                                      ),
-                                      onPressed: () {
-                                        notificationController.markAllRead();
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                        context.localization.makeAllAsRead,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            child: _buildNotificationSection(
+                              context,
+                              notificationController,
                             ),
                           ),
                         );
@@ -724,10 +619,148 @@ class _BalanceCardState extends State<BalanceCard> {
                 ),
               ),
               const SizedBox(width: 8),
+              Obx(
+                    () => GestureDetector(
+                  onTap: () {
+                    // Profile page এ navigate করবে
+                    Get.toNamed(AppRoutes.appProfile);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white30,
+                        width: 2,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 18, // ছোট, AppBar / header friendly
+                      backgroundColor: Colors.blueGrey.withAlpha(200),
+                      backgroundImage: userController.avatarBase64.value.isNotEmpty
+                          ? MemoryImage(
+                        base64Decode(userController.avatarBase64.value),
+                      )
+                          : null,
+                      child: userController.avatarBase64.value.isEmpty
+                          ? const Icon(
+                        Icons.person,
+                        size: 18,
+                        color: Colors.white,
+                      )
+                          : null,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
 
               // 🔹 Language Toggle Button
               const LanguageToggleButton(),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotificationSection(
+    BuildContext context,
+    NotificationController notificationController,
+  ) {
+    return Container(
+      constraints: const BoxConstraints(maxHeight: 400),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // 🔹 Title
+          Text(
+            context.localization.notifications,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // 🔹 Notification List
+          Expanded(
+            child: Obx(() {
+              final list = notificationController.notifications;
+
+              if (list.isEmpty) {
+                return Center(
+                  child: Text(
+                    context.localization.noNotifications,
+                    style: TextStyle(color: Colors.grey.shade500),
+                  ),
+                );
+              }
+
+              return ListView.separated(
+                itemCount: list.length,
+                separatorBuilder: (_, _) => const Divider(height: 1),
+                itemBuilder: (_, index) {
+                  final notification = list[index];
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          notification.title,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          notification.body,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            }),
+          ),
+          const SizedBox(height: 16),
+
+          // 🔹 Action Button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.loginTextButtonColor,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                elevation: 4,
+              ),
+              onPressed: () {
+                notificationController.markAllRead();
+                Navigator.pop(context);
+              },
+              child: Text(
+                context.localization.makeAllAsRead,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
           ),
         ],
       ),
