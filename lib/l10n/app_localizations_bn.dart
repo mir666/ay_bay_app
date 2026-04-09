@@ -623,4 +623,19 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get accountOpen => 'হিসাব খুলা হয়েছেঃ';
+
+  @override
+  String get downloadPDF => 'ডাউনলোড PDF';
+
+  @override
+  String get incomeSummary => 'আয়ের সারাংশ';
+
+  @override
+  String get savingsGoals => 'সঞ্চয় এর লক্ষ্য';
+
+  @override
+  String get noGoalsYet => 'এখনও কোন লক্ষ্য নেই';
+
+  @override
+  String get saveGoal => 'লক্ষ্য সেভ';
 }

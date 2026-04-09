@@ -196,5 +196,10 @@
   "transactions": "লেনদেন",
   "appLockPasswordSet": "অ্যাপ লকের পাসওয়ার্ড দেওয়া হয়েছে",
   "noTransactionsInThisMonth": "এই মাসের কোনো লেনদেন নেই",
-  "accountOpen": "হিসাব খুলা হয়েছেঃ"
+  "accountOpen": "হিসাব খুলা হয়েছেঃ",
+  "downloadPDF": "ডাউনলোড PDF",
+  "incomeSummary": "আয়ের সারাংশ",
+  "savingsGoals": "সঞ্চয় এর লক্ষ্য",
+  "noGoalsYet": "এখনও কোন লক্ষ্য নেই",
+  "saveGoal": "লক্ষ্য সেভ"
 }

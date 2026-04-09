@@ -196,5 +196,10 @@
   "transactions": "Transactions",
   "appLockPasswordSet": "App Lock password set",
   "noTransactionsInThisMonth": "No transactions in this month",
-  "accountOpen": "Account Open:"
+  "accountOpen": "Account Open:",
+  "downloadPDF": "Download PDF",
+  "incomeSummary": "Income Summary",
+  "savingsGoals": "Savings Goals",
+  "noGoalsYet": "No goals yet",
+  "saveGoal": "Save Goal"
 }

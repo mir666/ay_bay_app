@@ -1,5 +1,6 @@
 import 'package:ay_bay_app/core/loan/controllers/debt_controller.dart';
 import 'package:ay_bay_app/core/localization/controllers/localization_controller.dart';
+import 'package:ay_bay_app/core/profile/controllers/saving_controller.dart';
 import 'package:ay_bay_app/core/profile/controllers/user_controller.dart';
 import 'package:ay_bay_app/core/settings/controllers/change_password_contoller.dart';
 import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
@@ -21,5 +22,6 @@ class ControllerBinding extends Bindings {
     Get.put(LocaleController());
     Get.put(DebtController(), permanent: true);
     Get.put(NotificationController());
+    Get.put(SavingsGoalController());
   }
 }

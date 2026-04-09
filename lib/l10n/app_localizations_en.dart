@@ -626,4 +626,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountOpen => 'Account Open:';
+
+  @override
+  String get downloadPDF => 'Download PDF';
+
+  @override
+  String get incomeSummary => 'Income Summary';
+
+  @override
+  String get savingsGoals => 'Savings Goals';
+
+  @override
+  String get noGoalsYet => 'No goals yet';
+
+  @override
+  String get saveGoal => 'Save Goal';
 }
