@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/core/extension/transaction_category_localization.dart';
@@ -13,7 +15,8 @@ import 'package:ay_bay_app/core/profile/controllers/user_controller.dart';
 import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatelessWidget {
-  ProfileScreen({super.key});
+  final double radius;
+  ProfileScreen({super.key, this.radius = 60});
 
   final HomeController homeController = Get.find<HomeController>();
   final UserController userController = Get.find<UserController>();
@@ -37,6 +40,8 @@ class ProfileScreen extends StatelessWidget {
       return monthName; // fallback
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -141,25 +146,59 @@ class ProfileScreen extends StatelessWidget {
       child: Row(
         children: [
           // Avatar
-          CircleAvatar(
-            radius: size.width * 0.09,
-            backgroundColor: Colors.blueGrey.withValues(alpha: 0.3),
-            backgroundImage: userController.avatarUrl.value.isNotEmpty
-                ? NetworkImage(userController.avatarUrl.value)
+      Stack(
+      children: [
+        Container(
+          width: radius * 2,
+          height: radius * 2,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: Colors.white30, // border color
+              width: 3,           // border width
+            ),
+          ),
+          child: CircleAvatar(
+            radius: radius,
+            backgroundColor: Colors.blueGrey.withAlpha(80),
+            backgroundImage: userController.avatarBase64.value.isNotEmpty
+                ? MemoryImage(base64Decode(userController.avatarBase64.value))
                 : null,
-            child: userController.avatarUrl.value.isEmpty
+            child: userController.avatarBase64.value.isEmpty
                 ? Text(
               userController.fullName.value.isNotEmpty
-                  ? userController.fullName.value[0]
+                  ? userController.fullName.value[0].toUpperCase()
                   : '?',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: size.width * 0.085,
+                fontSize: radius * 0.85,
                 fontWeight: FontWeight.bold,
               ),
             )
                 : null,
           ),
+        ),
+
+      // Edit icon overlay
+      Positioned(
+        right: 0,
+        child: GestureDetector(
+          onTap: () {
+            userController.updateProfileImage();
+          },
+          child: CircleAvatar(
+            radius: radius * 0.25,
+            backgroundColor: Colors.grey,
+            child: Icon(
+              Icons.camera_alt,
+              size: radius * 0.25,
+              color: Colors.white70,
+            ),
+          ),
+        ),
+      ),
+      ],
+    ),
 
           SizedBox(width: size.width * 0.04),
 

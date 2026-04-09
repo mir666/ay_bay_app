@@ -71,7 +71,7 @@ class SettingsScreen extends StatelessWidget {
                       : 'Phone Number',
                 ),
               ),
-              onTap: () => Get.to(() => ProfileScreen()),
+              onTap: () => Get.to(() => ProfileScreen(radius: 60,)),
               trailing: const Icon(Icons.arrow_forward_ios, size: 18),
             ),
           ),

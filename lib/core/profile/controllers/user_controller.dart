@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -9,6 +14,9 @@ class UserController extends GetxController {
   var fullName = ''.obs;
   var phoneNumber = ''.obs;
   var avatarUrl = ''.obs;
+  var isLoading = false.obs;
+  final ImagePicker _picker = ImagePicker();
+  RxString avatarBase64 = ''.obs;
 
   // নতুন ফিল্ড
   var createdAt = Rxn<DateTime>(); // Nullable DateTime
@@ -18,6 +26,7 @@ class UserController extends GetxController {
   void onInit() {
     super.onInit();
     loadUser();
+    loadProfileImage();
   }
 
   /// Firebase থেকে ইউজারের তথ্য নাও
@@ -87,5 +96,25 @@ class UserController extends GetxController {
       Get.snackbar('Error', e.toString());
       return false;
     }
+  }
+
+  Future<void> loadProfileImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedImage = prefs.getString('profile_pic') ?? '';
+    avatarBase64.value = savedImage;
+  }
+
+  Future<void> updateProfileImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile == null) return;
+
+    File imageFile = File(pickedFile.path);
+    final bytes = await imageFile.readAsBytes();
+    final encoded = base64Encode(bytes);
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('profile_pic', encoded);
+
+    avatarBase64.value = encoded;
   }
 }
