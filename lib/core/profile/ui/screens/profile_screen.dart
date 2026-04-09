@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
 import 'package:ay_bay_app/core/extension/transaction_category_localization.dart';
+import 'package:ay_bay_app/core/profile/controllers/saving_controller.dart';
+import 'package:ay_bay_app/core/profile/models/saving_model.dart';
 import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
 import 'package:ay_bay_app/core/utils/number_util.dart';
 import 'package:ay_bay_app/features/common/data/category_data.dart';
@@ -23,7 +25,9 @@ import 'package:share_plus/share_plus.dart';
 
 class ProfileScreen extends StatelessWidget {
   final double radius;
+
   ProfileScreen({super.key, this.radius = 60});
+
   final HomeController homeController = Get.find<HomeController>();
   final UserController userController = Get.find<UserController>();
 
@@ -104,10 +108,67 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
               ),
+
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: _premiumCard(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        /// Header
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              context.localization.savingsGoals,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+
+                            IconButton(
+                              icon: Icon(Icons.add),
+                              onPressed: () {
+                                _showAddGoalDialog(context);
+                              },
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 4),
+
+                        /// Goals List
+                        Obx(() {
+                          final controller = Get.find<SavingsGoalController>();
+
+                          if (controller.goals.isEmpty) {
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(context.localization.noGoalsYet),
+                            );
+                          }
+
+                          return Column(
+                            children: controller.goals
+                                .map((goal) => savingsGoalCard(goal))
+                                .toList(),
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
               SizedBox(height: size.height * 0.015),
               Padding(
                 padding: EdgeInsets.all(16),
-                child: Text(context.localization.incomeSummary,style: TextStyle(fontSize: 18,fontWeight: FontWeight.w600),),
+                child: Text(
+                  context.localization.incomeSummary,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
               ),
               _buildCategoryColorLegend(),
               SizedBox(height: size.height * 0.03),
@@ -588,10 +649,7 @@ class ProfileScreen extends StatelessWidget {
               children: [
                 Text(
                   'Select Month to Download PDF',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Expanded(
@@ -612,30 +670,49 @@ class ProfileScreen extends StatelessWidget {
                           child: ListTile(
                             title: Text(monthName),
                             trailing: Row(
-                              mainAxisSize: MainAxisSize.min, // Row shrink-wrap হোক
+                              mainAxisSize: MainAxisSize.min,
+                              // Row shrink-wrap হোক
                               children: [
                                 // Download Icon
                                 IconButton(
-                                  icon: const Icon(Icons.download, color: Colors.blueAccent),
+                                  icon: const Icon(
+                                    Icons.download,
+                                    color: Colors.blueAccent,
+                                  ),
                                   tooltip: 'Download PDF',
                                   onPressed: () async {
-                                    await _generateMonthPdf(monthId, monthName); // Local download
-                                    Get.snackbar('Success', '$monthName PDF downloaded!');
+                                    await _generateMonthPdf(
+                                      monthId,
+                                      monthName,
+                                    ); // Local download
+                                    Get.snackbar(
+                                      'Success',
+                                      '$monthName PDF downloaded!',
+                                    );
                                   },
                                 ),
 
                                 // Share Icon
                                 IconButton(
-                                  icon: const Icon(Icons.share, color: Colors.green),
+                                  icon: const Icon(
+                                    Icons.share,
+                                    color: Colors.green,
+                                  ),
                                   tooltip: 'Share PDF',
                                   onPressed: () async {
-                                    final file = await _generateMonthPdfFile(monthId, monthName);
+                                    final file = await _generateMonthPdfFile(
+                                      monthId,
+                                      monthName,
+                                    );
 
                                     // Share the PDF file
                                     await SharePlus.instance.share(
                                       ShareParams(
-                                        text: 'Here is the PDF for $monthName', // Optional text
-                                        files: [XFile(file.path)],              // List of files to share
+                                        text: 'Here is the PDF for $monthName',
+                                        // Optional text
+                                        files: [
+                                          XFile(file.path),
+                                        ], // List of files to share
                                       ),
                                     );
                                   },
@@ -658,7 +735,8 @@ class ProfileScreen extends StatelessWidget {
 
   Future<void> _generateMonthPdf(String monthId, String monthName) async {
     final controller = Get.find<HomeController>();
-    final SettingsController settingsController = Get.find<SettingsController>();
+    final SettingsController settingsController =
+        Get.find<SettingsController>();
 
     // Fetch transactions for selected month
     await controller.fetchTransactions(monthId);
@@ -679,9 +757,12 @@ class ProfileScreen extends StatelessWidget {
 
     final pdf = pw.Document();
 
-
     final summaries = [
-      {'title': 'মোট বাজেট', 'value': controller.totalBalance.value, 'color': PdfColors.green},
+      {
+        'title': 'মোট বাজেট',
+        'value': controller.totalBalance.value,
+        'color': PdfColors.green,
+      },
       {'title': 'আয়', 'value': totalIncome, 'color': PdfColors.green800},
       {'title': 'ব্যয়', 'value': totalExpense, 'color': PdfColors.red},
       {'title': 'ব্যালেন্স', 'value': balance, 'color': PdfColors.blue},
@@ -695,17 +776,18 @@ class ProfileScreen extends StatelessWidget {
           pw.Center(
             child: pw.Text(
               '$monthName মাসের লেনদেন রিপোর্ট',
-              style: pw.TextStyle(
-                fontSize: 22,
-                fontWeight: pw.FontWeight.bold,
-              ),
+              style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
             ),
           ),
           pw.SizedBox(height: 20),
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
             children: summaries.map((s) {
-              return _pdfSummary(s['title'] as String, s['value'] as double, s['color'] as PdfColor);
+              return _pdfSummary(
+                s['title'] as String,
+                s['value'] as double,
+                s['color'] as PdfColor,
+              );
             }).toList(),
           ),
           pw.Divider(height: 32, color: PdfColors.grey400),
@@ -750,7 +832,8 @@ class ProfileScreen extends StatelessWidget {
   }
 
   pw.Widget _pdfSummary(String title, double amount, PdfColor color) {
-    final SettingsController settingsController = Get.find<SettingsController>();
+    final SettingsController settingsController =
+        Get.find<SettingsController>();
     return pw.Column(
       mainAxisSize: pw.MainAxisSize.min,
       children: [
@@ -780,7 +863,9 @@ class ProfileScreen extends StatelessWidget {
   Future<File> _generateMonthPdfFile(String monthId, String monthName) async {
     // ১. PDF ডকুমেন্ট তৈরি
     final pdf = pw.Document();
-    final ttfRegular = pw.Font.ttf(await rootBundle.load('assets/fonts/NotoSansBengali-Regular.ttf'));
+    final ttfRegular = pw.Font.ttf(
+      await rootBundle.load('assets/fonts/NotoSansBengali-Regular.ttf'),
+    );
 
     // ২. Sample Content, তোমার ডাটা অনুযায়ী পরিবর্তন করো
     pdf.addPage(
@@ -791,9 +876,19 @@ class ProfileScreen extends StatelessWidget {
             child: pw.Column(
               mainAxisAlignment: pw.MainAxisAlignment.center,
               children: [
-                pw.Text('Month: $monthName', style: pw.TextStyle(font: ttfRegular, fontSize: 24, fontWeight: pw.FontWeight.bold)),
+                pw.Text(
+                  'Month: $monthName',
+                  style: pw.TextStyle(
+                    font: ttfRegular,
+                    fontSize: 24,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
                 pw.SizedBox(height: 20),
-                pw.Text('Here is your PDF content for month ID: $monthId', style: pw.TextStyle(font: ttfRegular, fontSize: 16)),
+                pw.Text(
+                  'Here is your PDF content for month ID: $monthId',
+                  style: pw.TextStyle(font: ttfRegular, fontSize: 16),
+                ),
               ],
             ),
           );
@@ -810,7 +905,380 @@ class ProfileScreen extends StatelessWidget {
 
     return file; // শেয়ারের জন্য রিটার্ন
   }
-  /// 🔹 মাসের হরিজন্টাল লিস্ট
+
+  Widget savingsGoalCard(SavingsGoal goal) {
+    final controller = Get.find<SavingsGoalController>();
+
+    final percent =
+    (goal.progress * 100).clamp(0, 100);
+
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        vertical: 8,
+      ),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius:
+        BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12
+                .withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment:
+        CrossAxisAlignment.start,
+        children: [
+
+          /// Header
+          Row(
+            children: [
+              Container(
+                padding:
+                const EdgeInsets.all(8),
+                decoration:
+                BoxDecoration(
+                  color: Colors
+                      .deepPurple
+                      .withValues(
+                      alpha: 0.1),
+                  borderRadius:
+                  BorderRadius
+                      .circular(10),
+                ),
+                child: const Icon(
+                  Icons.flag,
+                  color:
+                  Colors.deepPurple,
+                  size: 20,
+                ),
+              ),
+
+              const SizedBox(width: 10),
+
+              Expanded(
+                child: Text(
+                  goal.title,
+                  style:
+                  const TextStyle(
+                    fontSize: 16,
+                    fontWeight:
+                    FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              /// Delete button
+              IconButton(
+                icon: const Icon(
+                  Icons.delete_outline,
+                  color: Colors.red,
+                ),
+                tooltip: "Delete Goal",
+                onPressed: () {
+                  controller.deleteGoal(
+                    goal.id,
+                  );
+
+                  Get.snackbar(
+                    "Deleted",
+                    "Goal removed",
+                    snackPosition:
+                    SnackPosition
+                        .BOTTOM,
+                  );
+                },
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          /// Amount Row
+          Row(
+            mainAxisAlignment:
+            MainAxisAlignment
+                .spaceBetween,
+            children: [
+              Text(
+                "৳ ${goal.savedAmount.toInt()}",
+                style:
+                const TextStyle(
+                  fontSize: 16,
+                  fontWeight:
+                  FontWeight.bold,
+                  color:
+                  Colors.green,
+                ),
+              ),
+              Text(
+                "Target: ৳ ${goal.targetAmount.toInt()}",
+                style:
+                const TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          /// Progress Bar
+          ClipRRect(
+            borderRadius:
+            BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: goal.progress,
+              minHeight: 8,
+              backgroundColor:
+              Colors.grey
+                  .shade200,
+              valueColor:
+              const AlwaysStoppedAnimation(
+                Colors.deepPurple,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 6),
+
+          /// Percentage
+          Align(
+            alignment:
+            Alignment.centerRight,
+            child: Text(
+              "${percent.toStringAsFixed(0)}%",
+              style:
+              const TextStyle(
+                fontSize: 12,
+                fontWeight:
+                FontWeight.bold,
+                color:
+                Colors.deepPurple,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          /// Add Savings Button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                _showAddMoneyDialog(goal.id);
+              },
+              style:
+              ElevatedButton
+                  .styleFrom(
+                backgroundColor:
+                Colors.deepPurple,
+                padding:
+                const EdgeInsets
+                    .symmetric(
+                  vertical: 14,
+                ),
+                shape:
+                RoundedRectangleBorder(
+                  borderRadius:
+                  BorderRadius
+                      .circular(
+                      14),
+                ),
+                elevation: 0,
+              ),
+              icon: const Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+              label: const Text(
+                "Add Savings",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight:
+                  FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddMoneyDialog(String goalId) {
+    final controller = Get.find<SavingsGoalController>();
+
+    final amountController = TextEditingController();
+
+    Get.dialog(
+      AlertDialog(
+        title: Text("Add Savings", style: TextStyle(color: Colors.white),),
+        content: TextField(
+          controller: amountController,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(labelText: "Amount"),
+        ),
+        actions: [
+          TextButton(onPressed: Get.back, child: Text('cancel')),
+          ElevatedButton(
+            onPressed: () {
+              final amount = double.tryParse(amountController.text);
+
+              if (amount != null) {
+                controller.addSavings(goalId, amount);
+
+                Get.back();
+              }
+            },
+            child: Text('save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddGoalDialog(BuildContext context) {
+    final controller = Get.find<SavingsGoalController>();
+
+    final titleController = TextEditingController();
+
+    final amountController = TextEditingController();
+
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// Header
+              Row(
+                children: [
+                  Icon(Icons.flag, color: Colors.deepPurple, size: 26),
+                  SizedBox(width: 10),
+                  Text(
+                    "Create Savings Goal",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              /// Goal Title
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(
+                  labelText: "Goal Title",
+                  hintText: "e.g. Buy Bike",
+                  prefixIcon: const Icon(Icons.title),
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              /// Target Amount
+              TextField(
+                controller: amountController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "Target Amount",
+                  hintText: "Enter amount",
+                  prefixIcon: const Icon(Icons.attach_money),
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              /// Buttons
+              Row(
+                children: [
+                  /// Cancel
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: Get.back,
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        side: BorderSide(color: Colors.white)),
+                      child: Text(context.localization.cancel, style: TextStyle(color: Colors.white),),
+                    ),
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  /// Save
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final title = titleController.text;
+
+                        final amount = double.tryParse(amountController.text);
+
+                        if (title.isEmpty || amount == null) {
+                          Get.snackbar(
+                            "Error",
+                            "Please enter valid data",
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                          return;
+                        }
+
+                        controller.addGoal(title: title, targetAmount: amount);
+
+                        Get.back();
+
+                        Get.snackbar(
+                          "Success",
+                          "Savings goal created",
+                          snackPosition: SnackPosition.BOTTOM,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: Text(
+                        context.localization.saveGoal,
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white,),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildMonthList() {
     return SizedBox(
       height: 50,
@@ -884,7 +1352,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  /// 🔹 আয় (Income) বার চার্ট
   Widget _buildIncomeBarChart(BuildContext context, Size size) {
     if (homeController.allTransactions.isEmpty) {
       return SizedBox(

@@ -1297,6 +1297,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Income Summary'**
   String get incomeSummary;
+
+  /// No description provided for @savingsGoals.
+  ///
+  /// In en, this message translates to:
+  /// **'Savings Goals'**
+  String get savingsGoals;
+
+  /// No description provided for @noGoalsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No goals yet'**
+  String get noGoalsYet;
+
+  /// No description provided for @saveGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Goal'**
+  String get saveGoal;
 }
 
 class _AppLocalizationsDelegate

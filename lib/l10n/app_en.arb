@@ -198,5 +198,8 @@
   "noTransactionsInThisMonth": "No transactions in this month",
   "accountOpen": "Account Open:",
   "downloadPDF": "Download PDF",
-  "incomeSummary": "Income Summary"
+  "incomeSummary": "Income Summary",
+  "savingsGoals": "Savings Goals",
+  "noGoalsYet": "No goals yet",
+  "saveGoal": "Save Goal"
 }
