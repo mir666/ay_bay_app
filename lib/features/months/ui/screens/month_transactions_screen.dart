@@ -66,7 +66,7 @@ class MonthTransactionsScreen extends StatelessWidget {
             child: IconButton(
               icon: const Icon(Icons.download, size: 18, color: Colors.white),
               onPressed: () async {
-                await _generatePdf(controller);
+                await _generatePdf(context,controller);
               },
             ),
           ),
@@ -77,7 +77,7 @@ class MonthTransactionsScreen extends StatelessWidget {
       body: Obx(() {
         final list = controller.transactions;
         if (list.isEmpty) {
-          return const Center(child: Text('কোনো ট্রানজ্যাকশন নেই'));
+          return Center(child: Text(context.localization.noTransactions));
         }
 
         double totalIncome = 0;
@@ -264,88 +264,135 @@ class MonthTransactionsScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _generatePdf(HomeController controller) async {
-    final SettingsController settingsController = Get.find<SettingsController>();
+  Future<void> _generatePdf(
+      BuildContext context,
+      HomeController controller,
+      ) async {
+    final settingsController = Get.find<SettingsController>();
     final list = controller.transactions;
+
+    final loc = context.localization;
 
     double totalIncome = list
         .where((trx) => trx.type == TransactionType.income)
         .fold(0.0, (sum, trx) => sum + trx.amount);
+
     double totalExpense = list
         .where((trx) => trx.type == TransactionType.expense)
         .fold(0.0, (sum, trx) => sum + trx.amount);
+
     double balance = controller.balance.toDouble();
 
     final pdf = pw.Document();
 
-    // Summary data
     final summaries = [
-      {'title': 'মোট বাজেট', 'value': controller.totalBalance.value, 'color': PdfColors.green},
-      {'title': 'আয়', 'value': totalIncome, 'color': PdfColors.green800},
-      {'title': 'ব্যয়', 'value': totalExpense, 'color': PdfColors.red},
-      {'title': 'ব্যালেন্স', 'value': balance, 'color': PdfColors.blue},
+      {
+        'title': loc.totalBudget,
+        'value': controller.totalBalance.value,
+        'color': PdfColors.green,
+      },
+      {
+        'title': loc.income,
+        'value': totalIncome,
+        'color': PdfColors.green800,
+      },
+      {
+        'title': loc.expense,
+        'value': totalExpense,
+        'color': PdfColors.red,
+      },
+      {
+        'title': loc.balance,
+        'value': balance,
+        'color': PdfColors.blue,
+      },
     ];
 
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(24),
-        build: (context) => [
-          // Header
+
+        build: (pw.Context pdfContext) => [
+
+          /// HEADER
           pw.Center(
             child: pw.Text(
-              '$monthName মাসের লেনদেন রিপোর্ট',
+              loc.transactionReport,
               style: pw.TextStyle(
                 fontSize: 22,
                 fontWeight: pw.FontWeight.bold,
               ),
             ),
           ),
+
           pw.SizedBox(height: 20),
 
-          // Summary Row
+          /// SUMMARY
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
             children: summaries.map((s) {
-              return _pdfSummary(s['title'] as String, s['value'] as double, s['color'] as PdfColor);
+              return _pdfSummary(
+                s['title'] as String,
+                s['value'] as double,
+                s['color'] as PdfColor,
+              );
             }).toList(),
           ),
+
           pw.Divider(height: 32, color: PdfColors.grey400),
 
-          // Transaction Table
+          /// TABLE
           pw.TableHelper.fromTextArray(
-            headers: ['তারিখ', 'টাইপ', 'ক্যাটাগরী', 'পরিমাণ'],
+            headers: [
+              loc.date,
+              loc.type,
+              loc.category,
+              loc.amount,
+            ],
             data: list.map((trx) {
               return [
                 DateFormat('dd MMM yyyy').format(trx.date),
-                trx.type == TransactionType.income ? 'আয়' : 'ব্যয়',
+                trx.type == TransactionType.income
+                    ? loc.income
+                    : loc.expense,
                 trx.category,
                 '${settingsController.defaultCurrency.value} ${trx.amount.toInt()}',
               ];
             }).toList(),
+
             headerStyle: pw.TextStyle(
               fontWeight: pw.FontWeight.bold,
               color: PdfColors.white,
               fontSize: 12,
             ),
-            headerDecoration: pw.BoxDecoration(color: PdfColors.grey800),
+
+            headerDecoration: const pw.BoxDecoration(
+              color: PdfColors.grey800,
+            ),
+
             cellAlignment: pw.Alignment.centerLeft,
             cellStyle: const pw.TextStyle(fontSize: 12),
+
             columnWidths: {
               0: const pw.FixedColumnWidth(90),
-              1: const pw.FixedColumnWidth(50),
+              1: const pw.FixedColumnWidth(80),
               2: const pw.FlexColumnWidth(),
               3: const pw.FixedColumnWidth(80),
             },
           ),
+
           pw.SizedBox(height: 20),
 
-          // Footer
+          /// FOOTER
           pw.Align(
             alignment: pw.Alignment.centerRight,
             child: pw.Text(
-              'Generated by AyBay App',
-              style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey),
+              loc.generatedByApp,
+              style: const pw.TextStyle(
+                fontSize: 10,
+                color: PdfColors.grey,
+              ),
             ),
           ),
         ],

@@ -38,6 +38,7 @@ class HomeController extends GetxController {
   RxBool isMonthDropdownOpen = false.obs;
   RxBool showTotalBudget = false.obs;
 
+
   String? get uid => _auth.currentUser?.uid;
 
   @override
@@ -63,6 +64,8 @@ class HomeController extends GetxController {
   final isSearching = false.obs;
   final searchText = ''.obs;
   final suggestions = <TransactionModel>[].obs;
+  final recentSearches = <String>[].obs;
+  Timer? _debounce;
 
   // 🔹 Load last session
   void _loadState() {
@@ -85,6 +88,12 @@ class HomeController extends GetxController {
   void searchTransaction(String query) {
     searchText.value = query;
     isSearching.value = query.isNotEmpty;
+    _debounce?.cancel();
+
+    _debounce = Timer(
+      const Duration(milliseconds: 300),
+          () => _performSearch(query),
+    );
 
     if (query.isEmpty) {
       transactions.value = allTransactions;
@@ -118,8 +127,72 @@ class HomeController extends GetxController {
         .toList();
   }
 
+  void _performSearch(String query) {
+    searchText.value = query;
+    isSearching.value = query.isNotEmpty;
+
+    if (query.isEmpty) {
+      transactions.value = allTransactions;
+      suggestions.clear();
+      monthSuggestions.clear();
+      return;
+    }
+
+    final q = query.toLowerCase();
+
+    final trxMatches = globalTransactions.where((trx) {
+      final titleMatch =
+      trx.title.toLowerCase().contains(q);
+
+      final categoryMatch =
+      trx.category.toLowerCase().contains(q);
+
+      final monthMatch =
+      trx.monthName.toLowerCase().contains(q);
+
+      final dateStr = DateFormat(
+        'dd MMM yyyy',
+      ).format(trx.date).toLowerCase();
+
+      final dateMatch =
+      dateStr.contains(q);
+
+      return titleMatch ||
+          categoryMatch ||
+          monthMatch ||
+          dateMatch;
+    }).toList();
+
+    suggestions.value =
+        trxMatches.take(6).toList();
+
+    transactions.value = trxMatches;
+
+    monthSuggestions.value = months
+        .where((m) =>
+        m['month']
+            .toString()
+            .toLowerCase()
+            .contains(q))
+        .take(6)
+        .toList();
+  }
+
+  void saveSearchHistory(String query) {
+    if (query.isEmpty) return;
+
+    recentSearches.remove(query);
+
+    recentSearches.insert(0, query);
+
+    if (recentSearches.length > 5) {
+      recentSearches.removeLast();
+    }
+  }
+
   void selectSuggestion(TransactionModel trx) async {
     searchText.value = trx.title;
+    saveSearchHistory(trx.title);
 
     selectedMonth.value = trx.monthName;
     selectedMonthId.value = trx.monthId;
@@ -133,6 +206,7 @@ class HomeController extends GetxController {
   }
 
   void selectMonthFromSearch(Map<String, dynamic> month) async {
+    saveSearchHistory(month['month']);
     selectedMonth.value = month['month'];
     selectedMonthId.value = month['id'];
 
@@ -169,11 +243,15 @@ class HomeController extends GetxController {
   }
 
   void closeSearch() {
+    if (searchText.value.isNotEmpty) {
+      saveSearchHistory(searchText.value);
+    }
+
     isSearching.value = false;
     searchText.value = '';
     suggestions.clear();
     monthSuggestions.clear();
-    transactions.value = allTransactions; // selected month restore
+    transactions.value = allTransactions;
   }
 
   /// মাস সিলেক্ট করার মেথড

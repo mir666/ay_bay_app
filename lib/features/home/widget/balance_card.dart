@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:ay_bay_app/app/app_colors.dart';
 import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/core/extension/localization_extension.dart';
+import 'package:ay_bay_app/core/extension/transaction_category_localization.dart';
 import 'package:ay_bay_app/core/localization/ui/widget/language_toggle_button.dart';
 import 'package:ay_bay_app/core/profile/controllers/user_controller.dart';
 import 'package:ay_bay_app/core/settings/controllers/settings_controller.dart';
@@ -116,112 +117,36 @@ class _BalanceCardState extends State<BalanceCard> {
 
   Widget _buildSearchBar(HomeController controller) {
     return Obx(() {
-      if (!controller.isSearching.value) return SizedBox();
+      if (!controller.isSearching.value) {
+        return const SizedBox();
+      }
 
       return Positioned(
-        top: 80,
+        top: 70,
         left: 12,
         right: 12,
-        child: Material(
-          elevation: 12,
-          borderRadius: BorderRadius.circular(16),
-          color: Colors.white,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: 400, // পুরো suggestions area scrollable
-            ),
-            child: SingleChildScrollView(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+          child: Material(
+            elevation: 18,
+            borderRadius: BorderRadius.circular(20),
+            shadowColor: Colors.black26,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              constraints: const BoxConstraints(
+                maxHeight: 460,
+              ),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  /// Search Bar
-                  Padding(
-                    padding: EdgeInsets.all(12),
-                    child: TextField(
-                      autofocus: true,
-                      onChanged: controller.searchTransaction,
-                      decoration: const InputDecoration(
-                        hintText: 'মাস, লেনদেন বা তারিখ খুঁজুন...',
-                        prefixIcon: Icon(Icons.search),
-                        border: InputBorder.none,
-                      ),
-                    ),
+                  _premiumSearchField(controller),
+
+                  Expanded(
+                    child: _buildSuggestionList(controller),
                   ),
-
-                  /// Month Suggestions
-                  if (controller.monthSuggestions.isNotEmpty)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          child: Text(
-                            context.localization.month,
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: controller.monthSuggestions.length,
-                          itemBuilder: (context, index) {
-                            final m = controller.monthSuggestions[index];
-                            return ListTile(
-                              leading: const Icon(Icons.calendar_month),
-                              title: searchHighlightText(
-                                m['month'],
-                                controller.searchText.value,
-                                highlightColor: Colors.deepPurple,
-                              ),
-                              onTap: () => controller.selectMonthFromSearch(m),
-                            );
-                          },
-                        ),
-                        const Divider(height: 1),
-                      ],
-                    ),
-
-                  /// Transaction Suggestions
-                  if (controller.suggestions.isNotEmpty)
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: controller.suggestions.length,
-                      itemBuilder: (context, index) {
-                        final trx = controller.suggestions[index];
-                        return ListTile(
-                          leading: Icon(
-                            trx.type == TransactionType.income
-                                ? Icons.arrow_downward
-                                : Icons.arrow_upward,
-                            color: trx.type == TransactionType.income
-                                ? Colors.green
-                                : Colors.red,
-                          ),
-                          title: searchHighlightText(
-                            trx.title,
-                            controller.searchText.value,
-                            highlightColor: trx.type == TransactionType.income
-                                ? Colors.green
-                                : Colors.red,
-                          ),
-                          subtitle: Text(
-                            DateFormat(
-                              'dd MMM yyyy',
-                              Get.locale?.languageCode,
-                            ).format(trx.date),
-                          ),
-                          trailing: Text('৳ ${trx.amount}'),
-                          onTap: () {
-                            controller.selectSuggestion(trx);
-                            controller.closeSearch();
-                          },
-                        );
-                      },
-                    ),
                 ],
               ),
             ),
@@ -229,6 +154,260 @@ class _BalanceCardState extends State<BalanceCard> {
         ),
       );
     });
+  }
+
+  Widget _premiumSearchField(HomeController controller) {
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: TextField(
+        autofocus: true,
+        onChanged: controller.searchTransaction,
+        decoration: InputDecoration(
+          hintText: context.localization.searchHint,
+          hintStyle: TextStyle(color: Colors.grey),
+          prefixIcon: const Icon(
+            Icons.search,
+          ),
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: controller.closeSearch,
+          ),
+          filled: true,
+          fillColor: Colors.grey.shade100,
+          contentPadding:
+          const EdgeInsets.symmetric(
+            vertical: 12,
+          ),
+          border: OutlineInputBorder(
+            borderRadius:
+            BorderRadius.circular(14),
+            borderSide: BorderSide.none,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSuggestionList(HomeController controller) {
+    if (controller.searchText.isEmpty) {
+      return _buildRecentSearches(controller);
+    }
+
+    if (controller.suggestions.isEmpty &&
+        controller.monthSuggestions.isEmpty) {
+      return _buildEmptyState();
+    }
+
+    return ListView(
+      children: [
+        if (controller.monthSuggestions.isNotEmpty)
+          _buildMonthSection(controller),
+
+        if (controller.suggestions.isNotEmpty)
+          _buildTransactionSection(controller),
+      ],
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Icon(Icons.search_off, size: 48, color: Colors.grey),
+            SizedBox(height: 10),
+            Text(
+              context.localization.noResultsFound,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _transactionTile(TransactionModel trx,HomeController controller) {
+    final isIncome = trx.type == TransactionType.income;
+
+    return ListTile(
+      leading: CircleAvatar(
+        radius: 18,
+        backgroundColor: isIncome
+            ? Colors.green.withValues(alpha: 0.1)
+            : Colors.red.withValues(alpha: 0.1),
+        child: Icon(
+          isIncome ? Icons.arrow_downward : Icons.arrow_upward,
+          color: isIncome ? Colors.green : Colors.red,
+        ),
+      ),
+
+      /// Title
+      title: searchHighlightText(
+        trx.category.localizedName(),
+        controller.searchText.value,
+        highlightColor: isIncome ? Colors.green : Colors.red,
+      ),
+
+      /// Category + Date
+      subtitle: Row(
+        children: [
+          /// Date
+          Text(
+            DateFormat(
+              'dd MMM yyyy', Get.locale?.languageCode).format(trx.date),
+            style: const TextStyle(
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+
+      /// Amount
+      trailing: Text(
+        "${settingsController.defaultCurrency.value} ${localizedNumber(trx.amount)}",
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: isIncome ? Colors.green : Colors.red,
+        ),
+      ),
+
+      onTap: () {
+        controller.selectSuggestion(trx);
+        controller.closeSearch();
+      },
+    );
+  }
+
+  Widget _buildRecentSearches(HomeController controller) {
+    if (controller.recentSearches.isEmpty) {
+      return const SizedBox();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
+          child: Text(
+            context.localization.recentSearches,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+        ),
+
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: controller.recentSearches.length,
+          itemBuilder: (context, index) {
+            final query = controller.recentSearches[index];
+
+            return ListTile(
+              leading: Icon(Icons.history, color: Colors.grey),
+              title: Text(query),
+
+              trailing: IconButton(
+                icon: Icon(Icons.close, size: 18,),
+                onPressed: () {
+                  controller.recentSearches.remove(query);
+                },
+              ),
+
+              onTap: () {controller.searchTransaction(query);
+              },
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMonthSection(HomeController controller) {
+    return Column(
+      crossAxisAlignment:
+      CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
+          child: Text(
+            "${context.localization.month} "
+                "(${controller.monthSuggestions.length})",
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: controller.monthSuggestions.length,
+          itemBuilder: (context, index) {
+            final m = controller.monthSuggestions[index];
+
+            return ListTile(
+              leading: const Icon(
+                Icons.calendar_month,
+                color: Colors.deepPurple,
+              ),
+
+              title: searchHighlightText(
+                _localizedMonth(m['month'], DateTime.now()),
+                controller.searchText.value,
+                highlightColor:
+                Colors.deepPurple,
+              ),
+              onTap: () => controller.selectMonthFromSearch(m),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTransactionSection(HomeController controller) {
+    return Column(
+      crossAxisAlignment:
+      CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
+          child: Text(
+            "${context.localization.transactions} "
+                "(${controller.suggestions.length})",
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: controller.suggestions.length,
+
+          itemBuilder: (context, index) {
+            final trx = controller.suggestions[index];
+            return _transactionTile(trx, controller);
+          },
+        ),
+      ],
+    );
   }
 
   Widget _buildCurrentBalance(HomeController controller) {
@@ -436,21 +615,17 @@ class _BalanceCardState extends State<BalanceCard> {
         child: Obx(() {
           final today = controller.todayDate.value;
 
-          // ✅ Check: selectedMonth must exist in months list
-          final safeSelectedMonth =
-              controller.months.any(
-                (m) => m['month'] == controller.selectedMonth.value,
-              )
-              ? controller.selectedMonth.value
-              : null;
+
+          final safeSelectedMonth = controller.months.any(
+                (m) => m['month'] == controller.selectedMonth.value)
+              ? controller.selectedMonth.value : null;
 
           return DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               isExpanded: true,
               value: safeSelectedMonth,
               hint: Text(
-                safeSelectedMonth == null
-                    ? context.localization.month
+                safeSelectedMonth == null ? context.localization.month
                     : _localizedMonth(safeSelectedMonth, today),
                 // <-- লোকালাইজড
                 style: const TextStyle(
@@ -476,14 +651,12 @@ class _BalanceCardState extends State<BalanceCard> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          _localizedMonth(m['month'], today), // <-- লোকালাইজড
+                          _localizedMonth(m['month'], today),
                           style: const TextStyle(color: Colors.white),
                         ),
                         Text(
                           DateFormat(
-                            'dd MMM',
-                            Get.locale?.languageCode ?? 'en',
-                          ).format(today),
+                            'dd MMM', Get.locale?.languageCode ?? 'en',).format(today),
                           style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 14,
@@ -513,10 +686,7 @@ class _BalanceCardState extends State<BalanceCard> {
     );
   }
 
-  Widget _buildHeaderProfileSection(
-    BuildContext context,
-    HomeController controller,
-  ) {
+  Widget _buildHeaderProfileSection(BuildContext context, HomeController controller) {
     final notificationController = Get.put(NotificationController());
 
     return Padding(

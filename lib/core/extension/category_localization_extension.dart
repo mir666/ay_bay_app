@@ -7,7 +7,7 @@ extension CategoryLocalization on CategoryModel {
   String localizedName(BuildContext context) {
     final categoryLocalization = context.localization;
 
-    switch (name) { // 🔴 key না, name
+    switch (name) {
       case 'salary':
         return categoryLocalization.category_salary;
       case 'gift':
