@@ -69,7 +69,7 @@ class TransactionModel {
       'amount': amount,
       'type': type == TransactionType.income ? 'income' : 'expense',
       'category': category,
-      'categoryIcon': categoryIcon, // ✅ save করবো Firestore-এ
+      'categoryIcon': categoryIcon,
       'date': Timestamp.fromDate(date),
       'isMonthly': isMonthly,
     };

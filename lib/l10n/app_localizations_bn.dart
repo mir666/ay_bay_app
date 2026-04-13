@@ -638,4 +638,44 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get saveGoal => 'লক্ষ্য সেভ';
+
+  @override
+  String get searchHint => 'মাস, লেনদেন বা তারিখ খুঁজুন';
+
+  @override
+  String get recentSearches => 'সাম্প্রতিক অনুসন্ধান';
+
+  @override
+  String get noResultsFound => 'কোনো ফলাফল পাওয়া যায়নি';
+
+  @override
+  String get namePhoneCannotBeEmpty =>
+      'নাম এবং মোবাইল নাম্বার খালি রাখা যাবে না';
+
+  @override
+  String get downloadMonthlyPDF => 'মাসিক পিডিএফ ডাউনলোড করুন';
+
+  @override
+  String get pdfDownloaded => 'PDF ডাউনলোড হয়েছে!';
+
+  @override
+  String get sharePDF => 'শেয়ার PDF';
+
+  @override
+  String get hereIsThePDFFor => 'এখানে পিডিএফটি রয়েছে';
+
+  @override
+  String get noTransactionFoundFor => 'কোনো লেনদেন খুঁজে পাওয়া যায়নি';
+
+  @override
+  String get generatedByApp => 'AyBay অ্যাপ দ্বারা তৈরি';
+
+  @override
+  String get transactionReport => 'লেনদেন প্রতিবেদন';
+
+  @override
+  String get type => 'প্রকার';
+
+  @override
+  String get amount => 'পরিমাণ';
 }

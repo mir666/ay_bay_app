@@ -82,7 +82,7 @@ class AppDrawer extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.bottomLeft,
                       child: Obx(
-                        () => Row(
+                            () => Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             /// Avatar with glow
@@ -101,15 +101,20 @@ class AppDrawer extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: Colors.white30, // border color
-                                    width: 3,              // border width
+                                    color: Colors.white30,
+                                    width: 3,
                                   ),
                                 ),
                                 child: CircleAvatar(
                                   radius: 34,
                                   backgroundColor: Colors.blueGrey.withAlpha(230),
-                                  backgroundImage: userController.avatarBase64.value.isNotEmpty
-                                      ? MemoryImage(base64Decode(userController.avatarBase64.value))
+                                  backgroundImage:
+                                  userController.avatarBase64.value.isNotEmpty
+                                      ? MemoryImage(
+                                    base64Decode(
+                                      userController.avatarBase64.value,
+                                    ),
+                                  )
                                       : null,
                                   child: userController.avatarBase64.value.isEmpty
                                       ? const Icon(
@@ -122,36 +127,53 @@ class AppDrawer extends StatelessWidget {
                               ),
                             ),
 
-                            SizedBox(width: 16),
+                            const SizedBox(width: 16),
 
-                            /// Text
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  context.localization.welcome,
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 18,
-                                    letterSpacing: 0.6,
+                            /// TEXT (FIXED: Expanded added)
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    context.localization.welcome,
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 18,
+                                      letterSpacing: 0.6,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  userController.fullName.value.isNotEmpty
-                                      ? userController.fullName.value
-                                      : 'User',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 0.3,
+
+                                  const SizedBox(height: 4),
+
+                                  Row(
+                                    children: [
+                                      Text(
+                                        userController.fullName.value.isNotEmpty
+                                            ? userController.fullName.value
+                                            : 'User',
+                                        maxLines: 2,
+                                        softWrap: true,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 0.3,
+                                        ),
+                                      ),
+                                      SizedBox(width: 2),
+
+                                      Icon(
+                                        Icons.workspace_premium,
+                                        color: Colors.amber,
+                                        size: 18,
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),

@@ -201,5 +201,19 @@
   "incomeSummary": "আয়ের সারাংশ",
   "savingsGoals": "সঞ্চয় এর লক্ষ্য",
   "noGoalsYet": "এখনও কোন লক্ষ্য নেই",
-  "saveGoal": "লক্ষ্য সেভ"
+  "saveGoal": "লক্ষ্য সেভ",
+  "searchHint": "মাস, লেনদেন বা তারিখ খুঁজুন",
+  "recentSearches": "সাম্প্রতিক অনুসন্ধান",
+  "noResultsFound": "কোনো ফলাফল পাওয়া যায়নি",
+  "namePhoneCannotBeEmpty": "নাম এবং মোবাইল নাম্বার খালি রাখা যাবে না",
+  "downloadMonthlyPDF": "মাসিক পিডিএফ ডাউনলোড করুন",
+  "pdfDownloaded": "PDF ডাউনলোড হয়েছে!",
+  "sharePDF": "শেয়ার PDF",
+  "hereIsThePDFFor": "এখানে পিডিএফটি রয়েছে",
+  "noTransactionFoundFor": "কোনো লেনদেন খুঁজে পাওয়া যায়নি",
+  "generatedByApp": "AyBay অ্যাপ দ্বারা তৈরি",
+  "transactionReport": "লেনদেন প্রতিবেদন",
+  "type": "প্রকার",
+  "amount": "পরিমাণ"
+
 }

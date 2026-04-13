@@ -104,7 +104,7 @@ class ProfileScreen extends StatelessWidget {
                     leading: Icon(Icons.download, color: Colors.orangeAccent),
                     title: Text(context.localization.downloadPDF),
                     trailing: Icon(Icons.arrow_forward_ios, size: 18),
-                    onTap: () => _showDownloadPdfDialog(),
+                    onTap: () => _showDownloadPdfDialog(context),
                   ),
                 ),
               ),
@@ -170,9 +170,9 @@ class ProfileScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
               ),
-              _buildCategoryColorLegend(),
-              SizedBox(height: size.height * 0.03),
               _buildMonthList(),
+              SizedBox(height: size.height * 0.03),
+              _buildCategoryColorLegend(),
               SizedBox(height: size.height * 0.03),
               _buildIncomeBarChart(context, size),
             ],
@@ -277,16 +277,31 @@ class ProfileScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Name
-                Text(
-                  userController.fullName.value.isNotEmpty
-                      ? userController.fullName.value
-                      : 'Your Name',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: size.width * 0.06,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        userController.fullName.value.isNotEmpty
+                            ? userController.fullName.value
+                            : 'Your Name',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: size.width * 0.06,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+
+                    SizedBox(width: 6),
+
+                    Icon(
+                      Icons.workspace_premium,
+                      color: Colors.amber,
+                      size: 22,
+                    ),
+                  ],
                 ),
 
                 SizedBox(height: size.height * 0.005),
@@ -319,7 +334,7 @@ class ProfileScreen extends StatelessWidget {
                 if (userController.isPremium.value &&
                     firstTransactionDate != null)
                   Text(
-                    'Transactions since: ${firstTransactionDate.day}/${firstTransactionDate.month}/${firstTransactionDate.year}',
+                    '${context.localization.accountOpen} ${localizedNumber(userController.createdAt.value!.day)}/${localizedNumber(userController.createdAt.value!.month)}/${localizedNumber(userController.createdAt.value!.year)}',
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: size.width * 0.035,
@@ -336,7 +351,7 @@ class ProfileScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: IconButton(
-              onPressed: () => _showEditProfileDialog(),
+              onPressed: () => _showEditProfileDialog(context),
               icon: const Icon(Icons.edit, color: Colors.white, size: 20),
             ),
           ),
@@ -345,7 +360,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showEditProfileDialog() {
+  void _showEditProfileDialog(BuildContext context) {
     final nameController = TextEditingController(
       text: userController.fullName.value,
     );
@@ -408,8 +423,7 @@ class ProfileScreen extends StatelessWidget {
                               ? Text(
                                   userController.fullName.value.isNotEmpty
                                       ? userController.fullName.value[0]
-                                            .toUpperCase()
-                                      : '?',
+                                      .toUpperCase() : '?',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 36,
@@ -460,7 +474,7 @@ class ProfileScreen extends StatelessWidget {
                           Icons.person,
                           color: Colors.blueAccent,
                         ),
-                        labelText: 'Full Name',
+                        labelText: context.localization.readFullName,
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(
@@ -499,7 +513,7 @@ class ProfileScreen extends StatelessWidget {
                           Icons.phone,
                           color: Colors.green,
                         ),
-                        labelText: 'Phone Number',
+                        labelText: context.localization.readPhoneNumber,
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(
@@ -537,8 +551,8 @@ class ProfileScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Text(
-                              'Cancel',
+                            child: Text(
+                              context.localization.cancel,
                               style: TextStyle(
                                 color: Colors.red,
                                 fontWeight: FontWeight.bold,
@@ -560,9 +574,10 @@ class ProfileScreen extends StatelessWidget {
 
                                     if (newName.isEmpty || newPhone.isEmpty) {
                                       Get.snackbar(
-                                        'Error',
-                                        'Name & Phone cannot be empty',
+                                        context.localization.error,
+                                        context.localization.namePhoneCannotBeEmpty,
                                         snackPosition: SnackPosition.BOTTOM,
+                                        barBlur: 0,
                                       );
                                       return;
                                     }
@@ -575,9 +590,10 @@ class ProfileScreen extends StatelessWidget {
                                       if (Get.isDialogOpen!) Get.back();
                                     } catch (e) {
                                       Get.snackbar(
-                                        'Error',
+                                        context.localization.error,
                                         e.toString(),
                                         snackPosition: SnackPosition.BOTTOM,
+                                        barBlur: 0,
                                       );
                                     }
                                   }
@@ -590,8 +606,8 @@ class ProfileScreen extends StatelessWidget {
                               ),
                               elevation: 3,
                             ),
-                            child: const Text(
-                              'Save',
+                            child: Text(
+                              context.localization.save,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -632,7 +648,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showDownloadPdfDialog() {
+  void _showDownloadPdfDialog(BuildContext context) {
     Get.dialog(
       Center(
         child: Material(
@@ -648,7 +664,7 @@ class ProfileScreen extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'Select Month to Download PDF',
+                  context.localization.downloadMonthlyPDF,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
@@ -675,19 +691,23 @@ class ProfileScreen extends StatelessWidget {
                               children: [
                                 // Download Icon
                                 IconButton(
-                                  icon: const Icon(
-                                    Icons.download,
+                                  icon: Icon(
+                                    Icons.download_for_offline_outlined,
                                     color: Colors.blueAccent,
                                   ),
-                                  tooltip: 'Download PDF',
+                                  tooltip: context.localization.downloadPDF,
                                   onPressed: () async {
                                     await _generateMonthPdf(
+                                      context,
                                       monthId,
                                       monthName,
                                     ); // Local download
                                     Get.snackbar(
-                                      'Success',
-                                      '$monthName PDF downloaded!',
+                                      context.localization.success,
+                                      '$monthName ${context.localization.pdfDownloaded}',
+                                      snackPosition: SnackPosition.BOTTOM,
+                                      barBlur: 0,
+                                      backgroundColor: Colors.transparent,
                                     );
                                   },
                                 ),
@@ -695,10 +715,10 @@ class ProfileScreen extends StatelessWidget {
                                 // Share Icon
                                 IconButton(
                                   icon: const Icon(
-                                    Icons.share,
-                                    color: Colors.green,
+                                    Icons.folder_shared_outlined,
+                                    color: Colors.orange,
                                   ),
-                                  tooltip: 'Share PDF',
+                                  tooltip: context.localization.sharePDF,
                                   onPressed: () async {
                                     final file = await _generateMonthPdfFile(
                                       monthId,
@@ -708,7 +728,7 @@ class ProfileScreen extends StatelessWidget {
                                     // Share the PDF file
                                     await SharePlus.instance.share(
                                       ShareParams(
-                                        text: 'Here is the PDF for $monthName',
+                                        text: '${context.localization.hereIsThePDFFor} $monthName',
                                         // Optional text
                                         files: [
                                           XFile(file.path),
@@ -733,53 +753,79 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _generateMonthPdf(String monthId, String monthName) async {
+  Future<void> _generateMonthPdf(
+      BuildContext context,
+      String monthId,
+      String monthName,
+      ) async {
     final controller = Get.find<HomeController>();
-    final SettingsController settingsController =
-        Get.find<SettingsController>();
+    final settingsController = Get.find<SettingsController>();
 
-    // Fetch transactions for selected month
     await controller.fetchTransactions(monthId);
     final list = controller.transactions;
 
     if (list.isEmpty) {
-      Get.snackbar('No Transactions', 'No transactions found for $monthName');
+      Get.snackbar(
+        context.localization.noTransactions,
+        '${context.localization.noTransactionFoundFor} $monthName',
+      );
       return;
     }
 
     double totalIncome = list
         .where((trx) => trx.type == TransactionType.income)
         .fold(0.0, (sum, trx) => sum + trx.amount);
+
     double totalExpense = list
         .where((trx) => trx.type == TransactionType.expense)
         .fold(0.0, (sum, trx) => sum + trx.amount);
+
     double balance = controller.balance.toDouble();
 
     final pdf = pw.Document();
 
     final summaries = [
       {
-        'title': 'মোট বাজেট',
+        'title': context.localization.totalBudget,
         'value': controller.totalBalance.value,
         'color': PdfColors.green,
       },
-      {'title': 'আয়', 'value': totalIncome, 'color': PdfColors.green800},
-      {'title': 'ব্যয়', 'value': totalExpense, 'color': PdfColors.red},
-      {'title': 'ব্যালেন্স', 'value': balance, 'color': PdfColors.blue},
+      {
+        'title': context.localization.income,
+        'value': totalIncome,
+        'color': PdfColors.green800,
+      },
+      {
+        'title': context.localization.expense,
+        'value': totalExpense,
+        'color': PdfColors.red,
+      },
+      {
+        'title': context.localization.balance,
+        'value': balance,
+        'color': PdfColors.blue,
+      },
     ];
 
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(24),
-        build: (context) => [
+
+        build: (pw.Context pdfContext) => [
+
           pw.Center(
             child: pw.Text(
-              '$monthName মাসের লেনদেন রিপোর্ট',
-              style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
+              '$monthName ${context.localization.transactionReport}',
+              style: pw.TextStyle(
+                fontSize: 22,
+                fontWeight: pw.FontWeight.bold,
+              ),
             ),
           ),
+
           pw.SizedBox(height: 20),
+
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
             children: summaries.map((s) {
@@ -790,13 +836,22 @@ class ProfileScreen extends StatelessWidget {
               );
             }).toList(),
           ),
+
           pw.Divider(height: 32, color: PdfColors.grey400),
+
           pw.TableHelper.fromTextArray(
-            headers: ['তারিখ', 'টাইপ', 'ক্যাটাগরী', 'পরিমাণ'],
+            headers: [
+              context.localization.date,
+              context.localization.type,
+              context.localization.category,
+              context.localization.amount,
+            ],
             data: list.map((trx) {
               return [
                 DateFormat('dd MMM yyyy').format(trx.date),
-                trx.type == TransactionType.income ? 'আয়' : 'ব্যয়',
+                trx.type == TransactionType.income
+                    ? context.localization.income
+                    : context.localization.expense,
                 trx.category,
                 '${settingsController.defaultCurrency.value} ${trx.amount.toInt()}',
               ];
@@ -806,22 +861,27 @@ class ProfileScreen extends StatelessWidget {
               color: PdfColors.white,
               fontSize: 12,
             ),
-            headerDecoration: pw.BoxDecoration(color: PdfColors.grey800),
+            headerDecoration: const pw.BoxDecoration(color: PdfColors.grey800),
             cellAlignment: pw.Alignment.centerLeft,
             cellStyle: const pw.TextStyle(fontSize: 12),
             columnWidths: {
               0: const pw.FixedColumnWidth(90),
-              1: const pw.FixedColumnWidth(50),
+              1: const pw.FixedColumnWidth(80),
               2: const pw.FlexColumnWidth(),
               3: const pw.FixedColumnWidth(80),
             },
           ),
+
           pw.SizedBox(height: 20),
+
           pw.Align(
             alignment: pw.Alignment.centerRight,
             child: pw.Text(
-              'Generated by AyBay App',
-              style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey),
+              context.localization.generatedByApp,
+              style: const pw.TextStyle(
+                fontSize: 10,
+                color: PdfColors.grey,
+              ),
             ),
           ),
         ],
@@ -1650,4 +1710,5 @@ class ProfileScreen extends StatelessWidget {
       },
     );
   }
+
 }
