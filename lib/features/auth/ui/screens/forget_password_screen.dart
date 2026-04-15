@@ -22,7 +22,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          /// 🌈 Premium Light Background
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
