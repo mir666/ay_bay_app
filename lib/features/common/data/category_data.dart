@@ -12,13 +12,13 @@ final List<CategoryModel> incomeCategories = [
 
 final List<CategoryModel> expenseCategories = [
   CategoryModel(name: 'food', iconId: 10, color: Colors.red),
-  CategoryModel(name: 'transport', iconId: 11, color: Colors.brown),
-  CategoryModel(name: 'shopping', iconId: 12, color: Colors.pink),
-  CategoryModel(name: 'electric_bill', iconId: 13, color: Colors.yellow),
+  CategoryModel(name: 'transport', iconId: 11, color: Color(0xff677e74)),
+  CategoryModel(name: 'shopping', iconId: 12, color: Color(0xffEA46BD)),
+  CategoryModel(name: 'electric_bill', iconId: 13, color: Colors.deepPurple),
   CategoryModel(name: 'net_bill', iconId: 14, color: Colors.indigo),
   CategoryModel(name: 'gas_bill', iconId: 15, color: Colors.cyan),
-  CategoryModel(name: 'bazaar', iconId: 16, color: Colors.lime),
-  CategoryModel(name: 'hospital', iconId: 17, color: Colors.deepOrange),
-  CategoryModel(name: 'school', iconId: 18, color: Colors.lightBlue),
+  CategoryModel(name: 'bazaar', iconId: 16, color: Color(0xff625039)),
+  CategoryModel(name: 'hospital', iconId: 17, color: Color(0xff4875A1)),
+  CategoryModel(name: 'school', iconId: 18, color: Color(0xffE0B138)),
   CategoryModel(name: 'other', iconId: 5, color: Colors.grey),
 ];
