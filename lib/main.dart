@@ -147,7 +147,11 @@ void main() async {
   //  Schedule Daily Reminder
   // =============================================================
 
+  // Daily reminder
   await NotificationService.scheduleDailyExpenseReminder();
+
+  // Monthly summary
+  await NotificationService.scheduleMonthlySummaryReminder();
 
   // Start App
   runApp(const AyBayApp());

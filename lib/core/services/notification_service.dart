@@ -126,7 +126,7 @@ class NotificationService {
       now.year,
       now.month,
       now.day,
-      20,
+      21,
       0,
     );
 
@@ -142,6 +142,26 @@ class NotificationService {
       body: 'আজ কি আপনার সব খরচ যোগ হয়েছে?',
       scheduledDate: scheduledTime,
       matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
+
+  static Future<void> scheduleMonthlySummaryReminder() async {
+    final now = DateTime.now();
+
+    // next month 1st day সকাল 9টা
+    var scheduledTime = DateTime(
+      now.year,
+      now.month + 1,
+      1,
+      9,
+      0,
+    );
+
+    await showScheduledNotification(
+      id: 6000,
+      title: 'Monthly Summary',
+      body: 'গত মাসের মোট খরচ দেখে নিন',
+      scheduledDate: scheduledTime,
     );
   }
 
