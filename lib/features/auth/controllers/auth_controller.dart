@@ -1,16 +1,19 @@
 import 'package:ay_bay_app/app/app_routes.dart';
 import 'package:ay_bay_app/core/profile/controllers/user_controller.dart';
+import 'package:ay_bay_app/core/services/notification_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get_storage/get_storage.dart';
 
 class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   final isLoading = false.obs;
+
 
   /// 🔹 Save FCM token (fire-and-forget)
   Future<void> saveFcmToken() async {
@@ -41,7 +44,7 @@ class AuthController extends GetxController {
         password: password,
       );
 
-      final uid = userCredential.user!.uid;
+      final _ = userCredential.user!.uid;
 
       await _db.collection('users').doc(userCredential.user!.uid).set({
         'name': name,
@@ -77,6 +80,22 @@ class AuthController extends GetxController {
         password: password,
       );
 
+      final box = GetStorage();
+
+      try {
+        if (box.read('daily_9pm_set') != true) {
+          await NotificationService.scheduleDaily9PMNotification(
+            title: "dailyReminder".tr,
+            body: "dailyReminderBody".tr,);
+          box.write('daily_9pm_set', true);
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print("Notification scheduling failed: $e");
+        }
+      }
+
+
       saveFcmToken(); // fire-and-forget
       Get.offAllNamed(AppRoutes.home);
     } catch (e) {
@@ -100,5 +119,7 @@ class AuthController extends GetxController {
   // SIGN OUT
   Future<void> signOut() async {
     await _auth.signOut();
+    final box = GetStorage();
+    box.remove('daily_9pm_set');
   }
 }

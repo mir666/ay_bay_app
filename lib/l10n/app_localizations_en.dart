@@ -680,4 +680,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get amount => 'Amount';
+
+  @override
+  String get target => 'Target:';
+
+  @override
+  String get addSavings => 'Add Savings';
+
+  @override
+  String get invalidAmount => 'Invalid Amount';
+
+  @override
+  String get goalRemoved => 'Goal removed';
+
+  @override
+  String get createSavingsGoal => 'Create Savings Goal';
+
+  @override
+  String get goalTitle => 'Goal Title';
+
+  @override
+  String get buyBike => 'e.g. Buy Bike';
+
+  @override
+  String get dailyReminder => 'Daily Reminder';
+
+  @override
+  String get dailyReminderBody => 'Now check your day\'s tasks';
+
+  @override
+  String get updatePassword => 'Update Password';
+
+  @override
+  String get currentPassword => 'Current Password';
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get confirmNewPassword => 'Confirm New Password';
+
+  @override
+  String get resetPassword => 'Reset Password';
 }

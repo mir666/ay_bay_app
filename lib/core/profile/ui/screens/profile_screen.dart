@@ -153,7 +153,7 @@ class ProfileScreen extends StatelessWidget {
 
                           return Column(
                             children: controller.goals
-                                .map((goal) => savingsGoalCard(goal))
+                                .map((goal) => savingsGoalCard(context,goal))
                                 .toList(),
                           );
                         }),
@@ -966,8 +966,9 @@ class ProfileScreen extends StatelessWidget {
     return file; // শেয়ারের জন্য রিটার্ন
   }
 
-  Widget savingsGoalCard(SavingsGoal goal) {
+  Widget savingsGoalCard(BuildContext context, SavingsGoal goal) {
     final controller = Get.find<SavingsGoalController>();
+    final settingsController = Get.find<SettingsController>();
 
     final percent =
     (goal.progress * 100).clamp(0, 100);
@@ -1003,15 +1004,12 @@ class ProfileScreen extends StatelessWidget {
                 const EdgeInsets.all(8),
                 decoration:
                 BoxDecoration(
-                  color: Colors
-                      .deepPurple
-                      .withValues(
-                      alpha: 0.1),
+                  color: Colors.deepPurple.withValues(alpha: 0.1),
                   borderRadius:
                   BorderRadius
                       .circular(10),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.flag,
                   color:
                   Colors.deepPurple,
@@ -1046,8 +1044,8 @@ class ProfileScreen extends StatelessWidget {
                   );
 
                   Get.snackbar(
-                    "Deleted",
-                    "Goal removed",
+                    "",
+                    context.localization.goalRemoved,
                     snackPosition:
                     SnackPosition
                         .BOTTOM,
@@ -1062,11 +1060,10 @@ class ProfileScreen extends StatelessWidget {
           /// Amount Row
           Row(
             mainAxisAlignment:
-            MainAxisAlignment
-                .spaceBetween,
+            MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "৳ ${goal.savedAmount.toInt()}",
+                "${settingsController.defaultCurrency.value} ${localizedNumber(goal.savedAmount)}",
                 style:
                 const TextStyle(
                   fontSize: 16,
@@ -1077,7 +1074,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               Text(
-                "Target: ৳ ${goal.targetAmount.toInt()}",
+                "${context.localization.target} ${settingsController.defaultCurrency.value} ${localizedNumber(goal.targetAmount)}",
                 style:
                 const TextStyle(
                   color: Colors.grey,
@@ -1112,14 +1109,11 @@ class ProfileScreen extends StatelessWidget {
             alignment:
             Alignment.centerRight,
             child: Text(
-              "${percent.toStringAsFixed(0)}%",
-              style:
-              const TextStyle(
+              "${localizedNumber(percent)}%",
+              style: TextStyle(
                 fontSize: 12,
-                fontWeight:
-                FontWeight.bold,
-                color:
-                Colors.deepPurple,
+                fontWeight: FontWeight.bold,
+                color: Colors.deepPurple,
               ),
             ),
           ),
@@ -1131,37 +1125,22 @@ class ProfileScreen extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
-                _showAddMoneyDialog(goal.id);
+                showAddMoneyDialog(context, goal.id);
               },
               style:
-              ElevatedButton
-                  .styleFrom(
-                backgroundColor:
-                Colors.deepPurple,
-                padding:
-                const EdgeInsets
-                    .symmetric(
-                  vertical: 14,
+              ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14,
                 ),
-                shape:
-                RoundedRectangleBorder(
-                  borderRadius:
-                  BorderRadius
-                      .circular(
-                      14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 elevation: 0,
               ),
-              icon: const Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-              label: const Text(
-                "Add Savings",
+              label: Text(
+                context.localization.addSavings,
                 style: TextStyle(
                   color: Colors.white,
-                  fontWeight:
-                  FontWeight.bold,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -1171,34 +1150,129 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showAddMoneyDialog(String goalId) {
+  void showAddMoneyDialog(BuildContext context, String goalId) {
     final controller = Get.find<SavingsGoalController>();
-
     final amountController = TextEditingController();
 
     Get.dialog(
-      AlertDialog(
-        title: Text("Add Savings", style: TextStyle(color: Colors.white),),
-        content: TextField(
-          controller: amountController,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: "Amount"),
+      Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
         ),
-        actions: [
-          TextButton(onPressed: Get.back, child: Text('cancel')),
-          ElevatedButton(
-            onPressed: () {
-              final amount = double.tryParse(amountController.text);
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
 
-              if (amount != null) {
-                controller.addSavings(goalId, amount);
+              /// Title
+              Row(
+                children: [
+                  Icon(
+                    Icons.savings_outlined,
+                    color: Colors.green,
+                    size: 28,
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    context.localization.addSavings,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
 
-                Get.back();
-              }
-            },
-            child: Text('save'),
+              const SizedBox(height: 20),
+
+              /// Amount Field
+              TextField(
+                controller: amountController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: context.localization.money,
+                  hintStyle: TextStyle(color: Colors.grey),
+                  prefixIcon: Icon(Icons.attach_money),
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 25),
+
+              /// Buttons
+              Row(
+                children: [
+
+                  /// Cancel Button
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(context.localization.cancel,style: TextStyle(color: Colors.red),),
+                    ),
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  /// Save Button
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final amount =
+                        double.tryParse(amountController.text);
+
+                        if (amount == null || amount <= 0) {
+                          Get.snackbar(
+                            context.localization.invalidAmount,
+                            "",
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                          return;
+                        }
+
+                        controller.addSavings(goalId, amount);
+
+                        Get.back();
+
+                        Get.snackbar(
+                          context.localization.success,
+                          "",
+                          snackPosition: SnackPosition.BOTTOM,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        context.localization.save,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -1226,7 +1300,7 @@ class ProfileScreen extends StatelessWidget {
                   Icon(Icons.flag, color: Colors.deepPurple, size: 26),
                   SizedBox(width: 10),
                   Text(
-                    "Create Savings Goal",
+                    context.localization.createSavingsGoal,
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -1238,8 +1312,9 @@ class ProfileScreen extends StatelessWidget {
               TextField(
                 controller: titleController,
                 decoration: InputDecoration(
-                  labelText: "Goal Title",
-                  hintText: "e.g. Buy Bike",
+                  labelText: context.localization.goalTitle,
+                  hintText: context.localization.buyBike,
+                  hintStyle: TextStyle(color: Colors.grey),
                   prefixIcon: const Icon(Icons.title),
                   filled: true,
                   fillColor: Colors.grey.shade100,
@@ -1257,8 +1332,9 @@ class ProfileScreen extends StatelessWidget {
                 controller: amountController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: "Target Amount",
-                  hintText: "Enter amount",
+                  labelText: context.localization.target,
+                  hintText: context.localization.money,
+                  hintStyle: TextStyle(color: Colors.grey),
                   prefixIcon: const Icon(Icons.attach_money),
                   filled: true,
                   fillColor: Colors.grey.shade100,
@@ -1301,9 +1377,12 @@ class ProfileScreen extends StatelessWidget {
 
                         if (title.isEmpty || amount == null) {
                           Get.snackbar(
-                            "Error",
-                            "Please enter valid data",
+                            context.localization.error,
+                            "",
                             snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.transparent,
+                            barBlur: 0,
+                            colorText: Colors.red,
                           );
                           return;
                         }
@@ -1313,9 +1392,12 @@ class ProfileScreen extends StatelessWidget {
                         Get.back();
 
                         Get.snackbar(
-                          "Success",
-                          "Savings goal created",
+                          context.localization.success,
+                          "",
                           snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.transparent,
+                          barBlur: 0,
+                          colorText: Colors.green,
                         );
                       },
                       style: ElevatedButton.styleFrom(

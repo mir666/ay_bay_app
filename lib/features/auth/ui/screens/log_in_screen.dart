@@ -148,11 +148,10 @@ class _LogInScreenState extends State<LogInScreen> {
                           width: double.infinity,
                           height: 54,
                           child: ElevatedButton(
-                            onPressed: controller.isLoading.value
-                                ? null
-                                : () => controller.login(
+                            onPressed: controller.isLoading.value ? null : () => controller.login(
                               phone: phoneCtrl.text.trim(),
                               password: passCtrl.text.trim(),
+
                             ),
                             style: ElevatedButton.styleFrom(
                               elevation: 10,
@@ -162,11 +161,8 @@ class _LogInScreenState extends State<LogInScreen> {
                                 borderRadius: BorderRadius.circular(22),
                               ),
                             ),
-                            child: controller.isLoading.value
-                                ? CircularProgressIndicator(
-                              color: Colors.white,
-                            )
-                                : Text(
+                            child: controller.isLoading.value ? CircularProgressIndicator(color: Colors.white,
+                            ) : Text(
                               context.localization.submit,
                               style: TextStyle(
                                 fontSize: 18,

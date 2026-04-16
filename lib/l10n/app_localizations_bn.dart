@@ -678,4 +678,46 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get amount => 'পরিমাণ';
+
+  @override
+  String get target => 'টার্গেটঃ';
+
+  @override
+  String get addSavings => 'সেভিং যোগ করুন';
+
+  @override
+  String get invalidAmount => 'সঠিক সংখ্যা লিখুন';
+
+  @override
+  String get goalRemoved => 'লক্ষ্য মুছে ফেলা হয়েছে';
+
+  @override
+  String get createSavingsGoal => 'সেভিং লক্ষ্য তৈরি করুন';
+
+  @override
+  String get goalTitle => 'লক্ষের নাম';
+
+  @override
+  String get buyBike => 'যেমন - বাইক';
+
+  @override
+  String get dailyReminder => 'প্রতিদিনের চেক-আপ';
+
+  @override
+  String get dailyReminderBody => 'এখন আপনার দিনের কাজগুলো চেক করুন';
+
+  @override
+  String get updatePassword => 'আপডেট পাসওয়ার্ড';
+
+  @override
+  String get currentPassword => 'বর্তমান পাসওয়ার্ড';
+
+  @override
+  String get newPassword => 'নতুন পাসওয়ার্ড';
+
+  @override
+  String get confirmNewPassword => 'নতুন পাসওয়ার্ড নিশ্চিত করুন';
+
+  @override
+  String get resetPassword => 'নতুন পাসওয়ার্ড দিন';
 }

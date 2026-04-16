@@ -22,6 +22,6 @@ class ControllerBinding extends Bindings {
     Get.put(LocaleController());
     Get.put(DebtController(), permanent: true);
     Get.put(NotificationController());
-    Get.put(SavingsGoalController());
+    Get.lazyPut(() => SavingsGoalController(), fenix: true);
   }
 }

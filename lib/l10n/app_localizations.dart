@@ -1393,6 +1393,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Amount'**
   String get amount;
+
+  /// No description provided for @target.
+  ///
+  /// In en, this message translates to:
+  /// **'Target:'**
+  String get target;
+
+  /// No description provided for @addSavings.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Savings'**
+  String get addSavings;
+
+  /// No description provided for @invalidAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Amount'**
+  String get invalidAmount;
+
+  /// No description provided for @goalRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal removed'**
+  String get goalRemoved;
+
+  /// No description provided for @createSavingsGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Savings Goal'**
+  String get createSavingsGoal;
+
+  /// No description provided for @goalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal Title'**
+  String get goalTitle;
+
+  /// No description provided for @buyBike.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Buy Bike'**
+  String get buyBike;
+
+  /// No description provided for @dailyReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Reminder'**
+  String get dailyReminder;
+
+  /// No description provided for @dailyReminderBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Now check your day\'s tasks'**
+  String get dailyReminderBody;
+
+  /// No description provided for @updatePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Password'**
+  String get updatePassword;
+
+  /// No description provided for @currentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Password'**
+  String get currentPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newPassword;
+
+  /// No description provided for @confirmNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm New Password'**
+  String get confirmNewPassword;
+
+  /// No description provided for @resetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPassword;
 }
 
 class _AppLocalizationsDelegate

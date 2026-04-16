@@ -19,7 +19,9 @@ class DebtController extends GetxController {
   }
 
   static const String hasSeenNotificationHintKey = 'seen_notify_hint';
-  bool get hasSeenNotificationHint => box.read(hasSeenNotificationHintKey) ?? false;
+
+  bool get hasSeenNotificationHint =>
+      box.read(hasSeenNotificationHintKey) ?? false;
 
   void markNotificationHintSeen() {
     box.write(hasSeenNotificationHintKey, true);
@@ -50,11 +52,13 @@ class DebtController extends GetxController {
     box.write('debts', debts.map((e) => e.toJson()).toList());
   }
 
-  double get totalOwe =>
-      debts.where((d) => d.isOwe && !d.isCleared).fold(0.0, (sum, d) => sum + d.amount);
+  double get totalOwe => debts
+      .where((d) => d.isOwe && !d.isCleared)
+      .fold(0.0, (sum, d) => sum + d.amount);
 
-  double get totalReceive =>
-      debts.where((d) => !d.isOwe && !d.isCleared).fold(0.0, (sum, d) => sum + d.amount);
+  double get totalReceive => debts
+      .where((d) => !d.isOwe && !d.isCleared)
+      .fold(0.0, (sum, d) => sum + d.amount);
 
   void addDebt(DebtModel debt) {
     debts.add(debt);
@@ -103,7 +107,8 @@ class DebtController extends GetxController {
     if (debt.isCleared) return;
 
     final now = DateTime.now();
-    final notifyBase = DateTime(
+
+    final due = DateTime(
       debt.dueDate.year,
       debt.dueDate.month,
       debt.dueDate.day,
@@ -111,44 +116,51 @@ class DebtController extends GetxController {
       debt.dueDate.minute,
     );
 
-    final daysDifference = debt.dueDate
-        .difference(DateTime(now.year, now.month, now.day))
-        .inDays;
+    final diff = due.difference(now);
 
-    DateTime beforeNotify;
+    DateTime reminderTime;
 
-    if (daysDifference <= 0) {
-      // আজকের debt → 1 hour আগে
-      beforeNotify = notifyBase.subtract(Duration(hours: 1));
-    } else if (daysDifference == 2) {
-      // 2 দিন পর → 1 day আগে
-      beforeNotify = notifyBase.subtract(Duration(days: 1));
-    } else {
-      // 2 দিনের বেশি → 2 দিন আগে
-      beforeNotify = notifyBase.subtract(Duration(days: 2));
+    // 🔥 RULE 1: long term (7+ days / 15 days / 1 month)
+    if (diff.inDays >= 7) {
+      reminderTime = due.subtract(const Duration(days: 2));
     }
 
-    // 🔹 Ensure notification is in future
-    if (beforeNotify.isAfter(now)) {
-      NotificationService.showScheduledNotification(
-        id: debt.id.hashCode,
+    // 🔥 RULE 2: medium (2–6 days)
+    else if (diff.inDays >= 2) {
+      reminderTime = due.subtract(const Duration(days: 1));
+    }
+
+    // 🔥 RULE 3: short (1 day or less)
+    else {
+      reminderTime = due.subtract(const Duration(hours: 5));
+    }
+
+    // 🔥 IDs (stable & unique)
+    final baseId = debt.id.hashCode;
+    final reminderId = baseId + 1;
+    final dueId = baseId + 2;
+
+    // 🔔 BEFORE REMINDER
+    if (reminderTime.isAfter(now)) {
+      NotificationService.scheduleUserNotification(
+        id: reminderId,
         title: debt.isOwe ? 'টাকা পাওয়ার সময় আসছে' : 'টাকা ফেরত দেওয়ার সময় আসছে',
         body: debt.isOwe
-            ? 'আপনি ${debt.name} থেকে ${debt.amount.toStringAsFixed(0)} ৳ পাবেন।'
-            : 'আপনি ${debt.name} কে ${debt.amount.toStringAsFixed(0)} ৳ দিতে হবে।',
-        scheduledDate: beforeNotify,
+            ? '${debt.name} থেকে ${debt.amount.toStringAsFixed(0)} ৳ পাবেন'
+            : '${debt.name} কে ${debt.amount.toStringAsFixed(0)} ৳ দিতে হবে',
+        dateTime: reminderTime,
       );
     }
 
-    // 🔹 Due date notification at exact time
-    if (notifyBase.isAfter(now)) {
-      NotificationService.showScheduledNotification(
-        id: debt.id.hashCode + 100000,
-        title: debt.isOwe ? 'টাকা পাওয়ার সময় আসছে' : 'টাকা ফেরত দেওয়ার সময় আসছে',
+    // 🔔 EXACT DUE NOTIFICATION
+    if (due.isAfter(now)) {
+      NotificationService.scheduleUserNotification(
+        id: dueId,
+        title: debt.isOwe ? 'আজ টাকা পাওয়ার দিন' : 'আজ টাকা দেওয়ার দিন',
         body: debt.isOwe
-            ? 'আপনি ${debt.name} থেকে ${debt.amount.toStringAsFixed(0)} ৳ পাবেন।'
-            : 'আপনি ${debt.name} কে ${debt.amount.toStringAsFixed(0)} ৳ দিতে হবে।',
-        scheduledDate: notifyBase,
+            ? '${debt.name} থেকে টাকা পাওয়ার সময় হয়েছে'
+            : '${debt.name} কে টাকা দেওয়ার সময় হয়েছে',
+        dateTime: due,
       );
     }
   }

@@ -29,12 +29,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     title = message.data['title'] ?? title;
     body = message.data['body'] ?? body;
   }
-
-  await NotificationService.showNotification(
-    id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
-    title: title,
-    body: body,
-  );
 }
 
 // =============================================================
@@ -107,13 +101,6 @@ void main() async {
       );
 
       // Show local notification
-      await NotificationService.showNotification(
-        id: DateTime.now()
-            .millisecondsSinceEpoch
-            .remainder(100000),
-        title: title,
-        body: body,
-      );
     },
   );
 
@@ -142,16 +129,6 @@ void main() async {
       );
     },
   );
-
-  // =============================================================
-  //  Schedule Daily Reminder
-  // =============================================================
-
-  // Daily reminder
-  await NotificationService.scheduleDailyExpenseReminder();
-
-  // Monthly summary
-  await NotificationService.scheduleMonthlySummaryReminder();
 
   // Start App
   runApp(const AyBayApp());

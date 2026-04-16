@@ -1,128 +1,103 @@
-// notification_service.dart
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
-  static final _notifications = FlutterLocalNotificationsPlugin();
+  NotificationService._();
 
+  static final FlutterLocalNotificationsPlugin
+  _notifications = FlutterLocalNotificationsPlugin();
+
+  /// Initialize notification
   static Future<void> init() async {
     tz.initializeTimeZones();
-    tz.setLocalLocation(tz.getLocation('Asia/Dhaka'));
 
-    const androidSettings = AndroidInitializationSettings('@drawable/notification_icon');
-    const iosSettings = DarwinInitializationSettings();
+    try {
+      final timeZoneName = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(timeZoneName.toString()));
+    } catch (e) {
+      tz.setLocalLocation(tz.getLocation('Asia/Dhaka'));
+    }
 
-    const initSettings = InitializationSettings(android: androidSettings, iOS: iosSettings);
+    const AndroidInitializationSettings android =
+    AndroidInitializationSettings('@drawable/notification_icon');
 
-    await _notifications.initialize(
-      settings: initSettings,
-      onDidReceiveNotificationResponse: (details) {
-        print("Notification clicked: ${details.payload}");
-      },
-      onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
-    );
+    const InitializationSettings settings =
+    InitializationSettings(android: android);
 
-    // Android channel
-    const androidChannel = AndroidNotificationChannel(
-      'scheduled_channel',
-      'Scheduled Notifications',
-      description: 'Scheduled debt notifications',
-      importance: Importance.max,
-    );
-
-    await _notifications
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(androidChannel);
-
-    await _notifications
-        .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
-
-    await _notifications
-        .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestExactAlarmsPermission();
+    await _notifications.initialize(settings: settings);
   }
 
-  static Future<void> showNotification({
+  /// ==============================
+  /// 1) Instant Notification
+  /// ==============================
+
+  static Future<void> showInstantNotification({
     required String title,
     required String body,
-    int? id,
   }) async {
-    final int safeId = id ?? DateTime.now().millisecondsSinceEpoch.remainder(2147483647);
-
-    final androidDetails = AndroidNotificationDetails(
-      'scheduled_channel',
-      'Scheduled Notifications',
-      channelDescription: 'Scheduled debt notifications',
+    const androidDetails =
+    AndroidNotificationDetails(
+      'instant_channel',
+      'Instant Notification',
       importance: Importance.max,
       priority: Priority.high,
     );
-    final iosDetails = DarwinNotificationDetails();
 
-    final details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+    const details =
+    NotificationDetails(
+      android: androidDetails,
+    );
 
     await _notifications.show(
-      id: safeId,
+      id: DateTime.now().millisecondsSinceEpoch,
       title: title,
       body: body,
       notificationDetails: details,
-      payload: body,
     );
   }
 
-  static Future<void> showScheduledNotification({
+  /// ==============================
+  /// 2) Specific Time Notification
+  /// ==============================
+
+  static Future<void> scheduleSpecificTimeNotification({
+    required int id,
     required String title,
     required String body,
-    required DateTime scheduledDate,
-    int? id,
-    DateTimeComponents? matchDateTimeComponents,
+    required DateTime dateTime,
   }) async {
-    final int safeId = id ?? DateTime.now().millisecondsSinceEpoch.remainder(2147483647);
-
-    final androidDetails = AndroidNotificationDetails(
-      'scheduled_channel',
-      'Scheduled Notifications',
-      channelDescription: 'Scheduled debt notifications',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
-    final iosDetails = DarwinNotificationDetails();
-
-    final details = NotificationDetails(android: androidDetails, iOS: iosDetails);
-
-    final tzDate = tz.TZDateTime.from(scheduledDate, tz.local);
-
-    if (tzDate.isBefore(tz.TZDateTime.now(tz.local))) {
-      return;
-    }
-
     await _notifications.zonedSchedule(
-      id: safeId,
+      id: id,
       title: title,
       body: body,
-      scheduledDate: tzDate,
-      notificationDetails: details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: matchDateTimeComponents,
-      payload: body,
+      scheduledDate: tz.TZDateTime.from(dateTime, tz.local),
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'specific_time_channel',
+          'Specific Time Notification',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+      ),
+      androidScheduleMode:
+      AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
 
-  static Future<void> printPendingNotifications() async {
-    final pending = await _notifications.pendingNotificationRequests();
+  /// ==============================
+  /// 3) Daily Reminder Notification
+  /// ==============================
 
-    for (var n in pending) {
-      print("Pending ID: ${n.id} Title: ${n.title}");
-    }
-  }
-
-  static Future<void> scheduleDailyExpenseReminder() async {
+  static Future<void> scheduleDaily9PMNotification({
+    required String title,
+    required String body,
+  }) async {
     final now = DateTime.now();
 
-    var scheduledTime = DateTime(
+    DateTime scheduledDate = DateTime(
       now.year,
       now.month,
       now.day,
@@ -130,51 +105,68 @@ class NotificationService {
       0,
     );
 
-    if (scheduledTime.isBefore(now)) {
-      scheduledTime = scheduledTime.add(
-        const Duration(days: 1),
-      );
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
 
-    await showScheduledNotification(
-      id: 5000,
-      title: 'Daily Expense Reminder',
-      body: 'আজ কি আপনার সব খরচ যোগ হয়েছে?',
-      scheduledDate: scheduledTime,
+    await _notifications.zonedSchedule(
+      id: 100,
+      title: title,
+      body: body,
+      scheduledDate: tz.TZDateTime.from(scheduledDate, tz.local),
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'daily_9pm_channel',
+          'Daily Reminder',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
     );
   }
 
-  static Future<void> scheduleMonthlySummaryReminder() async {
-    final now = DateTime.now();
+  /// ==============================
+  /// 4) Task Reminder Notification
+  /// ==============================
 
-    // next month 1st day সকাল 9টা
-    var scheduledTime = DateTime(
-      now.year,
-      now.month + 1,
-      1,
-      9,
-      0,
-    );
-
-    await showScheduledNotification(
-      id: 6000,
-      title: 'Monthly Summary',
-      body: 'গত মাসের মোট খরচ দেখে নিন',
-      scheduledDate: scheduledTime,
+  static Future<void> scheduleUserNotification({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime dateTime,
+  }) async {
+    await _notifications.zonedSchedule(
+      id: id,
+      title: title,
+      body: body,
+      scheduledDate: tz.TZDateTime.from(dateTime, tz.local),
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'debt_channel',
+          'Debt Reminder',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
 
-  static Future<void> cancelNotification(int id) async {
+  /// ==============================
+  /// Cancel Specific Notification
+  /// ==============================
+
+  static Future<void> cancelNotification(
+      int id) async {
     await _notifications.cancel(id: id);
   }
 
-  static Future<void> cancelAllNotifications() async {
+  /// Cancel All Notifications
+
+  static Future<void> cancelAllNotifications()
+  async {
     await _notifications.cancelAll();
   }
-}
-
-@pragma('vm:entry-point')
-void notificationTapBackground(NotificationResponse response) {
-  print('Background notification clicked: ${response.payload}');
 }

@@ -214,6 +214,20 @@
   "generatedByApp": "AyBay অ্যাপ দ্বারা তৈরি",
   "transactionReport": "লেনদেন প্রতিবেদন",
   "type": "প্রকার",
-  "amount": "পরিমাণ"
+  "amount": "পরিমাণ",
+  "target": "টার্গেটঃ",
+  "addSavings": "সেভিং যোগ করুন",
+  "invalidAmount": "সঠিক সংখ্যা লিখুন",
+  "goalRemoved": "লক্ষ্য মুছে ফেলা হয়েছে",
+  "createSavingsGoal": "সেভিং লক্ষ্য তৈরি করুন",
+  "goalTitle": "লক্ষের নাম",
+  "buyBike": "যেমন - বাইক",
+  "dailyReminder": "প্রতিদিনের চেক-আপ",
+  "dailyReminderBody": "এখন আপনার দিনের কাজগুলো চেক করুন",
+  "updatePassword": "আপডেট পাসওয়ার্ড",
+  "currentPassword": "বর্তমান পাসওয়ার্ড",
+  "newPassword": "নতুন পাসওয়ার্ড",
+  "confirmNewPassword": "নতুন পাসওয়ার্ড নিশ্চিত করুন",
+  "resetPassword": "নতুন পাসওয়ার্ড দিন"
 
 }
